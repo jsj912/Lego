@@ -129,3 +129,42 @@ export function HangingBasket({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/** A window packed with flowers: tiers of buckets and blooms filling the glass. */
+export function FlowerWall({ className }: { className?: string }) {
+  const colors: Petal[] = ["pink", "coral", "yellow", "white", "lav", "red", "blue"];
+  const rnd = (n: number) => {
+    const x = Math.sin(n * 91.7) * 43758.5453;
+    return x - Math.floor(x);
+  };
+  const blooms = [];
+  let k = 0;
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 13; col++) {
+      const x = col * 18 + (row % 2 ? 9 : 0) + rnd(k) * 6;
+      const y = 14 + row * 24 + rnd(k + 50) * 8;
+      const c = colors[Math.floor(rnd(k + 100) * colors.length)];
+      blooms.push(
+        <g key={k}>
+          <path d={`M${x} ${y + 3} L${x + (rnd(k + 7) - 0.5) * 6} ${y + 16}`} stroke="#2f8f4e" strokeWidth={1.4} />
+          <Stud x={x} y={y} r={4.2 + rnd(k + 9) * 1.6} fill={PAL[c][0]} dark={PAL[c][1]} />
+        </g>,
+      );
+      k++;
+    }
+  }
+  return (
+    <svg viewBox="0 0 230 170" preserveAspectRatio="xMidYMid slice" className={className} aria-hidden focusable="false">
+      <rect width="230" height="170" fill="#e8f3e4" />
+      {/* leafy backdrop */}
+      {Array.from({ length: 40 }, (_, i) => (
+        <ellipse key={i} cx={rnd(i + 300) * 230} cy={rnd(i + 400) * 170} rx={9} ry={4} transform={`rotate(${rnd(i + 500) * 180} ${rnd(i + 300) * 230} ${rnd(i + 400) * 170})`} fill={i % 2 ? "#3a9559" : "#2f8f4e"} />
+      ))}
+      {blooms}
+      {/* shelf lips */}
+      {[58, 106, 154].map((y) => (
+        <rect key={y} x={0} y={y} width={230} height={5} fill="#a57a4c" />
+      ))}
+    </svg>
+  );
+}

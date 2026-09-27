@@ -3,7 +3,7 @@ import type { Hobby } from "@/content/offTheClock";
 import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import type { BrickColor } from "@/lib/bricks";
 import { BrickBouquet } from "./BrickBouquet";
-import { FlowerDisplay, HangingBasket } from "./FlowerDisplay";
+import { FlowerDisplay, FlowerWall, HangingBasket } from "./FlowerDisplay";
 import { AFrame, FlatRoofFlag, PitchedRoof, SawtoothRoof, StepGable } from "./Buildings";
 import { LibraryWindow } from "./LibraryWindow";
 
@@ -64,7 +64,8 @@ function Display({ hobby }: { hobby: Hobby }) {
     case "flowers":
       return (
         <div className="flex h-full items-end justify-center">
-          <BrickBouquet className="h-full max-h-[170px] w-auto drop-shadow-[0_6px_6px_rgba(0,0,0,0.18)]" />
+          <FlowerWall className="absolute inset-0 h-full w-full" />
+          <BrickBouquet className="relative h-full max-h-[170px] w-auto drop-shadow-[0_6px_6px_rgba(0,0,0,0.25)]" />
         </div>
       );
     case "scrapbook":
@@ -174,7 +175,7 @@ function Door({ kind, frame, isFlowers }: { kind: BuildingSpec["door"]; frame: s
 }
 
 /** One shop on the street: a distinct building per hobby. The whole front is a button. */
-export function Shopfront({ hobby, photoCount, onOpen }: { hobby: Hobby; photoCount: number; onOpen: (el: HTMLElement) => void }) {
+export function Shopfront({ hobby, onOpen }: { hobby: Hobby; photoCount?: number; onOpen: (el: HTMLElement) => void }) {
   const b = BUILDINGS[hobby.id];
   const isFlowers = hobby.id === "flowers";
   const windowEl = (
@@ -229,7 +230,7 @@ export function Shopfront({ hobby, photoCount, onOpen }: { hobby: Hobby; photoCo
       {/* sidewalk */}
       <div className="h-3 rounded-b bg-[#b8b3a7]" />
       <span className="mt-3 inline-flex items-center gap-1.5 self-center rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-white opacity-80 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-        Step inside{photoCount > 0 ? ` · ${photoCount} photo${photoCount === 1 ? "" : "s"}` : ""}
+        Step inside
       </span>
     </button>
   );
