@@ -13,7 +13,7 @@ export function logoPath(name: string): string | null {
   return null;
 }
 
-export type Photo = { src: string; alt: string };
+export type Photo = { src: string; alt: string; caption?: string };
 
 /**
  * Build-time listing of the photos in /public/interests/<folder>/, sorted by name.

@@ -118,7 +118,8 @@ export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; p
             {photos.map((p, i) => (
               <li key={p.src} className="overflow-hidden rounded-xl bg-surface ring-1 ring-ink/10">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.src} alt={p.alt || `${hobby.title}, photo ${i + 1}`} loading="lazy" decoding="async" className="aspect-square h-full w-full object-cover" />
+                <img src={p.src} alt={p.alt || `${hobby.title}, photo ${i + 1}`} loading="lazy" decoding="async" className="aspect-square w-full object-cover" />
+                {p.caption && <p className="px-3 py-2 text-[0.8rem] leading-snug text-ink-2">{p.caption}</p>}
               </li>
             ))}
           </ul>

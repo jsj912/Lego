@@ -402,3 +402,5 @@ html { scrollbar-gutter: stable; }
 .wall-corrugated { background: repeating-linear-gradient(90deg, #b9bdc1 0 6px, #9ea3a8 6px 9px, #c8ccd0 9px 12px); }
 .garage-door { background: repeating-linear-gradient(180deg, #d4d7db 0 13px, #a9aeb3 13px 15px); }
 .hazard-band { background: repeating-linear-gradient(45deg, #ffd500 0 8px, #1f2226 8px 16px); }
+
+.flower-window { background: radial-gradient(ellipse at 50% 30%, #fff8f0, #f6ecdf 70%); }

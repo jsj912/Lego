@@ -60,18 +60,57 @@ function PetalFlower({ x, y, r, n, petal, petalDk, petalHi, centre, centreDk, ti
 }
 
 /** Rose head from stacked round plates, largest at the bottom, stud on top. */
-function Rose({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
+function Rose({ x, y, s = 1, white = false }: { x: number; y: number; s?: number; white?: boolean }) {
   const rings = [13, 10, 7.2, 4.8];
+  const base = white ? C.white : C.rose;
+  const hi = white ? "#ffffff" : C.roseHi;
+  const dk = white ? C.whiteDk : C.roseDk;
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       {rings.map((rr, i) => (
         <g key={rr} transform={`translate(0 ${-i * 3.2})`}>
-          <ellipse cx={0} cy={2.6} rx={rr} ry={rr * 0.62} fill={C.roseDk} />
-          <ellipse cx={0} cy={0} rx={rr} ry={rr * 0.62} fill={i % 2 ? C.roseHi : C.rose} />
-          <path d={`M${-rr * 0.7} ${-rr * 0.15} Q0 ${-rr * 0.75} ${rr * 0.7} ${-rr * 0.15}`} fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth={0.8} />
+          <ellipse cx={0} cy={2.6} rx={rr} ry={rr * 0.62} fill={dk} />
+          <ellipse cx={0} cy={0} rx={rr} ry={rr * 0.62} fill={i % 2 ? hi : base} />
+          <path d={`M${-rr * 0.7} ${-rr * 0.15} Q0 ${-rr * 0.75} ${rr * 0.7} ${-rr * 0.15}`} fill="none" stroke={white ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.35)"} strokeWidth={0.8} />
         </g>
       ))}
-      <Stud x={0} y={-13} r={2.6} fill={C.roseHi} dark={C.roseDk} />
+      <Stud x={0} y={-13} r={2.6} fill={hi} dark={dk} />
+    </g>
+  );
+}
+
+/** Gladiolus spike: pink petal pairs stacked up a stem, smaller towards the tip. */
+function Gladiolus({ x, y, h, angle }: { x: number; y: number; h: number; angle: number }) {
+  const n = 8;
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${angle})`}>
+      <rect x={-1} y={-h} width={2} height={h} fill={C.stem} />
+      {Array.from({ length: n }, (_, i) => {
+        const t = i / (n - 1);
+        const r = 8.5 - t * 4.5;
+        const yy = -h * 0.3 - t * h * 0.66;
+        const side = i % 2 ? 1 : -1;
+        return (
+          <g key={i} transform={`translate(${side * 2} ${yy})`}>
+            <ellipse cx={side * r * 0.5} cy={1.2} rx={r} ry={r * 0.72} fill={C.pinkDk} />
+            <ellipse cx={side * r * 0.5} cy={0} rx={r} ry={r * 0.72} fill={C.pink} />
+            <ellipse cx={side * r * 0.3} cy={-r * 0.2} rx={r * 0.4} ry={r * 0.25} fill={C.pinkHi} opacity={0.8} />
+          </g>
+        );
+      })}
+      <path d={`M0 ${-h} l-1.5 -5 M0 ${-h} l1.5 -5`} stroke={C.stemHi} strokeWidth={1.4} />
+    </g>
+  );
+}
+
+/** Purple aster cluster: small petal flowers with yellow centres. */
+function Asters({ x, y }: { x: number; y: number }) {
+  const pts = [[0, 0], [-7, 4], [7, 3], [-2, -6], [5, -5]];
+  return (
+    <g>
+      {pts.map(([dx, dy], i) => (
+        <PetalFlower key={i} x={x + dx} y={y + dy} r={4.4} n={12} petal={C.lav} petalDk={C.lavDk} petalHi="#a78bfa" centre={C.gold} centreDk={C.goldDk} />
+      ))}
     </g>
   );
 }
@@ -85,19 +124,6 @@ function Leaf({ x, y, len, angle }: { x: number; y: number; len: number; angle: 
       <path d={`M0 0 Q${w} ${-len * 0.5} 0 ${-len} Q${-w} ${-len * 0.5} 0 0 Z`} fill={C.leaf} />
       <path d={`M0 -2 L0 ${-len + 3}`} stroke={C.leafDk} strokeWidth={0.9} />
       <circle cx={0} cy={-len * 0.18} r={1.3} fill={C.leafDk} />
-    </g>
-  );
-}
-
-/** Lavender / statice spike: small stacked purple studs up a bar. */
-function Spike({ x, y, h, angle }: { x: number; y: number; h: number; angle: number }) {
-  const n = Math.round(h / 5.5);
-  return (
-    <g transform={`translate(${x} ${y}) rotate(${angle})`}>
-      <rect x={-0.9} y={-h} width={1.8} height={h} fill={C.stem} />
-      {Array.from({ length: n }, (_, i) => (
-        <Stud key={i} x={i % 2 ? 1.6 : -1.6} y={-h + i * 5.2} r={2.6} fill={C.lav} dark={C.lavDk} />
-      ))}
     </g>
   );
 }
@@ -118,63 +144,48 @@ function Breath({ x, y, spread, angle }: { x: number; y: number; spread: number;
   );
 }
 
-function Stem({ x1, y1, x2, y2 }: { x1: number; y1: number; x2: number; y2: number }) {
-  return (
-    <g>
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={C.stem} strokeWidth={3} strokeLinecap="round" />
-      <line x1={x1 - 0.8} y1={y1} x2={x2 - 0.8} y2={y2} stroke={C.stemHi} strokeWidth={0.9} strokeLinecap="round" />
-    </g>
-  );
-}
-
+/**
+ * Joan's bouquet style from her photos: pink gladiolus, red and white roses,
+ * purple asters and baby's breath in a kraft-paper wrap with a white band.
+ */
 export function BrickBouquet({ className }: { className?: string }) {
-  const base = { x: 100, y: 158 };
-  const heads = [
-    { x: 100, y: 30 }, // gerbera
-    { x: 78, y: 54 }, // rose
-    { x: 122, y: 52 }, // rose
-    { x: 58, y: 76 }, // daisy
-    { x: 142, y: 78 }, // daisy
-  ];
   return (
-    <svg viewBox="26 6 148 174" className={className} aria-hidden focusable="false">
+    <svg viewBox="26 0 148 180" className={className} aria-hidden focusable="false">
       {/* back flap of the wrap */}
       <path d="M50 92 L100 176 L150 92 L128 112 L100 104 L72 112 Z" fill={C.kraftDk} />
       <path d="M50 92 L72 112 L100 104" fill="none" stroke={C.kraftHi} strokeWidth={1} opacity={0.6} />
 
-      {/* stems */}
-      {heads.map((h, i) => (
-        <Stem key={i} x1={base.x + (i - 2) * 2} y1={base.y} x2={h.x} y2={h.y + 6} />
-      ))}
+      {/* gladiolus spikes rise out of the back */}
+      <Gladiolus x={94} y={128} h={112} angle={-14} />
+      <Gladiolus x={106} y={128} h={118} angle={12} />
+      <Gladiolus x={100} y={128} h={96} angle={-1} />
 
-      {/* lavender + baby's breath behind */}
-      <Spike x={95} y={124} h={98} angle={22} />
-      <Spike x={105} y={124} h={90} angle={-26} />
-      <Breath x={80} y={102} spread={16} angle={-30} />
-      <Breath x={120} y={100} spread={16} angle={32} />
-      <Breath x={100} y={90} spread={13} angle={4} />
+      {/* baby's breath clouds */}
+      <Breath x={78} y={100} spread={17} angle={-34} />
+      <Breath x={122} y={98} spread={17} angle={34} />
+      <Breath x={100} y={86} spread={14} angle={2} />
+      <Breath x={62} y={90} spread={10} angle={-50} />
+      <Breath x={138} y={90} spread={10} angle={50} />
 
       {/* leaves */}
-      <Leaf x={90} y={120} len={36} angle={-62} />
-      <Leaf x={110} y={120} len={36} angle={62} />
-      <Leaf x={97} y={112} len={26} angle={-16} />
+      <Leaf x={88} y={122} len={34} angle={-62} />
+      <Leaf x={112} y={122} len={34} angle={62} />
 
-      {/* heads, back to front */}
-      <PetalFlower x={58} y={76} r={12} n={10} petal={C.white} petalDk={C.whiteDk} petalHi="#ffffff" centre={C.gold} centreDk={C.goldDk} tilt={-12} />
-      <PetalFlower x={142} y={78} r={12} n={10} petal={C.white} petalDk={C.whiteDk} petalHi="#ffffff" centre={C.gold} centreDk={C.goldDk} tilt={10} />
-      <Rose x={78} y={58} s={1.1} />
-      <Rose x={122} y={56} s={1.05} />
-      <PetalFlower x={100} y={30} r={17} n={12} petal={C.pink} petalDk={C.pinkDk} petalHi={C.pinkHi} centre={C.gold} centreDk={C.goldDk} />
-      <Breath x={148} y={60} spread={9} angle={40} />
-      <Breath x={52} y={60} spread={9} angle={-40} />
+      {/* heads */}
+      <Asters x={66} y={84} />
+      <Asters x={134} y={84} />
+      <Rose x={80} y={80} white />
+      <Rose x={120} y={80} white s={0.95} />
+      <Rose x={100} y={74} s={1.1} />
+      <Rose x={86} y={96} s={0.85} />
+      <Rose x={114} y={96} s={0.85} />
 
-      {/* front flaps: angled tan plates with fold lines */}
+      {/* front flaps: angled kraft plates with fold lines */}
       <path d="M48 106 L100 176 L110 126 Z" fill={C.kraft} />
       <path d="M152 108 L100 176 L90 128 Z" fill={C.kraft} />
       <path d="M48 106 L110 126" stroke={C.kraftHi} strokeWidth={1.4} />
       <path d="M152 108 L90 128" stroke={C.kraftHi} strokeWidth={1.4} />
       <path d="M100 176 L105 132" stroke={C.kraftDk} strokeWidth={1} opacity={0.7} />
-      {/* studs along the wrap's plate edges */}
       {[[58, 110], [72, 115], [142, 112], [128, 117]].map(([sx, sy]) => (
         <Stud key={`${sx}-${sy}`} x={sx} y={sy} r={2.4} fill={C.kraftHi} dark={C.kraftDk} />
       ))}
@@ -182,7 +193,6 @@ export function BrickBouquet({ className }: { className?: string }) {
       {/* white band tile */}
       <path d="M85 150 L115 150 L112 162 L88 162 Z" fill={C.whiteDk} />
       <path d="M85 148 L115 148 L113 158 L87 158 Z" fill={C.band} />
-      <path d="M87 151 L113 151" stroke="rgba(0,0,0,0.08)" strokeWidth={1} />
     </svg>
   );
 }

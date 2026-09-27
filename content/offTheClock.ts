@@ -16,6 +16,8 @@ export type Hobby = {
   books?: Book[];
   currentlyReading?: string | null;
   runStats?: RunStat[];
+  /** caption per photo file name (also used as alt text) */
+  captions?: Record<string, string>;
 };
 
 export const hobbies: Hobby[] = [
@@ -52,6 +54,12 @@ export const hobbies: Hobby[] = [
     title: "The Flower Stall",
     blurb: "I make bouquets.",
     folder: "flowers",
+    captions: {
+      "01-gladiolus-bouquet-held.webp": "Pink gladiolus, purple asters and baby's breath in kraft paper",
+      "02-gladiolus-kraft-wrap.webp": "Pink gladiolus, purple asters and baby's breath",
+      "03-red-roses.webp": "Red roses with baby's breath",
+      "04-white-roses-purple.webp": "White roses, purple asters and baby's breath",
+    },
   },
   {
     id: "scrapbook",

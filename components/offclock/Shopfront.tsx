@@ -3,7 +3,7 @@ import type { Hobby } from "@/content/offTheClock";
 import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import type { BrickColor } from "@/lib/bricks";
 import { BrickBouquet } from "./BrickBouquet";
-import { FlowerDisplay, FlowerWall, HangingBasket } from "./FlowerDisplay";
+import { FlowerDisplay, HangingBasket } from "./FlowerDisplay";
 import { AFrame, FlatRoofFlag, PitchedRoof, SawtoothRoof, StepGable } from "./Buildings";
 import { LibraryWindow } from "./LibraryWindow";
 
@@ -64,8 +64,9 @@ function Display({ hobby }: { hobby: Hobby }) {
     case "flowers":
       return (
         <div className="flex h-full items-end justify-center">
-          <FlowerWall className="absolute inset-0 h-full w-full" />
-          <BrickBouquet className="relative h-full max-h-[170px] w-auto drop-shadow-[0_6px_6px_rgba(0,0,0,0.25)]" />
+          <span aria-hidden className="flower-window absolute inset-0" />
+          <span aria-hidden className="wood absolute inset-x-0 bottom-0 h-3" />
+          <BrickBouquet className="relative mb-2 h-full max-h-[168px] w-auto drop-shadow-[0_6px_6px_rgba(0,0,0,0.22)]" />
         </div>
       );
     case "scrapbook":

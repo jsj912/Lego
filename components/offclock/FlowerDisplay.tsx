@@ -86,10 +86,14 @@ export function FlowerDisplay({ className }: { className?: string }) {
         <circle key={x} cx={x - 6} cy={88} r={1.3} fill="#7a5532" />
       ))}
 
-      <Bucket x={44} y={38} heads={[{ dx: -6, dy: 0, c: "blue", kind: "stud" }, { dx: 2, dy: -6, c: "blue", kind: "stud" }, { dx: 8, dy: 2, c: "white", kind: "stud" }, { dx: -1, dy: 6, c: "lav", kind: "stud" }]} />
-      <Bucket x={88} y={36} heads={[{ dx: -6, dy: 2, c: "yellow", kind: "tulip" }, { dx: 0, dy: -4, c: "yellow", kind: "tulip" }, { dx: 7, dy: 1, c: "yellow", kind: "tulip" }]} tint="#f3f1ea" />
-      <Bucket x={132} y={36} heads={[{ dx: -7, dy: 1, c: "pink", kind: "tulip" }, { dx: 0, dy: -5, c: "coral", kind: "tulip" }, { dx: 7, dy: 0, c: "pink", kind: "tulip" }]} />
-      <Bucket x={176} y={40} heads={[{ dx: -6, dy: 0, c: "red", kind: "stud" }, { dx: 3, dy: -5, c: "pink", kind: "stud" }, { dx: 8, dy: 3, c: "white", kind: "stud" }, { dx: -1, dy: 5, c: "red", kind: "stud" }]} tint="#f3f1ea" />
+      {/* red roses */}
+      <Bucket x={44} y={38} heads={[{ dx: -6, dy: 1, c: "red", kind: "stud" }, { dx: 1, dy: -5, c: "red", kind: "stud" }, { dx: 7, dy: 2, c: "red", kind: "stud" }, { dx: 0, dy: 5, c: "red", kind: "stud" }]} />
+      {/* pink gladiolus */}
+      <Bucket x={88} y={32} heads={[{ dx: -5, dy: 2, c: "pink", kind: "tulip" }, { dx: 0, dy: -6, c: "pink", kind: "tulip" }, { dx: 6, dy: 0, c: "pink", kind: "tulip" }]} tint="#f3f1ea" />
+      {/* white roses */}
+      <Bucket x={132} y={38} heads={[{ dx: -6, dy: 1, c: "white", kind: "stud" }, { dx: 1, dy: -5, c: "white", kind: "stud" }, { dx: 7, dy: 2, c: "white", kind: "stud" }, { dx: 0, dy: 5, c: "white", kind: "stud" }]} />
+      {/* purple asters */}
+      <Bucket x={176} y={40} heads={[{ dx: -6, dy: 0, c: "lav", kind: "stud" }, { dx: 2, dy: -5, c: "lav", kind: "stud" }, { dx: 7, dy: 3, c: "lav", kind: "stud" }, { dx: -1, dy: 5, c: "lav", kind: "stud" }]} tint="#f3f1ea" />
 
       {/* tiered wooden plant stand */}
       <g>
@@ -101,12 +105,12 @@ export function FlowerDisplay({ className }: { className?: string }) {
             <rect x={x} y={y + 5} width={w} height={2} fill="#7a5532" />
           </g>
         ))}
-        <Pot x={256} y={75} c="coral" />
-        <Pot x={284} y={75} c="yellow" w={16} />
+        <Pot x={256} y={75} c="red" />
+        <Pot x={284} y={75} c="white" w={16} />
         <Pot x={306} y={75} c="pink" />
         <Pot x={268} y={53} c="lav" />
         <Pot x={296} y={53} c="red" />
-        <Pot x={288} y={31} c="coral" w={12} />
+        <Pot x={288} y={31} c="pink" w={12} />
       </g>
     </svg>
   );
@@ -126,45 +130,6 @@ export function HangingBasket({ className }: { className?: string }) {
       <Stud x={34} y={30} r={3.2} fill={PAL.coral[0]} dark={PAL.coral[1]} />
       <Stud x={9} y={55} r={2.2} fill={PAL.pink[0]} dark={PAL.pink[1]} />
       <Stud x={39} y={57} r={2.2} fill={PAL.coral[0]} dark={PAL.coral[1]} />
-    </svg>
-  );
-}
-
-/** A window packed with flowers: tiers of buckets and blooms filling the glass. */
-export function FlowerWall({ className }: { className?: string }) {
-  const colors: Petal[] = ["pink", "coral", "yellow", "white", "lav", "red", "blue"];
-  const rnd = (n: number) => {
-    const x = Math.sin(n * 91.7) * 43758.5453;
-    return x - Math.floor(x);
-  };
-  const blooms = [];
-  let k = 0;
-  for (let row = 0; row < 6; row++) {
-    for (let col = 0; col < 13; col++) {
-      const x = col * 18 + (row % 2 ? 9 : 0) + rnd(k) * 6;
-      const y = 14 + row * 24 + rnd(k + 50) * 8;
-      const c = colors[Math.floor(rnd(k + 100) * colors.length)];
-      blooms.push(
-        <g key={k}>
-          <path d={`M${x} ${y + 3} L${x + (rnd(k + 7) - 0.5) * 6} ${y + 16}`} stroke="#2f8f4e" strokeWidth={1.4} />
-          <Stud x={x} y={y} r={4.2 + rnd(k + 9) * 1.6} fill={PAL[c][0]} dark={PAL[c][1]} />
-        </g>,
-      );
-      k++;
-    }
-  }
-  return (
-    <svg viewBox="0 0 230 170" preserveAspectRatio="xMidYMid slice" className={className} aria-hidden focusable="false">
-      <rect width="230" height="170" fill="#e8f3e4" />
-      {/* leafy backdrop */}
-      {Array.from({ length: 40 }, (_, i) => (
-        <ellipse key={i} cx={rnd(i + 300) * 230} cy={rnd(i + 400) * 170} rx={9} ry={4} transform={`rotate(${rnd(i + 500) * 180} ${rnd(i + 300) * 230} ${rnd(i + 400) * 170})`} fill={i % 2 ? "#3a9559" : "#2f8f4e"} />
-      ))}
-      {blooms}
-      {/* shelf lips */}
-      {[58, 106, 154].map((y) => (
-        <rect key={y} x={0} y={y} width={230} height={5} fill="#a57a4c" />
-      ))}
     </svg>
   );
 }

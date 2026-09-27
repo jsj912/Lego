@@ -15,7 +15,15 @@ export const metadata: Metadata = {
 };
 
 export default function OffTheClockPage() {
-  const photos = Object.fromEntries(hobbies.map((h) => [h.id, interestPhotos(h.folder)]));
+  const photos = Object.fromEntries(
+    hobbies.map((h) => [
+      h.id,
+      interestPhotos(h.folder).map((p) => {
+        const file = decodeURIComponent(p.src.split("/").pop() ?? "");
+        return { ...p, alt: h.captions?.[file] ?? p.alt, caption: h.captions?.[file] };
+      }),
+    ]),
+  );
   return (
     <div data-page-root>
       <main id="main" className="relative bg-bg">
