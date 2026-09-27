@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${sora.variable} ${inter.variable} ${jetbrains.variable} antialiased`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${sora.variable} ${inter.variable} ${jetbrains.variable} antialiased`}>
       <body className="min-h-dvh">
         <Providers>{children}</Providers>
       </body>

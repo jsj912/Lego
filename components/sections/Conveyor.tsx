@@ -3,10 +3,10 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
-import { education, experience } from "@/content/site";
+import { experience } from "@/content/site";
 import type { Experience } from "@/content/types";
 import { IsoStack } from "@/components/ui/IsoStack";
-import { CAMPUS_HALL } from "@/components/ui/models";
+import { FACTORY } from "@/components/ui/models";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { useMotionSafe } from "@/hooks/useMotionSafe";
@@ -15,7 +15,7 @@ import { cn } from "@/lib/cn";
 import { buildBySlug } from "@/lib/derive";
 import { eyebrowOf } from "@/lib/sections";
 
-const BELT_START = 190; // px from the left where the belt leaves the factory
+const BELT_START = 300; // px from the left where the belt leaves the factory
 const ROLLERS = [0, 1, 2, 3, 4, 5, 6, 7];
 
 const COLORS: BrickColor[] = ["blue", "red", "green", "yellow"];
@@ -82,6 +82,39 @@ function Manifest({ e, color }: { e: Experience; color: BrickColor }) {
   );
 }
 
+// Chimney tops in FACTORY, in stud units relative to the IsoStack's top-left corner
+// (derived from its isometric projection: x ≈ 6.93u / 9.53u, y ≈ 1.18u / 3.88u).
+const CHIMNEYS = [
+  { x: 6.93, y: 1.18 },
+  { x: 9.53, y: 3.88 },
+];
+
+/** The factory with smoke rising out of its two chimneys. */
+function Factory({ u }: { u: number }) {
+  return (
+    <div className="relative">
+      <IsoStack items={FACTORY} size={u} />
+      <span aria-hidden className="pointer-events-none absolute inset-0">
+        {CHIMNEYS.map((c, ci) =>
+          [0, 1, 2].map((i) => (
+            <span
+              key={`${ci}-${i}`}
+              className="smoke-puff absolute rounded-full bg-[#d4d9de]"
+              style={{
+                width: u * 1.3,
+                height: u * 1.3,
+                left: c.x * u + 2 - (u * 1.3) / 2,
+                top: c.y * u + 2 - u * 1.3,
+                animationDelay: `${-(i * 1.2 + ci * 0.6)}s`,
+              }}
+            />
+          )),
+        )}
+      </span>
+    </div>
+  );
+}
+
 function Roller({ size, rotate }: { size: number; rotate: ReturnType<typeof useTransform<number, number>> }) {
   return (
     <motion.svg aria-hidden width={size} height={size} viewBox="0 0 22 22" style={{ rotate }}>
@@ -98,7 +131,6 @@ export function Conveyor() {
   const { reduced } = useMotionSafe();
   const [selected, setSelected] = useState(0);
   const [rowW, setRowW] = useState(900);
-  const college = education[0];
   const jobs = experience; // most recent first, nearest the factory
   const colorOf = (i: number) => COLORS[i % COLORS.length];
 
@@ -132,10 +164,10 @@ export function Conveyor() {
 
         <div id="belt-panel" className="mt-10">
           {/* ───────── desktop: the machine ───────── */}
-          <div className="relative hidden h-[320px] lg:block" data-conveyor-machine>
+          <div className="relative hidden h-[400px] lg:block" data-conveyor-machine>
             {/* bricks riding the belt, clipped so they emerge from the factory */}
             <div className="absolute bottom-[98px] right-0 top-0 overflow-hidden" style={{ left: BELT_START }}>
-              <motion.div ref={rowRef} className="absolute bottom-0 left-0 flex items-end gap-5 pl-[96px] pr-2" style={{ x: rowX }}>
+              <motion.div ref={rowRef} className="absolute bottom-0 left-0 flex items-end gap-5 pl-[116px] pr-2" style={{ x: rowX }}>
                 {jobs.map((e, i) => (
                   <BeltBrick key={e.id} e={e} color={colorOf(i)} selected={i === selected} onSelect={() => setSelected(i)} />
                 ))}
@@ -173,26 +205,19 @@ export function Conveyor() {
               ))}
             </div>
 
-            {/* the factory (college) at the start of the line, drawn over the belt start */}
-            <div className="absolute bottom-[40px] left-0 z-10 flex w-[260px] justify-center">
-              <IsoStack items={CAMPUS_HALL} size={13} />
+            {/* the factory the belt runs out of, drawn over the belt start */}
+            <div className="absolute bottom-[30px] left-0 z-10 flex w-[390px] justify-center">
+              <Factory u={16} />
             </div>
-            <div className="absolute bottom-0 left-0 z-10 w-[260px] text-center">
-              <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-ink-2">Start of the line</p>
-              <p className="mt-0.5 text-sm font-semibold leading-tight">{college.school}</p>
-            </div>
+            <p className="absolute bottom-0 left-0 z-10 w-[390px] text-center font-mono text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-ink-2">
+              The factory
+            </p>
           </div>
 
           {/* ───────── below lg: a vertical belt ───────── */}
           <div className="lg:hidden">
-            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-surface p-3 pr-5 shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
-              <div className="sky flex h-24 w-28 shrink-0 items-end justify-center rounded-xl pb-1">
-                <IsoStack items={CAMPUS_HALL} size={6} shadow={false} />
-              </div>
-              <div className="min-w-0">
-                <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-ink-2">Start of the line</p>
-                <p className="mt-0.5 font-semibold leading-tight">{college.school}</p>
-              </div>
+            <div className="relative flex items-end justify-center overflow-hidden rounded-[var(--radius-card)] bg-surface px-3 pb-2 pt-12 shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
+              <Factory u={11} />
             </div>
             <div className="relative ml-8 border-l-[12px] border-[#232322] pb-2 pl-6 pt-8" style={{ borderImage: "repeating-linear-gradient(180deg, #232322 0 22px, #3a3a38 22px 26px) 12" }}>
               <ol className="space-y-7">

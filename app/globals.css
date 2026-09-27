@@ -362,5 +362,28 @@ html { scrollbar-gutter: stable; }
 /* ≥1280px: keep all content clear of the fixed progress rail (40px wide + 24px) */
 @media (min-width: 1280px) {
   #main > section,
-  body > footer { padding-left: 64px; }
+  [data-site-footer] { padding-left: 64px; }
 }
+
+/* factory chimney smoke */
+@keyframes smoke-rise {
+  0% { transform: translate(0, 28px) scale(0.6); opacity: 0; }
+  25% { opacity: 0.9; }
+  100% { transform: translate(14px, -30px) scale(1.4); opacity: 0; }
+}
+.smoke-puff { animation: smoke-rise 3.6s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .smoke-puff { animation: none !important; opacity: 0.6; } }
+
+/* candle-lit library: cobblestone wall, warm vignette, candle glow */
+.library-stone {
+  background:
+    radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.05) 0 3px, transparent 3.5px) 0 0 / 9px 8px,
+    radial-gradient(circle at 50% 50%, rgb(0 0 0 / 0.25) 0 3.5px, transparent 4px) 4px 4px / 9px 8px,
+    #2a2420;
+}
+.library-vignette { background: radial-gradient(ellipse at 50% 45%, transparent 45%, rgb(0 0 0 / 0.55) 100%); }
+.candle-glow { background: radial-gradient(circle, rgb(255 190 90 / 0.55), rgb(255 150 50 / 0.18) 45%, transparent 70%); }
+.fav-glow { background: radial-gradient(ellipse at center, rgb(255 190 90 / 0.3), transparent 70%); }
+.flame { background: radial-gradient(ellipse at 50% 70%, #fff6c8, #ffc23d 55%, #ff7a1a); border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%; }
+.wood { background: linear-gradient(180deg, #7a5532, #54391f); }
+.wood-v { background: linear-gradient(90deg, #5a3c21, #7a5532 50%, #4a3019); }

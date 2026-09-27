@@ -1,31 +1,111 @@
 import { ArrowUpRight } from "lucide-react";
 import type { Build } from "@/content/types";
 import { Badge } from "@/components/ui/Badge";
-import { Brick } from "@/components/ui/Brick";
 import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
+import { BUILD_MODELS, boxModel } from "@/components/ui/models";
 import { BoxArt } from "@/components/sections/SetCard";
-import { brickColorAt } from "@/lib/bricks";
 import { cn } from "@/lib/cn";
 import { KIND_COLOR, KIND_LABEL } from "@/lib/derive";
 import { PAGE_TITLE, type ManualPage } from "./pages";
 
-/** Generic exploded view: the build so far, with the next brick lowering into place. */
-function ExplodedView({ n }: { n: number }) {
-  const placed = Math.min(n - 1, 4);
-  const stack: IsoItem[] = [
-    { kind: "plate", color: "grey", w: 4, h: 3, x: 0, y: 0, z: 0 },
-    ...Array.from({ length: placed }, (_, i): IsoItem => ({ color: brickColorAt(i), w: i % 2 ? 2 : 3, h: 2, x: i % 2 ? 1 : 0, y: 0, z: 1 + i * 3 })),
+const LIFT = 7; // plates the incoming sub-assembly hovers above its spot
+
+type Gear = Extract<IsoItem, { kind: "gear" }>;
+const isGear = (i: IsoItem): i is Gear => i.kind === "gear";
+
+/**
+ * Split a model into a base (the ground plate, already down when building starts)
+ * and `total` bottom-up sub-assemblies; gears go with the last one.
+ */
+function subAssemblies(model: IsoItem[], total: number): { base: IsoItem[]; groups: IsoItem[][] } {
+  const raw = (i: IsoItem) => i as unknown as { z?: number; kind?: string };
+  const zOf = (i: IsoItem) => raw(i).z ?? 0;
+  const solids = model.filter((i) => !isGear(i)).sort((a, b) => zOf(a) - zOf(b));
+  const first = solids[0];
+  const hasBase = first && zOf(first) === 0 && (raw(first).kind === "plate" || raw(first).kind === "disc");
+  const base = hasBase ? [first] : [];
+  const rest = hasBase ? solids.slice(1) : solids;
+  const gears = model.filter(isGear);
+  // spread pieces as evenly as possible so every step adds something
+  const baseSize = Math.floor(rest.length / total);
+  const extra = rest.length % total;
+  const groups: IsoItem[][] = [];
+  let at = 0;
+  for (let k = 0; k < total; k++) {
+    const size = baseSize + (k < extra ? 1 : 0);
+    groups.push(rest.slice(at, at + size));
+    at += size;
+  }
+  groups[total - 1] = [...groups[total - 1], ...gears];
+  return { base, groups };
+}
+
+
+function lift(item: IsoItem): IsoItem {
+  if (isGear(item)) return { ...item, cz: item.cz + LIFT * 0.4 };
+  const z = (item as unknown as { z?: number }).z ?? 0;
+  return { ...item, z: z + LIFT } as unknown as IsoItem;
+}
+
+function ghost(item: IsoItem): IsoItem | null {
+  if (isGear(item)) return null;
+  return { ...item, outline: true, decals: undefined } as unknown as IsoItem;
+}
+
+type Part = { key: string; name: string; color: string; count: number; icon: IsoItem; span: number };
+
+/** Parts inventory of a model: identical pieces grouped and counted, like a real manual. */
+function partsInventory(model: IsoItem[]): Part[] {
+  const parts = new Map<string, Part>();
+  for (const it of model) {
+    let key: string;
+    let name: string;
+    let icon: IsoItem;
+    let span = 1;
+    if (isGear(it)) {
+      key = `gear-${it.teeth ?? Math.round(it.radius * 10)}-${it.color}`;
+      name = `${it.teeth ?? Math.max(8, Math.round(it.radius * 10))}-tooth gear`;
+      icon = { ...it, face: "front" as const, at: 0, cx: it.radius, cz: it.radius, spin: false, ratio: undefined };
+    } else {
+      const raw = it as unknown as { kind?: string; w?: number; h?: number; d?: number; color: string };
+      const kind = raw.kind ?? "brick";
+      const a = kind === "round" ? 1 : kind === "disc" ? (raw.d ?? 1) : Math.min(raw.w ?? 1, raw.h ?? 1);
+      const b = kind === "round" ? 1 : kind === "disc" ? (raw.d ?? 1) : Math.max(raw.w ?? 1, raw.h ?? 1);
+      key = `${kind}-${a}x${b}-${raw.color}`;
+      span = b;
+      name =
+        kind === "round" ? "1×1 round" : kind === "disc" ? `${a}×${a} round plate` : kind === "beam" ? `${b}-hole beam` : `${a}×${b} ${kind}`;
+      icon = { ...(it as object), x: 0, y: 0, z: 0, decals: undefined, outline: false } as unknown as IsoItem;
+    }
+    const color = (it as { color: string }).color;
+    const existing = parts.get(key);
+    if (existing) existing.count += 1;
+    else parts.set(key, { key, name, color, count: 1, icon, span });
+  }
+  return [...parts.values()].sort((p, q) => q.count - p.count);
+}
+
+/**
+ * Instruction-manual exploded view that builds the set's own model: everything
+ * from earlier steps is placed, this step's pieces hover above a dashed outline
+ * of where they go. The last step completes the Final Model.
+ */
+function ExplodedView({ build, index, n, total }: { build: Build; index: number; n: number; total: number }) {
+  const model = BUILD_MODELS[build.slug] ?? boxModel(index, KIND_COLOR[build.kind], "white");
+  const { base, groups } = subAssemblies(model, total);
+  const placed = [...base, ...groups.slice(0, n - 1).flat()];
+  const incoming = groups[n - 1] ?? [];
+  const items: IsoItem[] = [
+    ...placed,
+    ...(incoming.map(ghost).filter(Boolean) as IsoItem[]),
+    ...incoming.map(lift),
   ];
   return (
-    <div aria-hidden className="relative flex h-72 w-56 flex-col items-center justify-end">
-      <div className="mb-2 flex flex-col items-center">
-        <IsoStack items={[{ color: brickColorAt(n + 1), w: 2, h: 2 }]} size={22} shadow={false} />
-        <svg width="12" height="40" viewBox="0 0 12 40" className="mt-1 overflow-visible">
-          <line x1="6" y1="0" x2="6" y2="38" stroke="#0055BF" strokeWidth="1.5" strokeDasharray="4 4" />
-          <path d="M1 31 L6 39 L11 31" fill="none" stroke="#0055BF" strokeWidth="1.5" />
-        </svg>
-      </div>
-      <IsoStack items={stack} size={22} />
+    <div aria-hidden className="relative flex h-72 w-60 flex-col items-center justify-end">
+      <span className="absolute right-0 top-2 rounded-md bg-white/80 px-2 py-1 font-mono text-[0.62rem] font-semibold text-ink-2 ring-1 ring-ink/10">
+        {incoming.length} piece{incoming.length === 1 ? "" : "s"} this step
+      </span>
+      <IsoStack items={items} size={20} />
     </div>
   );
 }
@@ -119,23 +199,43 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
             <p className="mt-6 font-display text-2xl font-medium leading-snug sm:text-3xl">{page.text}</p>
           </div>
         );
-      case "pieces":
+      case "pieces": {
+        const model = BUILD_MODELS[build.slug] ?? boxModel(index, KIND_COLOR[build.kind], "white");
+        const inventory = partsInventory(model);
+        const total = inventory.reduce((n, p) => n + p.count, 0);
         return (
           <div>
-            <h2 className="text-2xl font-semibold sm:text-3xl">Pieces Used</h2>
-            <ul className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {page.pieces.map((p, i) => (
-                <li key={p} className="flex items-center gap-3 rounded-xl bg-white/80 p-3 ring-1 ring-ink/8">
-                  <Brick color={brickColorAt(i)} studs={{ w: 1, h: 1 }} size={14} isometric className="shrink-0" />
-                  <span className="min-w-0">
-                    <span className="block font-mono text-xs font-semibold text-ink-2">1x</span>
-                    <span className="block text-sm leading-snug">{p}</span>
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className="text-2xl font-semibold sm:text-3xl">Pieces Used</h2>
+              <p className="font-mono text-xs font-semibold text-ink-2">{total} pieces</p>
+            </div>
+            <ul className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+              {inventory.map((p) => (
+                <li key={p.key} className="flex items-center gap-3 rounded-xl bg-white/80 p-2.5 ring-1 ring-ink/8">
+                  <span className="flex h-11 w-12 shrink-0 items-end justify-center">
+                    <IsoStack items={[p.icon]} size={isGear(p.icon) ? 14 : p.span <= 2 ? 15 : p.span <= 4 ? 10 : 6} shadow={false} className="max-h-11 max-w-12 drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" />
+                  </span>
+                  <span className="min-w-0 leading-tight">
+                    <span className="block font-mono text-sm font-bold">{p.count}×</span>
+                    <span className="block text-[0.8rem]">{p.name}</span>
+                    <span className="block font-mono text-[0.62rem] uppercase tracking-[0.1em] text-ink-2">{p.color}</span>
                   </span>
                 </li>
               ))}
             </ul>
+            <div className="mt-5">
+              <p className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-ink-2">Built with</p>
+              <ul className="mt-1.5 flex flex-wrap gap-1.5">
+                {page.pieces.map((t) => (
+                  <li key={t} className="rounded-md bg-white px-2 py-0.5 font-mono text-[0.72rem] ring-1 ring-ink/10">
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         );
+      }
       case "step":
         return (
           <div className="grid h-full gap-8 sm:grid-cols-[1fr_auto] sm:items-center">
@@ -148,7 +248,7 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
               <p className="mt-4 text-lg leading-relaxed">{page.step.body}</p>
             </div>
             <div className="hidden sm:block">
-              <ExplodedView n={page.n} />
+              <ExplodedView build={build} index={index} n={page.n} total={page.total} />
             </div>
           </div>
         );

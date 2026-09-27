@@ -43,7 +43,7 @@ export const builtAt: { name: string; logo: string; experience?: string; educati
 
 // Projects shown as large cards, in this order. The other builds follow as compact
 // "more sets" in array order (set numbers follow display order).
-export const featuredBuilds: string[] = ["moe-appliance-detection", "amsdds", "network-anomaly-detection"];
+export const featuredBuilds: string[] = ["moe-appliance-detection", "amsdds", "ringshield"];
 
 export const education: Education[] = [
   {
@@ -141,7 +141,27 @@ export const builds: Build[] = [
     links: { github: null, report: null, demo: null },
   },
   {
-    set: "003", slug: "network-anomaly-detection", kind: "project",
+    set: "003", slug: "ringshield", kind: "flagship",
+    title: "RingShield",
+    context: "Fraud-Ring Detection with Temporal Graph Neural Networks",
+    when: "2025 – Present",
+    outcome: "Phase 1 complete: systematic review, gap taxonomy, system architecture and evaluation protocol. Implementation in progress.",
+    pieces: ["Temporal Graph Neural Networks", "Dynamic time-stamped graphs", "Explainability", "Drift monitoring", "AMLworld", "Elliptic", "IEEE-CIS", "PaySim"],
+    challenge: "Coordinated fraud rings that node-level and rule-based models miss.",
+    steps: [
+      { title: "Graph modelling", body: "Models financial transactions as a dynamic, time-stamped graph of users, devices, cards and merchants." },
+      { title: "Temporal GNNs", body: "Uses temporal GNNs to surface coordinated fraud rings." },
+      { title: "Explainability", body: "Adds analyst-actionable explainability, surfacing the suspicious transaction paths behind each decision." },
+      { title: "Drift monitoring", body: "Drift monitoring to adapt as fraud patterns shift." },
+    ],
+    finalModel: "Phase 1 complete: systematic review of ~50 papers with a nine-category gap taxonomy, system architecture, and evaluation protocol across AMLworld, Elliptic, IEEE-CIS and PaySim. Implementation in progress.",
+    lessons: [],
+    note: "Led the systematic review workflow, developed a PRISMA-based 9-category gap taxonomy, and authored the initial manuscript draft.",
+    ownership: "Led the systematic review workflow, developed a PRISMA-based 9-category gap taxonomy, and authored the initial manuscript draft.",
+    links: { github: null, report: null, demo: null },
+  },
+  {
+    set: "004", slug: "network-anomaly-detection", kind: "project",
     title: "ML-Based Network Traffic & Malware Anomaly Detection",
     context: null,
     when: "Sept 2025 – Dec 2025",
@@ -159,7 +179,7 @@ export const builds: Build[] = [
     links: { github: null, report: "https://drive.google.com/file/d/1RHb_D2x1-Yb0OIWUVPx_TvzyGQ9h3Pd3/view?usp=drive_link", demo: null },
   },
   {
-    set: "004", slug: "smart-glasses", kind: "project",
+    set: "005", slug: "smart-glasses", kind: "project",
     title: "Vision-Based Assistive Smart Glasses",
     context: null,
     when: "2025",
@@ -176,7 +196,7 @@ export const builds: Build[] = [
     links: { github: "https://github.com/jsj912/Smart-Glasses", report: "https://drive.google.com/file/d/10pxIxtpENJj9zUxnAg3Ka71C-AQFfdB6/view?usp=drive_link", demo: null },
   },
   {
-    set: "005", slug: "homomorphic-iot", kind: "project",
+    set: "006", slug: "homomorphic-iot", kind: "project",
     title: "Homomorphic Encryption for IoT Sensor Analytics",
     context: null,
     when: null,
@@ -187,25 +207,6 @@ export const builds: Build[] = [
     finalModel: "Built a secure analytics pipeline over homomorphically encrypted IoT sensor data with a Flask backend, enabling computation and visualization without decryption.",
     lessons: [],
     note: null,
-    links: { github: null, report: null, demo: null },
-  },
-  {
-    set: "006", slug: "ringshield", kind: "flagship",
-    title: "RingShield",
-    context: "Fraud-Ring Detection with Temporal Graph Neural Networks",
-    when: "2025 – Present",
-    outcome: "Phase 1 complete: systematic review, gap taxonomy, system architecture and evaluation protocol. Implementation in progress.",
-    pieces: ["Temporal Graph Neural Networks", "Dynamic time-stamped graphs", "Explainability", "Drift monitoring", "AMLworld", "Elliptic", "IEEE-CIS", "PaySim"],
-    challenge: "Coordinated fraud rings that node-level and rule-based models miss.",
-    steps: [
-      { title: "Graph modelling", body: "Models financial transactions as a dynamic, time-stamped graph of users, devices, cards and merchants." },
-      { title: "Temporal GNNs", body: "Uses temporal GNNs to surface coordinated fraud rings." },
-      { title: "Explainability", body: "Adds analyst-actionable explainability, surfacing the suspicious transaction paths behind each decision." },
-      { title: "Drift monitoring", body: "Drift monitoring to adapt as fraud patterns shift." },
-    ],
-    finalModel: "Phase 1 complete: systematic review of ~50 papers with a nine-category gap taxonomy, system architecture, and evaluation protocol across AMLworld, Elliptic, IEEE-CIS and PaySim. Implementation in progress.",
-    lessons: [],
-    note: "Led the systematic review workflow, developed a PRISMA-based 9-category gap taxonomy, and authored the initial manuscript draft.",
     links: { github: null, report: null, demo: null },
   },
 ];

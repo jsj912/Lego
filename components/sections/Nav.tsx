@@ -30,6 +30,7 @@ export function Nav({ name, resumeHref }: { name: string; resumeHref: string | n
 
   return (
     <header
+      data-site-nav
       className={cn(
         "fixed inset-x-0 top-0 z-nav h-[var(--nav-h)] transition-[background-color,box-shadow] duration-300",
         scrolled || open ? "bg-bg/85 shadow-[0_1px_0_rgb(17_17_17/0.06)] backdrop-blur-md" : "bg-transparent",

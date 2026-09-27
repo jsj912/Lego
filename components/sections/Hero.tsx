@@ -1,4 +1,4 @@
-import { ArrowDown, FileDown, MapPin } from "lucide-react";
+import { ArrowDown, MapPin } from "lucide-react";
 import { person } from "@/content/site";
 import { BlueprintGrid } from "@/components/ui/BlueprintGrid";
 import { SectionShell } from "@/components/ui/SectionShell";
@@ -8,7 +8,7 @@ import { HeroMinifig } from "./HeroMinifig";
 
 // The previous hero build (gear-train machine) lives on in ./HeroTower.tsx.
 
-export function Hero({ resumeHref }: { resumeHref: string | null }) {
+export function Hero() {
   return (
     <SectionShell id="start" labelledBy="start-title" className="overflow-hidden pt-[var(--nav-h)]">
       <div data-cursor-light className="cursor-light pointer-events-none absolute inset-0" aria-hidden />
@@ -35,11 +35,6 @@ export function Hero({ resumeHref }: { resumeHref: string | null }) {
             <SnapButton href="#builds" size="lg" variant="red">
               Explore my builds <ArrowDown size={18} aria-hidden />
             </SnapButton>
-            {resumeHref && (
-              <SnapButton href={resumeHref} external size="lg" variant="ghost" dataTestId="resume-button">
-                Download résumé <FileDown size={18} aria-hidden />
-              </SnapButton>
-            )}
           </div>
 
           <BuiltAtStrip />

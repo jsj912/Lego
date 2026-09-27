@@ -2,6 +2,7 @@ import type { Hobby } from "@/content/offTheClock";
 import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import { BRICK_SHADES, type BrickColor } from "@/lib/bricks";
 import { BrickBouquet } from "./BrickBouquet";
+import { FlowerDisplay, HangingBasket } from "./FlowerDisplay";
 import { LibraryWindow } from "./LibraryWindow";
 
 export const HOBBY_COLOR: Record<Hobby["id"], BrickColor> = {
@@ -126,9 +127,20 @@ export function Shopfront({ hobby, photoCount, onOpen }: { hobby: Hobby; photoCo
           <div className="relative h-[150px] rounded-t-md border-[5px] bg-[#6b4f35]" style={{ borderColor: shade.dark }}>
             <span className="absolute right-1.5 top-1/2 h-2 w-2 rounded-full bg-brick-yellow" />
             <span className="absolute inset-x-1.5 top-2 h-8 rounded-sm bg-[#dbeafe]/70" />
+            {hobby.id === "flowers" && (
+              <span aria-hidden className="absolute left-1/2 top-12 -translate-x-1/2 rounded-[2px] bg-[#fbf3dc] px-1 py-0.5 font-mono text-[0.46rem] font-bold tracking-[0.12em] text-brick-red shadow">
+                OPEN
+              </span>
+            )}
           </div>
         </div>
       </div>
+      {hobby.id === "flowers" && (
+        <>
+          <HangingBasket className="pointer-events-none absolute left-2 top-[126px] z-[2] h-[58px] w-[44px]" />
+          <FlowerDisplay className="pointer-events-none absolute inset-x-0 bottom-[38px] z-[2] w-full" />
+        </>
+      )}
       {/* sidewalk */}
       <div className="h-3 rounded-b bg-[#b8b3a7]" />
       <span className="mt-3 inline-flex items-center gap-1.5 self-center rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-white opacity-80 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">

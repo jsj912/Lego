@@ -17,13 +17,15 @@ export default function Home() {
   const resume = resumeHref();
   return (
     <ManualController>
+      {/* one root element: Next scrolls the first page node into view on soft navigations */}
+      <div data-page-root>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-toast focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-white">
         Skip to content
       </a>
       <Nav name={person.name} resumeHref={resume} />
       <ProgressTower />
       <main id="main" tabIndex={-1} className="outline-none">
-        <Hero resumeHref={resume} />
+        <Hero />
         <Conveyor />
         <Builds />
         <Lab />
@@ -33,6 +35,7 @@ export default function Home() {
         <Contact resumeHref={resume} />
       </main>
       <Footer />
+      </div>
     </ManualController>
   );
 }

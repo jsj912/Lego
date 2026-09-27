@@ -23,7 +23,7 @@ for (const [w, h] of [[1440, 900], [390, 844]]) {
     await page.evaluate((y) => window.scrollTo(0, y), y);
     await page.waitForTimeout(60);
   }
-  await page.addStyleTag({ content: "body > header { visibility: hidden !important; }" });
+  await page.addStyleTag({ content: "[data-site-nav] { visibility: hidden !important; }" });
   for (const id of IDS) {
     const el = page.locator(`#${id}`);
     await el.scrollIntoViewIfNeeded();
@@ -33,7 +33,7 @@ for (const [w, h] of [[1440, 900], [390, 844]]) {
     written.push(path);
   }
   const path = `.screens/footer-${w}.png`;
-  await page.locator("body > footer").screenshot({ path });
+  await page.locator("[data-site-footer]").screenshot({ path });
   written.push(path);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   console.log(`${w}px horizontal overflow: ${overflow}`);

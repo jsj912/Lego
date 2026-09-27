@@ -25,7 +25,7 @@ for (const [w, h] of SIZES) {
   });
   if (rail) {
     const minLeft = await p.evaluate(() => {
-      const els = [...document.querySelectorAll("#main section h1, #main section h2, #main section h3, #main section p, #main section a, #main section button, #main section li, #main section article, body > footer a, body > footer p")];
+      const els = [...document.querySelectorAll("#main section h1, #main section h2, #main section h3, #main section p, #main section a, #main section button, #main section li, #main section article, [data-site-footer] a, [data-site-footer] p")];
       let min = Infinity, who = "";
       for (const el of els) {
         const r = el.getBoundingClientRect();
@@ -63,7 +63,7 @@ for (const [w, h] of SIZES) {
       await p.click(`nav[aria-label="Primary"] a[href="#${id}"]`);
       await p.waitForTimeout(250);
       const r = await p.evaluate((id) => {
-        const nav = document.querySelector("body > header").getBoundingClientRect().bottom;
+        const nav = document.querySelector("[data-site-nav]").getBoundingClientRect().bottom;
         const sec = document.getElementById(id);
         const eyebrow = sec.querySelector("header p") || sec.querySelector("h2");
         return { nav, top: eyebrow.getBoundingClientRect().top };
@@ -105,7 +105,7 @@ await p.click("[data-back-link]");
 await p.waitForURL(BASE + "/");
 await p.waitForTimeout(300);
 const h1 = await p.evaluate(() => {
-  const nav = document.querySelector("body > header").getBoundingClientRect().bottom;
+  const nav = document.querySelector("[data-site-nav]").getBoundingClientRect().bottom;
   return { nav, top: document.querySelector("h1").getBoundingClientRect().top };
 });
 console.log(`back link: h1 top ${Math.round(h1.top)} vs nav ${Math.round(h1.nav)} ${h1.top >= h1.nav ? "OK" : "HIDDEN"}`);

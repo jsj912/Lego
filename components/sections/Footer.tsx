@@ -10,7 +10,7 @@ export const TRADEMARK_DISCLAIMER =
 export function Footer({ egg, offClockLink = true }: { egg?: ReactNode; offClockLink?: boolean }) {
   const year = new Date().getFullYear();
   return (
-    <footer className="on-dark relative bg-surface-dark text-ink-inverse">
+    <footer data-site-footer className="on-dark relative bg-surface-dark text-ink-inverse">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
           <div>

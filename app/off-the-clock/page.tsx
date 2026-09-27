@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function OffTheClockPage() {
   const photos = Object.fromEntries(hobbies.map((h) => [h.id, interestPhotos(h.folder)]));
   return (
-    <>
+    <div data-page-root>
       <main id="main" className="relative bg-bg">
         <div className="relative overflow-hidden">
           <BlueprintGrid variant="dots" />
@@ -37,6 +37,6 @@ export default function OffTheClockPage() {
         <Street hobbies={hobbies} photos={photos} />
       </main>
       <Footer offClockLink={false} />
-    </>
+    </div>
   );
 }

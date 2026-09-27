@@ -350,3 +350,32 @@ export const BUILD_MODELS: Record<string, IsoItem[]> = {
     { kind: "gear", color: "yellow", face: "front", at: 3.5, cx: 1.2, cz: 2.4, radius: 0.75, spin: true },
   ],
 };
+
+// ───────── Conveyor: the brick factory the belt runs out of ─────────
+const factoryWindows = (n: number, z = 0.3) =>
+  Array.from({ length: n }, (_, i) => ({ face: "front" as const, a: 0.45 + i * 1.5, z, w: 1, h: 0.62, mullions: true, fill: "#2d5a86" }));
+
+export const FACTORY: IsoItem[] = [
+  { kind: "plate", color: "grey", w: 11, h: 8, x: 0, y: 0, z: 0 },
+  // main hall: three courses of red brick with window rows
+  { color: "red", w: 9, h: 6, x: 0, y: 1, z: 1, decals: [...factoryWindows(4), { face: "side", a: 1.6, z: 0, w: 2.8, h: 1.1, fill: "#232322" }] },
+  { color: "red", w: 9, h: 6, x: 0, y: 1, z: 4, decals: [...factoryWindows(6), { face: "side", a: 1.6, z: -0.1, w: 2.8, h: 0.9, fill: "#232322" }] },
+  { color: "red", w: 9, h: 6, x: 0, y: 1, z: 7, decals: factoryWindows(6) },
+  { kind: "plate", color: "dark", w: 9, h: 6, x: 0, y: 1, z: 10 },
+  // sawtooth roof: tall back rows with skylights, low front rows
+  ...[0, 1, 2].flatMap((j) => [
+    { color: "grey" as BrickColor, w: 9, h: 1, x: 0, y: 1 + j * 2, z: 11, decals: [{ face: "front" as const, a: 0.3, z: 0.25, w: 8.4, h: 0.7, fill: "#8ec5ff" }] },
+    { kind: "plate" as const, color: "grey" as BrickColor, w: 9, h: 1, x: 0, y: 2 + j * 2, z: 11 },
+  ]),
+  // chimneys
+  ...[11, 14, 17, 20, 23].map((z, i) => ({ color: (i === 3 ? "white" : "dark") as BrickColor, w: 2, h: 2, x: 1, y: 1, z })),
+  { kind: "plate", color: "dark", w: 2, h: 2, x: 1, y: 1, z: 26, studs: false },
+  ...[11, 14, 17, 20].map((z, i) => ({ color: (i === 2 ? "white" : "dark") as BrickColor, w: 2, h: 2, x: 4, y: 1, z })),
+  { kind: "plate", color: "dark", w: 2, h: 2, x: 4, y: 1, z: 23, studs: false },
+  // yard: crates by the loading bay
+  { color: "yellow", w: 1, h: 1, x: 9.6, y: 6.5, z: 1 },
+  { color: "yellow", w: 1, h: 1, x: 9.6, y: 5.3, z: 1 },
+  { color: "yellow", w: 1, h: 1, x: 9.6, y: 6.5, z: 4 },
+  // works gear on the front wall
+  { kind: "gear", color: "yellow", face: "front", at: 7, cx: 7.6, cz: 2.3, radius: 0.85, spin: true },
+];
