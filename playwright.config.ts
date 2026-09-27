@@ -21,7 +21,8 @@ export default defineConfig({
     { name: "mobile", use: { browserName: "chromium", viewport: { width: 390, height: 844 }, hasTouch: true } },
   ],
   webServer: {
-    command: `npm run build && npm run start -- -p ${PORT}`,
+    // CI runs `npm run verify`, which has already built the app
+    command: process.env.CI ? `npm run start -- -p ${PORT}` : `npm run build && npm run start -- -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,

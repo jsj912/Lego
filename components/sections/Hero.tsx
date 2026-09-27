@@ -1,4 +1,5 @@
 import { ArrowDown, MapPin } from "lucide-react";
+import { HiddenStud } from "@/components/eggs/HiddenStud";
 import { person } from "@/content/site";
 import { BlueprintGrid } from "@/components/ui/BlueprintGrid";
 import { SectionShell } from "@/components/ui/SectionShell";
@@ -12,6 +13,7 @@ export function Hero() {
   return (
     <SectionShell id="start" labelledBy="start-title" className="overflow-hidden pt-[var(--nav-h)]">
       <div data-cursor-light className="cursor-light pointer-events-none absolute inset-0" aria-hidden />
+      <HiddenStud id="hero" className="bottom-4 right-6" />
       <BlueprintGrid variant="lines" />
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-6 px-4 pb-12 pt-8 sm:px-6 md:grid-cols-[1.25fr_1fr] lg:px-8 lg:pt-10">

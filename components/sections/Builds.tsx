@@ -1,4 +1,5 @@
 import { builds, featuredBuilds } from "@/content/site";
+import { HiddenStud } from "@/components/eggs/HiddenStud";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { eyebrowOf } from "@/lib/sections";
@@ -9,6 +10,7 @@ export function Builds() {
   const more = builds.filter((b) => !featuredBuilds.includes(b.slug));
   return (
     <SectionShell id="builds" labelledBy="builds-title" className="bg-surface/60 py-24 sm:py-28">
+      <HiddenStud id="builds" className="top-10 right-6" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="builds-title"

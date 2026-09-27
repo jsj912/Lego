@@ -60,6 +60,8 @@ type Props = {
   label?: string;
   /** line-art (blueprint) mode: hidden lines are occluded by `fill` */
   line?: { stroke: string; fill: string };
+  /** compute the viewBox from these items instead (keeps separate stacks aligned) */
+  boundsItems?: IsoItem[];
 };
 
 type Solid = Exclude<IsoItem, { kind: "gear" }>;
@@ -86,7 +88,7 @@ function gearPath(cx: number, cy: number, radius: number, teeth: number) {
  * Original brick models drawn in a shared isometric space: bricks, plates,
  * tiles, round columns, beams with pin holes and gears. Pure SVG.
  */
-export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, className, label, line }: Props) {
+export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, className, label, line, boundsItems }: Props) {
   const shadow = shadowProp && !line;
   const uid = useId().replace(/:/g, "");
   const u = size;
@@ -105,12 +107,15 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
     minX = Math.min(minX, sx); maxX = Math.max(maxX, sx);
     minY = Math.min(minY, sy); maxY = Math.max(maxY, sy);
   };
-  for (const s of solids) {
+  const bItems = boundsItems ?? items;
+  const bSolids = bItems.filter((i): i is Solid => i.kind !== "gear").map((it) => ({ it, x: it.x ?? 0, y: it.y ?? 0, zb: (it.z ?? 0) * PLATE, ...dims(it) }));
+  const bGears = bItems.filter((i): i is Gear => i.kind === "gear");
+  for (const s of bSolids) {
     const top = s.zb + heightOf(s.it) + STUD_H;
     for (const [x, y] of [[s.x, s.y], [s.x + s.w, s.y], [s.x, s.y + s.h], [s.x + s.w, s.y + s.h]])
       for (const z of [s.zb, top]) grow(...P(x, y, z));
   }
-  for (const g of gears) {
+  for (const g of bGears) {
     for (const [da, dz] of [[-1, -1], [1, 1], [-1, 1], [1, -1]]) {
       const a = g.cx + da * g.radius, z = g.cz + dz * g.radius;
       grow(...(g.face === "front" ? P(a, g.at + 0.3, z) : P(g.at + 0.3, a, z)));

@@ -1,4 +1,5 @@
 import { FileText, Mail } from "lucide-react";
+import { HiddenStud } from "@/components/eggs/HiddenStud";
 import { person } from "@/content/site";
 import { BlueprintGrid } from "@/components/ui/BlueprintGrid";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -11,6 +12,7 @@ import { CopyEmail } from "./CopyEmail";
 export function Contact({ resumeHref }: { resumeHref: string | null }) {
   return (
     <SectionShell id="contact" labelledBy="contact-title" className="overflow-hidden py-28 sm:py-36">
+      <HiddenStud id="contact" className="bottom-6 left-1/2" />
       <BlueprintGrid variant="dots" />
       <div className="relative mx-auto grid max-w-7xl gap-16 px-4 sm:px-6 lg:grid-cols-[1fr_1.2fr] lg:px-8">
         <div>

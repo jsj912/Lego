@@ -10,6 +10,8 @@ import { TrophyShelf } from "@/components/sections/TrophyShelf";
 import { Workshop } from "@/components/sections/Workshop";
 import { ManualController } from "@/components/manual/ManualController";
 import { ProgressTower } from "@/components/tower/ProgressTower";
+import { LazyLayers } from "@/components/eggs/LazyLayers";
+import { UnfinishedBrick } from "@/components/eggs/UnfinishedBrick";
 import { person } from "@/content/site";
 import { resumeHref } from "@/lib/resume";
 
@@ -34,7 +36,8 @@ export default function Home() {
         <Workshop />
         <Contact resumeHref={resume} />
       </main>
-      <Footer />
+      <Footer egg={<UnfinishedBrick />} />
+      <LazyLayers />
       </div>
     </ManualController>
   );

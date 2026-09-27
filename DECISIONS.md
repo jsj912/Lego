@@ -62,3 +62,10 @@ Choices made while building, and why.
 - **Skills:** studs = sets whose tags count for the skill + 1, where a tag counts by exact name or via `skillAliases` (tag → skill) in `content/site.ts`. The explicit `skillLinks` map was removed.
 - **Fidelity:** no public detail about the internship work (bullets emptied); the Spring Batch → Lambda set and its manual were removed at Joan's request.
 - **Tests** run with at most 3 local workers: the SVG-heavy home page starved six parallel browsers into timeouts.
+
+## Delight layer, CI
+- **Intro** (`components/intro/UnboxingIntro.tsx`) and the easter-egg layer are lazy-loaded (`next/dynamic`, `ssr: false`). The intro overlay is `pointer-events: none` except its Skip button, so it can never block the page underneath. It ends on its own after 2.4s, or on Skip, Esc, wheel or touch. It plays once per session (`sessionStorage`) and only on `/` without a hash and without reduced motion.
+- **Hidden studs:** found state lives in a small `useSyncExternalStore` store backed by `localStorage` (try/catch). `data-eggs-ready` marks when the lazy layer has mounted, so tests can wait for it.
+- **404:** the house is split into one stack per piece, all sharing the full model's viewBox (`IsoStack boundsItems`), so the pieces land exactly in place.
+- **CI** runs `npm run verify` with `CI=true`. Playwright's webServer then only runs `next start`, because verify has already built the app.
+- **Tests added:** notfound, eggs, intro/reduced motion, content, links, contact, nav, a11y (axe; zero serious/critical on /, a manual, /off-the-clock and /nope). The a11y spec caught an invalid `<dl>` nesting in the Research title block, now fixed.

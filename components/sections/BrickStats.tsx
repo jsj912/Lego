@@ -1,4 +1,5 @@
 import { IsoStack } from "@/components/ui/IsoStack";
+import { HiddenStud } from "@/components/eggs/HiddenStud";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionShell } from "@/components/ui/SectionShell";
 import type { BrickColor } from "@/lib/bricks";
@@ -12,6 +13,7 @@ export function BrickStats() {
   const groups = skillWalls();
   return (
     <SectionShell id="stats" labelledBy="stats-title" className="py-24 sm:py-28">
+      <HiddenStud id="stats" className="bottom-8 right-8" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="stats-title"

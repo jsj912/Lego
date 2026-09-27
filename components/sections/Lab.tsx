@@ -1,4 +1,5 @@
 import { builds, focusAreas, publications } from "@/content/site";
+import { HiddenStud } from "@/components/eggs/HiddenStud";
 import { Badge } from "@/components/ui/Badge";
 import { IsoStack } from "@/components/ui/IsoStack";
 import { BLUEPRINT_RIG, BUILD_MODELS, boxModel } from "@/components/ui/models";
@@ -30,6 +31,7 @@ function Callouts() {
 export function Lab() {
   return (
     <SectionShell id="lab" labelledBy="lab-title" dark className="bp-blueprint overflow-hidden py-28 sm:py-36">
+      <HiddenStud id="lab" className="bottom-8 left-1/2" />
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-end gap-10">
         <SectionHeading
@@ -95,20 +97,18 @@ export function Lab() {
                         <dt className="opacity-70">Role</dt>
                         <dd className="mt-0.5 normal-case tracking-normal text-white">{p.authorship}</dd>
                       </div>
-                      <div className="col-span-2 flex flex-wrap items-center justify-between gap-2 border-t border-blueprint-line/30 px-3 py-2">
-                        <div>
-                          <dt className="opacity-70">Status</dt>
-                          <dd className="mt-1">
-                            <Badge tone="yellow">{p.status}</Badge>
-                          </dd>
-                        </div>
-                        {p.venue && (
-                          <div className="text-right">
-                            <dt className="opacity-70">Target venue</dt>
-                            <dd className="mt-1 normal-case tracking-normal text-white">{p.venue}</dd>
-                          </div>
-                        )}
+                      <div className={`border-t border-blueprint-line/30 px-3 py-2 ${p.venue ? "border-r" : "col-span-2"}`}>
+                        <dt className="opacity-70">Status</dt>
+                        <dd className="mt-1">
+                          <Badge tone="yellow">{p.status}</Badge>
+                        </dd>
                       </div>
+                      {p.venue && (
+                        <div className="border-t border-blueprint-line/30 px-3 py-2">
+                          <dt className="opacity-70">Target venue</dt>
+                          <dd className="mt-1 normal-case tracking-normal text-white">{p.venue}</dd>
+                        </div>
+                      )}
                     </dl>
                   </div>
                 </div>
