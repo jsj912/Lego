@@ -1,6 +1,7 @@
 import type { Hobby } from "@/content/offTheClock";
 import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import { BRICK_SHADES, type BrickColor } from "@/lib/bricks";
+import { BrickBouquet } from "./BrickBouquet";
 
 export const HOBBY_COLOR: Record<Hobby["id"], BrickColor> = {
   books: "red",
@@ -68,16 +69,6 @@ function Track({ stats }: { stats: Hobby["runStats"] }) {
   );
 }
 
-const BOUQUET: IsoItem[] = [
-  { kind: "round", color: "green", x: 1, y: 1, z: 0, studs: false },
-  { kind: "round", color: "green", x: 1, y: 1, z: 3, studs: false },
-  { kind: "round", color: "red", x: 0.4, y: 0.6, z: 6 },
-  { kind: "round", color: "yellow", x: 1.3, y: 0.3, z: 6 },
-  { kind: "round", color: "white", x: 1.6, y: 1.4, z: 6 },
-  { kind: "round", color: "red", x: 0.9, y: 1.5, z: 7 },
-  { kind: "round", color: "blue", x: 1, y: 0.9, z: 9 },
-];
-
 const TABLE: IsoItem[] = [
   { kind: "plate", color: "white", w: 5, h: 3, x: 0, y: 0, z: 3 },
   { kind: "round", color: "dark", x: 0, y: 0, z: 0, studs: false },
@@ -97,9 +88,8 @@ function Display({ hobby }: { hobby: Hobby }) {
       return <Track stats={hobby.runStats} />;
     case "flowers":
       return (
-        <div className="flex h-full items-end justify-center gap-4">
-          <IsoStack items={BOUQUET} size={20} />
-          <div className="mb-1 h-12 w-14 rounded-b-lg rounded-t-sm bg-gradient-to-b from-[#c2703d] to-[#8a4b24] shadow" />
+        <div className="flex h-full items-end justify-center">
+          <BrickBouquet className="h-full max-h-[170px] w-auto drop-shadow-[0_6px_6px_rgba(0,0,0,0.18)]" />
         </div>
       );
     case "scrapbook":
