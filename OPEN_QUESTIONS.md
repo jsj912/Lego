@@ -15,4 +15,4 @@ Things I wasn't sure about. Nothing here was guessed on the site; each item is e
 11. **Hero role.** Now just "Machine Learning Engineer", per the review. Easy to change in `person.roles`.
 12. **Off the clock placeholders** (`content/offTheClock.ts`, marked `TODO`): currently reading, running blurb, running stats, scrapbook blurb. They're hidden on the page until filled.
 13. **Logos:** add `samsung`, `fidelity`, `bmsce`, `iitm` (.svg/.png/.webp/.jpg) to `public/logos/`. Until then the tiles show names.
-14. **Hobby photos:** add images to `public/interests/{books,running,flowers,scrapbook,build-table}/`.
+14. **Hobby photos:** flowers (4), build-table (2) and scrapbook (2, incl. pencil sketches) added; `books` and `running` are still empty.

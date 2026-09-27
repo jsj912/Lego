@@ -3,12 +3,13 @@
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import type { Hobby } from "@/content/offTheClock";
+import type { Photo } from "@/lib/assets";
 import { IsoStack } from "@/components/ui/IsoStack";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /** Detail panel for one hobby: blurb, extras from data, and its photos (lazy). */
-export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; photos: string[]; onClose: () => void }) {
+export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; photos: Photo[]; onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -93,11 +94,11 @@ export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; p
         )}
 
         {photos.length > 0 ? (
-          <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {photos.map((src, i) => (
-              <li key={src} className="overflow-hidden rounded-xl bg-surface ring-1 ring-ink/10">
+          <ul className={`mt-6 grid grid-cols-2 gap-3 ${photos.length === 2 || photos.length === 4 ? "" : "sm:grid-cols-3"}`}>
+            {photos.map((p, i) => (
+              <li key={p.src} className="overflow-hidden rounded-xl bg-surface ring-1 ring-ink/10">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt={`${hobby.title}, photo ${i + 1}`} loading="lazy" decoding="async" className="aspect-square h-full w-full object-cover" />
+                <img src={p.src} alt={p.alt || `${hobby.title}, photo ${i + 1}`} loading="lazy" decoding="async" className="aspect-square h-full w-full object-cover" />
               </li>
             ))}
           </ul>

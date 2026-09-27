@@ -6,6 +6,7 @@ import { useCallback, useLayoutEffect, useRef, useState, useSyncExternalStore } 
 import type { Hobby } from "@/content/offTheClock";
 import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import { useMotionSafe } from "@/hooks/useMotionSafe";
+import type { Photo } from "@/lib/assets";
 import type { BrickColor } from "@/lib/bricks";
 import { Shopfront } from "./Shopfront";
 
@@ -53,7 +54,7 @@ function Minifig({ height = 120 }: { height?: number }) {
   );
 }
 
-export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<string, string[]> }) {
+export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<string, Photo[]> }) {
   const desktop = useDesktop();
   const { reduced } = useMotionSafe();
   const mode = desktop ? (reduced ? "row" : "scroll") : "stack";
