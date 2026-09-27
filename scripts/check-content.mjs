@@ -29,7 +29,8 @@ const BANNED = [
   'href="#"',
 ];
 
-const METRIC = /\d+(\.\d+)?\s?(%|mAP|F1)/;
+// digits not inside hex colours or identifiers, e.g. "96%", "0.932 mAP", "0.788 F1"
+const METRIC = /(?<![\w#.])\d+(\.\d+)?\s?(%|mAP\b|F1\b)/;
 const ALLOWED_URL_PREFIXES = [
   "https://fonts.googleapis.com",
   "https://fonts.gstatic.com",

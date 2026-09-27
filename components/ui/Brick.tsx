@@ -1,6 +1,7 @@
 import { useId } from "react";
 import { BRICK_SHADES, type BrickColor } from "@/lib/bricks";
 import { cn } from "@/lib/cn";
+import { BRICK_H, IsoStack } from "./IsoStack";
 
 type BrickProps = {
   color?: BrickColor;
@@ -17,8 +18,6 @@ type BrickProps = {
   label?: string;
 };
 
-const C30 = Math.cos(Math.PI / 6); // 0.866
-const BRICK_H = 1.2; // brick height in stud units
 const STUD_R = 0.3;
 const STUD_H = 0.2;
 
@@ -44,87 +43,15 @@ export function Brick({
   const glowClass = glow ? "drop-shadow-[0_0_14px_rgba(255,213,0,0.55)]" : undefined;
 
   if (isometric) {
-    const { w, h } = studs;
-    const u = size;
-    // isometric projection of (x, y, z) in stud units
-    const P = (x: number, y: number, z: number) => [r((x - y) * C30 * u), r(((x + y) * 0.5 - z) * u)] as const;
-    const pts = (...p: (readonly [number, number])[]) => p.map((q) => q.join(",")).join(" ");
-
-    const minX = -h * C30 * u;
-    const maxX = w * C30 * u;
-    const minY = -(BRICK_H + STUD_H) * u - 2;
-    const maxY = ((w + h) * 0.5) * u + u * 0.35; // room for contact shadow
-    const vbW = maxX - minX;
-    const vbH = maxY - minY;
-
-    const top = pts(P(0, 0, BRICK_H), P(w, 0, BRICK_H), P(w, h, BRICK_H), P(0, h, BRICK_H));
-    const left = pts(P(0, h, BRICK_H), P(w, h, BRICK_H), P(w, h, 0), P(0, h, 0));
-    const right = pts(P(w, 0, BRICK_H), P(w, h, BRICK_H), P(w, h, 0), P(w, 0, 0));
-
-    const rx = r(STUD_R * Math.SQRT2 * C30 * u);
-    const ry = r(STUD_R * Math.SQRT2 * 0.5 * u);
-    const cells: { cx: number; cyTop: number; cyBot: number; k: number }[] = [];
-    for (let i = 0; i < w; i++) {
-      for (let j = 0; j < h; j++) {
-        const [cx, cyBot] = P(i + 0.5, j + 0.5, BRICK_H);
-        const [, cyTop] = P(i + 0.5, j + 0.5, BRICK_H + STUD_H);
-        cells.push({ cx, cyTop, cyBot, k: i + j });
-      }
-    }
-    cells.sort((a, b) => a.k - b.k);
-    const [shX, shY] = P(w / 2, h / 2, 0);
-
-    const stroke = outline ? shade.dark : "rgba(0,0,0,0.08)";
-    const fill = (c: string) => (outline ? "none" : c);
-
     return (
-      <svg
-        viewBox={`${r(minX)} ${r(minY)} ${r(vbW)} ${r(vbH)}`}
-        width={r(vbW)}
-        height={r(vbH)}
-        className={cn("overflow-visible", glowClass, className)}
-        {...a11y}
-      >
-        <defs>
-          <linearGradient id={`t${uid}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor={shade.light} />
-            <stop offset="1" stopColor={shade.base} />
-          </linearGradient>
-        </defs>
-        {!outline && (
-          <ellipse
-            cx={shX}
-            cy={r(shY + u * 0.12)}
-            rx={r(((w + h) / 2) * C30 * u)}
-            ry={r(((w + h) / 4) * u * 0.55)}
-            fill="rgba(17,17,17,0.14)"
-            style={{ filter: "blur(6px)" }}
-          />
-        )}
-        <polygon points={left} fill={fill(shade.base)} stroke={stroke} strokeWidth={outline ? 1.5 : 0.6} strokeLinejoin="round" strokeDasharray={outline ? "4 3" : undefined} />
-        <polygon points={right} fill={fill(shade.dark)} stroke={stroke} strokeWidth={outline ? 1.5 : 0.6} strokeLinejoin="round" strokeDasharray={outline ? "4 3" : undefined} />
-        <polygon points={top} fill={outline ? "none" : `url(#t${uid})`} stroke={stroke} strokeWidth={outline ? 1.5 : 0.6} strokeLinejoin="round" strokeDasharray={outline ? "4 3" : undefined} />
-        {!outline && (
-          <polyline
-            points={pts(P(0, h, BRICK_H), P(0, 0, BRICK_H), P(w, 0, BRICK_H))}
-            fill="none"
-            stroke="rgba(255,255,255,0.55)"
-            strokeWidth={1}
-            strokeLinecap="round"
-          />
-        )}
-        {cells.map((c, i) => (
-          <g key={i}>
-            <path
-              d={`M${r(c.cx - rx)},${c.cyTop} L${r(c.cx - rx)},${c.cyBot} A${rx},${ry} 0 0 0 ${r(c.cx + rx)},${c.cyBot} L${r(c.cx + rx)},${c.cyTop} Z`}
-              fill={fill(shade.dark)}
-              stroke={outline ? stroke : "none"}
-              strokeWidth={outline ? 1.2 : 0}
-            />
-            <ellipse cx={c.cx} cy={c.cyTop} rx={rx} ry={ry} fill={fill(shade.light)} stroke={outline ? stroke : "rgba(255,255,255,0.35)"} strokeWidth={outline ? 1.2 : 0.6} />
-          </g>
-        ))}
-      </svg>
+      <IsoStack
+        items={[{ color, w: studs.w, h: studs.h, outline }]}
+        size={size}
+        glow={glow}
+        shadow={!outline}
+        className={className}
+        label={label}
+      />
     );
   }
 
