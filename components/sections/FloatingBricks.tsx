@@ -20,7 +20,7 @@ export function FloatingBricks() {
   const ref = useRef<HTMLDivElement>(null);
   useOffscreenPause(ref);
   return (
-    <div ref={ref} aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div ref={ref} aria-hidden className="pointer-events-none absolute inset-0 hidden overflow-hidden md:block">
       {ITEMS.map((it, i) => (
         <div
           key={i}

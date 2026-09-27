@@ -1,12 +1,14 @@
-import { Mail } from "lucide-react";
+import { FileText, Mail } from "lucide-react";
 import { person } from "@/content/site";
 import { BlueprintGrid } from "@/components/ui/BlueprintGrid";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/BrandIcons";
+import { eyebrowOf } from "@/lib/sections";
 import { ContactForm } from "./ContactForm";
+import { CopyEmail } from "./CopyEmail";
 
-export function Contact() {
+export function Contact({ resumeHref }: { resumeHref: string | null }) {
   return (
     <SectionShell id="contact" labelledBy="contact-title" className="overflow-hidden py-28 sm:py-36">
       <BlueprintGrid variant="dots" />
@@ -14,17 +16,25 @@ export function Contact() {
         <div>
           <SectionHeading
             id="contact-title"
-            eyebrow="Contact"
+            eyebrow={eyebrowOf("contact")}
             title="Let's build something incredible together."
             titleClassName="md:text-5xl"
-            intro="Fill in each field to snap a brick into place. The last brick sends it."
+            intro="Email is fastest. Or fill in the form: each field snaps a brick into place and the last brick sends it."
           />
           <ul className="mt-10 space-y-3">
-            <li>
+            <li className="flex flex-wrap items-center gap-3">
               <a href={`mailto:${person.email}`} className="inline-flex items-center gap-3 font-medium hover:text-brick-blue">
                 <Mail size={18} aria-hidden /> {person.email}
               </a>
+              <CopyEmail email={person.email} />
             </li>
+            {resumeHref && (
+              <li>
+                <a href={resumeHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 font-medium hover:text-brick-blue">
+                  <FileText size={18} aria-hidden /> Résumé (PDF)
+                </a>
+              </li>
+            )}
             <li>
               <a href={person.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 font-medium hover:text-brick-blue">
                 <LinkedinIcon size={18} /> LinkedIn

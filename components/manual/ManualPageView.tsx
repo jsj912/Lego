@@ -60,6 +60,57 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
             </div>
           </div>
         );
+      case "tldr":
+        return (
+          <div className="flex h-full flex-col gap-4 text-[0.95rem]">
+            <h2 className="text-2xl font-semibold sm:text-3xl">TL;DR</h2>
+            {page.problem && (
+              <div>
+                <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-red">Problem</p>
+                <p className="mt-1 leading-snug">{page.problem}</p>
+              </div>
+            )}
+            {page.approach.length > 0 && (
+              <div>
+                <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-blue">Approach</p>
+                <ol className="mt-1 flex flex-wrap gap-x-2 gap-y-1 leading-snug">
+                  {page.approach.map((a, i) => (
+                    <li key={a} className="flex items-center gap-2">
+                      {i > 0 && <span aria-hidden className="text-ink-2">→</span>}
+                      {a}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            <div>
+              <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-green">Result</p>
+              <p className="mt-1 font-semibold leading-snug">{page.result}</p>
+            </div>
+            {page.ownership && <p className="leading-snug text-ink-2">{page.ownership}</p>}
+            <div>
+              <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-ink-2">Stack</p>
+              <ul className="mt-1.5 flex flex-wrap gap-1.5">
+                {page.stack.map((p) => (
+                  <li key={p} className="rounded-md bg-white px-2 py-0.5 font-mono text-[0.74rem] ring-1 ring-ink/10">
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {page.links.length > 0 && (
+              <ul className="mt-auto flex flex-wrap gap-2 pt-2">
+                {page.links.map((l) => (
+                  <li key={l.href}>
+                    <a href={l.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3.5 py-2 text-sm font-semibold text-white hover:bg-brick-blue">
+                      {l.label} <ArrowUpRight size={14} aria-hidden />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
       case "challenge":
         return (
           <div className="flex h-full flex-col justify-center">
@@ -105,7 +156,8 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
         return (
           <div className="flex h-full flex-col justify-center">
             <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-2">Final Model</h2>
-            <p className="mt-6 font-display text-2xl font-medium leading-snug sm:text-3xl">{page.outcome}</p>
+            <BoxArt build={build} index={index} size={16} className="my-4 h-40" />
+            <p className="font-display text-2xl font-medium leading-snug sm:text-3xl">{page.outcome}</p>
             {page.finalModel && page.finalModel !== page.outcome && <p className="mt-6 text-lg leading-relaxed text-ink-2">{page.finalModel}</p>}
           </div>
         );

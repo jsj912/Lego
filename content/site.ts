@@ -14,7 +14,7 @@ import type {
 
 export const person: Person = {
   name: "Joan Sara Joe",
-  roles: ["Machine Learning Engineer", "AI Researcher", "Backend Developer"],
+  roles: ["Machine Learning Engineer"],
   tagline: "Building intelligent systems, one brick at a time.",
   location: "Bengaluru, India",
   email: "joansara123@gmail.com",
@@ -23,6 +23,18 @@ export const person: Person = {
   resumePath: "/resume.pdf", // I will add public/resume.pdf myself. If missing at build time, hide the button.
   phone: null,               // intentionally not published
 };
+
+// Proof line under the hero tagline.
+export const highlights: string[] = [
+  "Samsung R&D Institute (PRISM)",
+  "Fidelity Investments",
+  "#1 of 350+ · CySeck CTF 2026",
+];
+
+// Projects shown as large cards, in this order. Other builds appear as compact "more sets".
+// RingShield lives with its paper in the Research section.
+export const featuredBuilds: string[] = ["moe-appliance-detection", "amsdds", "network-anomaly-detection"];
+export const researchBuilds: string[] = ["ringshield"];
 
 export const education: Education[] = [
   {
@@ -51,6 +63,7 @@ export const focusAreas: string[] = [ // used in Workshop + Innovation Lab "rese
 export const experience: Experience[] = [
   {
     id: "fidelity",
+    deepDive: "lambda-migration",
     org: "Fidelity Investments",
     role: "Software Engineering Intern",
     start: "June 2026", end: "August 2026",
@@ -64,13 +77,14 @@ export const experience: Experience[] = [
   },
   {
     id: "samsung",
+    deepDive: "moe-appliance-detection",
     org: "Samsung R&D Institute (PRISM)",
     role: "Research Intern",
     start: "Jan 2026", end: "June 2026",
     where: "Bengaluru, India",
     bullets: [
       "Built a three-layer Mixture-of-Experts vision pipeline for appliance detection in the SmartThings ecosystem: a ResNet-18 (Places365) scene router dispatches frames to RF-DETR Nano specialist detectors.",
-      "Raised detection from 0.140 mAP (SSD-MobileNet baseline, which missed small objects entirely) to 0.932 mAP by replacing a single general detector with scene-conditioned experts.",
+      "An SSD-MobileNet baseline reached 0.140 mAP and missed small objects entirely; the scene-conditioned RF-DETR Nano experts reached 0.932 mAP.",
       "Shipped a CPU-only demo via OpenCV, plus a feedback layer that persists analyst corrections for retraining.",
       "First-authoring an IEEE-format paper on the architecture (in preparation).",
     ],
@@ -85,7 +99,7 @@ export const builds: Build[] = [
     title: "Mixture-of-Experts Appliance Detection",
     context: "Samsung R&D Institute (PRISM) · SmartThings ecosystem",
     when: "Jan 2026 – June 2026",
-    outcome: "Three-layer appliance detection architecture: 0.140 → 0.932 mAP.",
+    outcome: "Three-layer appliance detection: SSD-MobileNet baseline 0.140 mAP → RF-DETR Nano experts 0.932 mAP.",
     pieces: ["ResNet-18 (Places365)", "RF-DETR Nano", "Mixture-of-Experts", "OpenCV", "CPU-only deployment"],
     challenge: "A single general detector (SSD-MobileNet baseline) reached only 0.140 mAP and missed small objects entirely.",
     steps: [
@@ -94,7 +108,7 @@ export const builds: Build[] = [
       { title: "Feedback layer", body: "A feedback layer persists analyst corrections for retraining." },
       { title: "CPU-only demo", body: "Shipped a CPU-only demo via OpenCV." },
     ],
-    finalModel: "Detection raised from 0.140 mAP to 0.932 mAP by replacing a single general detector with scene-conditioned experts.",
+    finalModel: "The SSD-MobileNet baseline reached 0.140 mAP; the scene-conditioned RF-DETR Nano experts reached 0.932 mAP.",
     lessons: [],
     note: "First-authoring an IEEE-format paper on the architecture (in preparation).",
     links: { github: null, report: null, demo: null },
@@ -139,6 +153,7 @@ export const builds: Build[] = [
       "Dermoscopy fine-tuning improved clinical-photo transfer, motivating a shared-backbone / per-domain-head design.",
     ],
     note: null,
+    ownership: "5-person team · I owned the data pipeline, Flask decision engine, OOD gate and Layer 2.",
     links: { github: null, report: null, demo: null },
   },
   {
@@ -239,19 +254,17 @@ export const awards: Award[] = [
   },
   {
     title: "Finalist — Smart Horizon International Hackathon 2026",
-    detail: "Designing a six-module adaptive architecture for open-set skin-lesion detection with confidence calibration and skin-tone-diversity auditing across HAM10000 and ISIC 2019/2020.",
+    detail: null,
     relatedBuild: "amsdds",
   },
 ];
 
 export const leadership: Leadership[] = [
-  { org: "Sensored (BMSCE)", role: "Vice President", when: "Sep 2025 – Present",
-    detail: "Led strategy and execution for technical initiatives and national-level events." },
-  { org: "Sensored (BMSCE)", role: "Junior Core", when: "Nov 2024 – Sep 2025", detail: null },
+  { org: "Sensored (BMSCE)", role: "Junior Core → Vice President", when: "Nov 2024 – Present",
+    detail: "Vice President since Sep 2025: led strategy and execution for technical initiatives and national-level events." },
   { org: "BMSCE Phase Shift", role: "Department Coordinator (CSE ICB)", when: "Aug 2025 – Oct 2025",
     detail: "Led a 13-member cross-functional team for a national technical event; managed budgets and sponsorships, securing ~20% higher funding." },
   { org: "RaSoR — Ramanujan Society of Research", role: "Core Member (R&D Wing)", when: "Aug 2025 – Present", detail: null },
-  { org: "BMSCE ACM Student Chapter", role: "Member", when: "Oct 2024 – Present", detail: null },
 ];
 
 export const skills: Skills = {

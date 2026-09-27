@@ -14,22 +14,23 @@ import { person } from "@/content/site";
 import { resumeHref } from "@/lib/resume";
 
 export default function Home() {
+  const resume = resumeHref();
   return (
     <ManualController>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-toast focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-white">
         Skip to content
       </a>
-      <Nav name={person.name} />
+      <Nav name={person.name} resumeHref={resume} />
       <ProgressTower />
       <main id="main" tabIndex={-1} className="outline-none">
-        <Hero resumeHref={resumeHref()} />
-        <Workshop />
+        <Hero resumeHref={resume} />
+        <Conveyor />
         <Builds />
         <Lab />
-        <Conveyor />
         <BrickStats />
         <TrophyShelf />
-        <Contact />
+        <Workshop />
+        <Contact resumeHref={resume} />
       </main>
       <Footer />
     </ManualController>

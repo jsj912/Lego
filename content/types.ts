@@ -23,6 +23,8 @@ export type Education = {
 
 export type Experience = {
   id: string;
+  /** slug of the build whose manual covers this role in depth */
+  deepDive?: string;
   org: string;
   role: string;
   start: string;
@@ -58,6 +60,8 @@ export type Build = {
   finalModel: string | null;
   lessons: string[];
   note: string | null;
+  /** team size / what I owned, when it was a team build */
+  ownership?: string | null;
   links: BuildLinks;
 };
 

@@ -1,5 +1,5 @@
-import { ArrowDown, FileDown, MapPin } from "lucide-react";
-import { person } from "@/content/site";
+import { ArrowDown, FileText, Mail, MapPin } from "lucide-react";
+import { highlights, person } from "@/content/site";
 import { BlueprintGrid } from "@/components/ui/BlueprintGrid";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { SnapButton } from "@/components/ui/SnapButton";
@@ -13,44 +13,51 @@ export function Hero({ resumeHref }: { resumeHref: string | null }) {
       <BlueprintGrid variant="lines" />
       <FloatingBricks />
 
-      <div className="relative mx-auto grid min-h-[calc(100svh-var(--nav-h))] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.15fr_1fr] lg:px-8">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-4 pb-14 pt-10 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:px-8 lg:pb-16 lg:pt-14">
         <div>
-          <p className="font-mono text-xs font-medium uppercase tracking-[0.22em] text-ink-2">
-            <span aria-hidden className="mr-2 inline-block h-2 w-2 rounded-[2px] bg-brick-red" />
-            Set 000 · Build start
+          <p className="inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-sm font-semibold shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
+            <span aria-hidden className="h-2 w-2 rounded-[2px] bg-brick-red" />
+            {person.roles.join(" · ")}
           </p>
 
-          <h1 id="start-title" className="mt-6 text-[clamp(3rem,9vw,7.25rem)] font-semibold leading-[0.92] tracking-[-0.045em]">
+          <h1 id="start-title" className="mt-5 text-[clamp(2.75rem,7vw,5.5rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
             {person.name}
           </h1>
 
-          <ul className="mt-7 flex flex-wrap gap-2" aria-label="Roles">
-            {person.roles.map((role) => (
-              <li key={role} className="rounded-full bg-surface px-3.5 py-1.5 text-sm font-medium shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
-                {role}
-              </li>
-            ))}
-          </ul>
+          <p className="mt-5 max-w-xl font-display text-xl leading-snug text-ink sm:text-2xl">{person.tagline}</p>
 
-          <p className="mt-8 max-w-xl font-display text-2xl leading-snug text-ink sm:text-3xl">{person.tagline}</p>
+          {highlights.length > 0 && (
+            <ul className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[0.95rem] font-semibold text-ink" aria-label="Highlights" data-proof-line>
+              <li className="font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink-2">Previously</li>
+              {highlights.map((h, i) => (
+                <li key={h} className="flex items-center gap-2.5">
+                  {i > 0 && <span aria-hidden className="h-1.5 w-1.5 rounded-[2px] bg-brick-yellow" />}
+                  {h}
+                </li>
+              ))}
+            </ul>
+          )}
 
           <p className="mt-4 flex items-center gap-1.5 text-sm text-ink-2">
             <MapPin size={15} aria-hidden /> {person.location}
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <SnapButton href="#builds" size="lg" variant="red">
-              Explore My Builds <ArrowDown size={18} aria-hidden />
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <SnapButton href="#journey" size="lg" variant="red">
+              See my experience <ArrowDown size={18} aria-hidden />
             </SnapButton>
             {resumeHref && (
-              <SnapButton href={resumeHref} size="lg" variant="ghost" download dataTestId="resume-button">
-                Download Blueprint <FileDown size={18} aria-hidden />
+              <SnapButton href={resumeHref} external size="lg" variant="ghost" dataTestId="resume-button">
+                Résumé <FileText size={18} aria-hidden />
               </SnapButton>
             )}
+            <a href={`mailto:${person.email}`} className="inline-flex items-center gap-1.5 px-2 text-sm font-semibold underline decoration-ink/25 underline-offset-4 hover:decoration-ink">
+              <Mail size={16} aria-hidden /> {person.email}
+            </a>
           </div>
         </div>
 
-        <div className="relative hidden sm:block">
+        <div className="relative hidden md:block">
           <HeroTower />
         </div>
       </div>

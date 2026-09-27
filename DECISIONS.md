@@ -33,3 +33,15 @@ Choices made while building, and why.
 - **Booklet.** ≥1024px shows two-page spreads (the cover sits alone on the right, like a real book); below that it shows single pages. A page turn is one leaf with front and back faces, rotated with `rotateY` around the spine under CSS perspective, plus a moving shade gradient. Reduced motion turns it into a crossfade. The standalone route adds a "Read the whole manual as text" disclosure, so every page's text is in the HTML.
 - **The manual overlay is lazy-loaded** with `next/dynamic` (`ssr: false`).
 - **Progress tower.** Driven by the single `SectionProgressProvider` scroll source. Unplaced sections show as dashed slots that are still clickable. On completion a one-shot shimmer runs.
+
+## Recruiter-first restructure (after external review)
+- **Order:** Home → Experience → Projects → Research → Skills → Awards & Leadership → Education → Contact. The nav uses plain labels; the themed names (Conveyor, The sets, Innovation lab, Parts bin, Trophy shelf, Workshop) are only the small eyebrow above each heading. Section ids are unchanged, so old anchors still work.
+- **Hero:** shorter, so the CTAs sit above the fold at 1366×768. One role, a proof line from `highlights` in `content/site.ts`, Résumé button (also in the nav and Contact), and a visible email.
+- **One home per fact:** Experience = the two jobs only (each links to its deep-dive manual via `experience[].deepDive`). Projects = `featuredBuilds` as big cards plus the rest as compact "More sets". RingShield sits with its paper in Research (`researchBuilds`). Awards and leadership live together. Focus areas appear once, as the Research parts list. Removed: the conveyor's project/campus belts, the Workshop focus-area cards and the pull-quote.
+- **Cards show real links** (Code / Report / Demo from `links`) and the team/ownership line; the "N pieces" count is gone.
+- **Box art depicts each project** (`BUILD_MODELS`): MoE router with specialist arms, RingShield ring + shield, AMSDDS fast stage → gate → heavy stage, anomaly network with an alarm node, rack → λ cloud, glasses, a safe with a dial.
+- **Hero machine:** a gear train whose radii mesh (centre distance ≈ 0.9 × (r1 + r2)), teeth scaled to radius, each gear turning at −r_prev/r_next of its neighbour, driven by scroll through a `--gear-rot` CSS variable. Reduced motion leaves it still.
+- **Progress = a liftarm filling with pins** (vertical at ≥1280px, a slim bar under the nav below that), replacing the dashed-slot tower.
+- **Manual:** spreads pair [cover, TL;DR], [3, 4] and so on, so there's no blank first page. TL;DR = problem → approach → result → ownership → stack → links. The final page shows the finished model with the result.
+- **Contrast:** `--color-ink-2` darkened from the brief's #6B7280 to #4B5563; eyebrows are bigger and bolder.
+- **Contact:** a copy-email button next to mailto, since mailto often does nothing on work laptops.

@@ -11,7 +11,7 @@
   --color-brick-blue: #0055bf;
   --color-brick-green: #237841;
   --color-ink: #111111;
-  --color-ink-2: #6b7280;
+  --color-ink-2: #4b5563; /* darker than the brief's #6B7280 for small mono labels */
   /* AA-safe secondary text on surface-dark */
   --color-ink-inverse: #f5f5f0;
   --color-ink-inverse-2: #b4b4ae;
@@ -250,3 +250,19 @@ html { scrollbar-gutter: stable; }
 .dim-arrow-l, .dim-arrow-r { width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
 .dim-arrow-l { border-right: 7px solid currentColor; }
 .dim-arrow-r { border-left: 7px solid currentColor; }
+
+/* scroll-driven gears: a parent sets --gear-rot, each gear turns by its ratio */
+.gear-drive {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: rotate(calc(var(--gear-rot, 0deg) * var(--ratio, 1)));
+}
+
+/* liftarm progress pins */
+.pin-head { background: radial-gradient(circle at 35% 30%, var(--pl), var(--pb) 55%, var(--pd)); }
+.pin-axle::before, .pin-axle::after {
+  content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  background: rgb(0 0 0 / 0.3); border-radius: 1px;
+}
+.pin-axle::before { width: 45%; height: 3px; }
+.pin-axle::after { width: 3px; height: 45%; }

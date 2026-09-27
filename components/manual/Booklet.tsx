@@ -43,8 +43,8 @@ export function Booklet({ build, index, pages, captureKeys = true }: Props) {
   const spread = useSpread();
   const { reduced } = useMotionSafe();
   const n = pages.length;
-  // spread mode: position s shows pages [2s-1, 2s]; single mode: position = page index
-  const last = spread ? Math.floor(n / 2) : n - 1;
+  // spread mode: position s shows pages [2s, 2s+1]; single mode: position = page index
+  const last = spread ? Math.ceil(n / 2) - 1 : n - 1;
   const [pos, setPos] = useState(0);
   const [flip, setFlip] = useState<Flip | null>(null);
   const [fadeKey, setFadeKey] = useState(0);
@@ -54,7 +54,7 @@ export function Booklet({ build, index, pages, captureKeys = true }: Props) {
   const [prevSpread, setPrevSpread] = useState(spread);
   if (prevSpread !== spread) {
     setPrevSpread(spread);
-    setPos((p) => (spread ? Math.ceil(p / 2) : Math.max(0, p * 2 - 1)));
+    setPos((p) => (spread ? Math.floor(p / 2) : p * 2));
   }
 
   const page = (i: number, side: "left" | "right" | "single"): ReactNode => {
@@ -71,7 +71,7 @@ export function Booklet({ build, index, pages, captureKeys = true }: Props) {
     );
   };
 
-  const visible = spread ? [2 * pos - 1, 2 * pos].filter((i) => i >= 0 && i < n) : [pos];
+  const visible = spread ? [2 * pos, 2 * pos + 1].filter((i) => i >= 0 && i < n) : [pos];
   const label = visible.length === 2 ? `${visible[0] + 1}–${visible[1] + 1} / ${n}` : `${visible[0] + 1} / ${n}`;
   const announce = visible.map((i) => `Page ${i + 1} of ${n}: ${PAGE_TITLE[pages[i].kind]}`).join(". ");
 
@@ -89,8 +89,8 @@ export function Booklet({ build, index, pages, captureKeys = true }: Props) {
         const s = pos;
         setFlip(
           dir === 1
-            ? { dir, front: page(2 * s, "right"), back: page(2 * s + 1, "left"), target }
-            : { dir, front: page(2 * s - 2, "right"), back: page(2 * s - 1, "left"), target },
+            ? { dir, front: page(2 * s + 1, "right"), back: page(2 * s + 2, "left"), target }
+            : { dir, front: page(2 * s - 1, "right"), back: page(2 * s, "left"), target },
         );
       } else {
         setFlip(dir === 1 ? { dir, front: page(pos, "single"), back: <div className="h-full rounded-2xl bg-paper" />, target } : { dir, front: page(pos - 1, "single"), back: <div className="h-full rounded-2xl bg-paper" />, target });
@@ -134,15 +134,15 @@ export function Booklet({ build, index, pages, captureKeys = true }: Props) {
 
   // what sits underneath while a leaf turns
   const s = pos;
-  let underLeft = 2 * s - 1;
-  let underRight = 2 * s;
+  let underLeft = 2 * s;
+  let underRight = 2 * s + 1;
   let underSingle = pos;
   if (flip) {
     if (flip.dir === 1) {
-      underRight = 2 * s + 2;
+      underRight = 2 * s + 3;
       underSingle = pos + 1;
     } else {
-      underLeft = 2 * s - 3;
+      underLeft = 2 * s - 2;
     }
   }
 

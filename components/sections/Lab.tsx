@@ -1,7 +1,8 @@
-import { builds, focusAreas, publications } from "@/content/site";
+import { builds, focusAreas, publications, researchBuilds } from "@/content/site";
 import { Badge } from "@/components/ui/Badge";
 import { IsoStack } from "@/components/ui/IsoStack";
-import { BLUEPRINT_RIG, boxModel } from "@/components/ui/models";
+import { BLUEPRINT_RIG, BUILD_MODELS, boxModel } from "@/components/ui/models";
+import { eyebrowOf } from "@/lib/sections";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { publicationBuild } from "@/lib/derive";
@@ -33,16 +34,17 @@ export function Lab() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="lab-title"
-          eyebrow="Innovation Lab"
-          title="Drafts on the drawing board"
-          intro="Research sheets pinned to the drafting table. Every drawing is still being drafted."
+          eyebrow={eyebrowOf("lab")}
+          title="Research"
+          intro="Papers on the drafting table, all in preparation, plus the threads they come from."
           dark
         />
 
         <ol className="mt-16 grid gap-7 lg:grid-cols-3">
           {publications.map((p, i) => {
             const related = publicationBuild(p);
-            const model = related ? boxModel(builds.indexOf(related), "grey", "grey") : BLUEPRINT_RIG;
+            const model = related ? (BUILD_MODELS[related.slug] ?? boxModel(builds.indexOf(related), "grey", "grey")) : BLUEPRINT_RIG;
+            const isResearchBuild = related ? researchBuilds.includes(related.slug) : false;
             return (
               <li key={p.title} className="relative flex flex-col bg-blueprint-deep/60 p-2 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]">
                 {/* drawing frame */}
@@ -67,12 +69,20 @@ export function Lab() {
                     <div className="flex flex-1 flex-col p-5">
                       <h3 className="text-lg font-semibold leading-snug text-white">{p.title}</h3>
                       {p.detail && <p className="mt-3 text-[0.95rem] leading-relaxed text-blueprint-line/85">{p.detail}</p>}
+                      {related && isResearchBuild && (
+                        <div className="mt-4 border-l-2 border-brick-yellow pl-3">
+                          <p className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-blueprint-line/80">
+                            Build · SET {related.set} · {related.title}
+                          </p>
+                          <p className="mt-1 text-[0.92rem] leading-relaxed text-white">{related.outcome}</p>
+                        </div>
+                      )}
                       {related && (
                         <a
                           href={`/builds/${related.slug}`}
                           className="mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-brick-yellow underline-offset-4 hover:underline"
                         >
-                          Related build: SET {related.set} · {related.title}
+                          {isResearchBuild ? "Open the build manual" : `Related build: SET ${related.set} · ${related.title}`}
                         </a>
                       )}
                     </div>

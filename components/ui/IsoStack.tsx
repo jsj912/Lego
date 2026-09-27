@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { useId, type CSSProperties, type ReactNode } from "react";
 import { BRICK_SHADES, type BrickColor } from "@/lib/bricks";
 import { cn } from "@/lib/cn";
 
@@ -23,6 +23,10 @@ export type Decal = {
   /** draw window mullions */
   mullions?: boolean;
   round?: boolean;
+  shape?: "shield";
+  /** a short label (e.g. "λ") printed on the face */
+  text?: string;
+  textColor?: string;
 };
 
 type Base = {
@@ -42,7 +46,7 @@ export type IsoItem =
   /** beam with pin holes on its visible faces, no studs */
   | (Base & { kind: "beam"; w: number; h: number })
   /** gear standing on a visible face: "front" is the plane y = at, "side" is x = at; cx/cz/radius in stud units */
-  | { kind: "gear"; color: BrickColor; face: "front" | "side"; at: number; cx: number; cz: number; radius: number; teeth?: number; spin?: boolean };
+  | { kind: "gear"; color: BrickColor; face: "front" | "side"; at: number; cx: number; cz: number; radius: number; teeth?: number; spin?: boolean; /** scroll-driven: turns by var(--gear-rot) × ratio */ ratio?: number };
 
 type Props = {
   items: IsoItem[];
@@ -211,12 +215,34 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
       const strokeC = line ? line.stroke : "rgba(0,0,0,0.25)";
       return (
         <g key={`d${i}`} transform={t}>
-          {d.round ? (
+          {d.text ? (
+            <>
+              <rect x={a0} y={z0} width={d.w} height={d.h} rx={0.06} fill={fillC} stroke={strokeC} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+              <text
+                transform={`translate(${a0 + d.w / 2} ${z0 + d.h * 0.24}) scale(1 -1)`}
+                textAnchor="middle"
+                fontSize={d.h * 0.78}
+                fontWeight={700}
+                fontFamily="ui-sans-serif, system-ui, sans-serif"
+                fill={line ? line.stroke : d.textColor ?? "#111111"}
+              >
+                {d.text}
+              </text>
+            </>
+          ) : d.shape === "shield" ? (
+            <path
+              d={`M${a0},${z0 + d.h} L${a0 + d.w},${z0 + d.h} L${a0 + d.w},${z0 + d.h * 0.5} Q${a0 + d.w},${z0 + d.h * 0.12} ${a0 + d.w / 2},${z0} Q${a0},${z0 + d.h * 0.12} ${a0},${z0 + d.h * 0.5} Z`}
+              fill={fillC}
+              stroke={strokeC}
+              strokeWidth={0.8}
+              vectorEffect="non-scaling-stroke"
+            />
+          ) : d.round ? (
             <ellipse cx={a0 + d.w / 2} cy={z0 + d.h / 2} rx={d.w / 2} ry={d.h / 2} fill={fillC} stroke={strokeC} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
           ) : (
             <rect x={a0} y={z0} width={d.w} height={d.h} rx={0.06} fill={fillC} stroke={strokeC} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
           )}
-          {!line && !d.round && <path d={`M${a0 + d.w * 0.15},${z0 + d.h * 0.25} L${a0 + d.w * 0.45},${z0 + d.h * 0.85}`} stroke="rgba(255,255,255,0.35)" strokeWidth={1.2} vectorEffect="non-scaling-stroke" />}
+          {!line && !d.round && !d.shape && !d.text && <path d={`M${a0 + d.w * 0.15},${z0 + d.h * 0.25} L${a0 + d.w * 0.45},${z0 + d.h * 0.85}`} stroke="rgba(255,255,255,0.35)" strokeWidth={1.2} vectorEffect="non-scaling-stroke" />}
           {d.mullions && (
             <>
               <line x1={a0 + d.w / 2} y1={z0} x2={a0 + d.w / 2} y2={z0 + d.h} stroke={line ? line.stroke : "rgba(255,255,255,0.7)"} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
@@ -262,7 +288,10 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
     // local coords: (a, z) with z up; the matrix flips z, so draw with y = z
     const body = (d: number, fillC: string) => (
       <g transform={m(d)}>
-        <g className={g.spin ? "gear-spin" : undefined}>
+        <g
+          className={g.ratio !== undefined ? "gear-drive" : g.spin ? "gear-spin" : undefined}
+          style={g.ratio !== undefined ? ({ ["--ratio" as string]: g.ratio } as CSSProperties) : undefined}
+        >
           <path d={gearPath(g.cx, g.cz, g.radius, teeth)} fill={line ? line.fill : fillC} stroke={line ? line.stroke : "rgba(0,0,0,0.18)"} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
           {d > 0 && (
             <>

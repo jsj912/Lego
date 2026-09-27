@@ -5,8 +5,9 @@ import { trackErrors, waitForFlip } from "./helpers";
 for (const b of builds) {
   test(`manual ${b.set} (${b.slug}): open → page to end → Esc → focus restored`, async ({ page }) => {
     const errors = trackErrors(page);
-    await page.goto("/#builds");
-    const card = page.locator(`[data-set-card="${b.slug}"]`);
+    await page.goto("/");
+    // a project card where there is one, otherwise the first visible link to the manual (e.g. in Research)
+    const card = page.locator(`a[data-set-card="${b.slug}"]`).or(page.locator(`a[href="/builds/${b.slug}"]:visible`)).first();
     await card.scrollIntoViewIfNeeded();
     await card.focus();
     await page.keyboard.press("Enter");
@@ -26,7 +27,7 @@ for (const b of builds) {
 
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
-    await expect(page).toHaveURL(/\/(#builds)?$/);
+    await expect(page).toHaveURL(/\/$/);
     await expect(card).toBeFocused();
     expect(errors).toEqual([]);
   });

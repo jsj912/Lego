@@ -7,118 +7,92 @@ import { BRICK_SHADES } from "@/lib/bricks";
 import { cn } from "@/lib/cn";
 import { SECTIONS, type SectionId } from "@/lib/sections";
 
-const DUST = [
-  { dx: "-14px", dy: "-4px" },
-  { dx: "-8px", dy: "6px" },
-  { dx: "10px", dy: "-6px" },
-  { dx: "15px", dy: "3px" },
-  { dx: "2px", dy: "8px" },
-];
-
 function scrollToSection(id: SectionId) {
   document.getElementById(id)?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }
 
 /**
- * The brick progress tower. A brick drops onto the tower when its section is
- * half scrolled into view; the tower never un-builds, the glow follows the
- * active section. Desktop: fixed at the left edge. Mobile: a row under the nav.
+ * Progress as a liftarm: one pin hole per section. A pin snaps into its hole
+ * once the section is half scrolled into view (it never un-builds); the active
+ * section's pin glows. Wide screens: vertical at the left edge. Otherwise a
+ * slim horizontal liftarm under the nav.
  */
 export function ProgressTower() {
   const { placed, active, complete } = useSectionProgress();
-  const { place, reduced } = useMotionSafe();
+  const { reduced } = useMotionSafe();
+
+  const pin = (id: SectionId, color: (typeof SECTIONS)[number]["color"], size: number) => {
+    const on = placed.has(id);
+    const shade = BRICK_SHADES[color];
+    return (
+      <span aria-hidden className="relative block" style={{ width: size, height: size }}>
+        {/* the hole */}
+        <span className="absolute inset-0 rounded-full bg-[#3f4347] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6)]" />
+        {on && (
+          <motion.span
+            className="pin-head absolute inset-[1px] rounded-full"
+            style={{ ["--pl" as string]: shade.light, ["--pb" as string]: shade.base, ["--pd" as string]: shade.dark }}
+            initial={reduced ? { opacity: 0 } : { scale: 0.2, opacity: 0 }}
+            animate={reduced ? { opacity: 1 } : { scale: [0.2, 1.15, 1], opacity: 1 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span className="pin-axle" />
+          </motion.span>
+        )}
+      </span>
+    );
+  };
 
   return (
     <>
-      {/* desktop tower */}
-      <nav aria-label="Build progress" className="fixed left-1.5 top-1/2 z-tower hidden -translate-y-1/2 lg:block" data-tower>
-        <ol className="relative flex flex-col-reverse gap-[5px] overflow-visible pt-2">
-          {SECTIONS.map((s) => {
-            const on = placed.has(s.id);
-            const isActive = active === s.id;
-            const shade = BRICK_SHADES[s.color];
-            return (
-              <li key={s.id} className="relative">
-                <button
-                  type="button"
-                  onClick={() => scrollToSection(s.id)}
-                  aria-label={s.label}
-                  aria-current={isActive ? "true" : undefined}
-                  data-tower-brick={s.id}
-                  data-placed={on ? "true" : "false"}
-                  className="group relative block h-[18px] w-[28px] rounded-[4px]"
-                >
-                  {/* empty slot */}
-                  <span aria-hidden className="absolute inset-0 rounded-[4px] border border-dashed border-ink/25" />
-                  {on && (
-                    <motion.span
-                      aria-hidden
-                      className={cn(
-                        "absolute inset-0 rounded-[4px] transition-shadow duration-300",
-                        isActive && "shadow-[0_0_0_2px_rgba(255,213,0,0.9),0_0_14px_rgba(255,213,0,0.7)]",
-                      )}
-                      style={{ background: `linear-gradient(180deg, ${shade.light}, ${shade.base} 5px, ${shade.dark})` }}
-                      initial={place.initial}
-                      animate={place.animate}
-                      transition={place.transition}
-                    >
-                      <span className="absolute -top-[4px] left-[4px] flex gap-[6px]">
-                        {[0, 1].map((k) => (
-                          <span key={k} className="block h-[4px] w-[7px] rounded-t-[2px]" style={{ background: shade.base }} />
-                        ))}
-                      </span>
-                    </motion.span>
-                  )}
-                  {on && !reduced &&
-                    DUST.map((d, i) => (
-                      <span
-                        key={i}
-                        aria-hidden
-                        className="pointer-events-none absolute bottom-0 left-1/2 h-1 w-1 animate-dust rounded-full bg-ink/30 opacity-0 [animation-delay:420ms]"
-                        style={{ ["--dx" as string]: d.dx, ["--dy" as string]: d.dy }}
-                      />
-                    ))}
-                  {/* tooltip */}
-                  <span className="pointer-events-none absolute left-9 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                    {s.label}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
+      {/* wide screens: vertical liftarm */}
+      <nav aria-label="Section progress" className="fixed left-2 top-1/2 z-tower hidden -translate-y-1/2 xl:block" data-tower>
+        <ol className="relative flex flex-col gap-1.5 rounded-full bg-gradient-to-r from-[#b9bdc1] to-[#8d9297] p-1.5 shadow-[0_6px_14px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.5)]">
+          {SECTIONS.map((s) => (
+            <li key={s.id}>
+              <button
+                type="button"
+                onClick={() => scrollToSection(s.id)}
+                aria-label={s.label}
+                aria-current={active === s.id ? "true" : undefined}
+                data-tower-brick={s.id}
+                data-placed={placed.has(s.id) ? "true" : "false"}
+                className={cn(
+                  "group relative block rounded-full transition-shadow",
+                  active === s.id && "shadow-[0_0_0_2px_rgba(255,213,0,0.95),0_0_12px_rgba(255,213,0,0.7)]",
+                )}
+              >
+                {pin(s.id, s.color, 20)}
+                <span className="pointer-events-none absolute left-8 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                  {s.label}
+                </span>
+              </button>
+            </li>
+          ))}
           {complete && (
-            <span aria-hidden className="tower-shimmer pointer-events-none absolute inset-0 overflow-hidden rounded-md">
+            <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
               <span className="absolute inset-x-0 h-10 animate-shimmer bg-gradient-to-b from-transparent via-white/80 to-transparent" />
             </span>
           )}
         </ol>
       </nav>
 
-      {/* mobile row */}
-      <nav aria-label="Build progress" className="fixed inset-x-0 top-[var(--nav-h)] z-tower lg:hidden" data-tower-mobile>
-        <ol className="flex gap-[3px] px-2">
-          {SECTIONS.map((s) => {
-            const on = placed.has(s.id);
-            const isActive = active === s.id;
-            const shade = BRICK_SHADES[s.color];
-            return (
-              <li key={s.id} className="flex-1">
-                <button
-                  type="button"
-                  onClick={() => scrollToSection(s.id)}
-                  aria-label={s.label}
-                  aria-current={isActive ? "true" : undefined}
-                  className="block h-5 w-full pt-1"
-                >
-                  <span
-                    aria-hidden
-                    className={cn("block h-[6px] w-full rounded-[2px] transition-[background,box-shadow] duration-300", !on && "bg-ink/10", isActive && "shadow-[0_0_0_1.5px_rgba(255,213,0,0.95)]")}
-                    style={on ? { background: shade.base } : undefined}
-                  />
-                </button>
-              </li>
-            );
-          })}
+      {/* narrower screens: slim horizontal liftarm under the nav */}
+      <nav aria-label="Section progress" className="fixed inset-x-0 top-[var(--nav-h)] z-tower xl:hidden" data-tower-mobile>
+        <ol className="mx-auto flex max-w-md items-center justify-between rounded-b-xl bg-gradient-to-b from-[#b9bdc1] to-[#8d9297] px-2 py-1 shadow-[0_4px_10px_rgba(0,0,0,0.12)]">
+          {SECTIONS.map((s) => (
+            <li key={s.id}>
+              <button
+                type="button"
+                onClick={() => scrollToSection(s.id)}
+                aria-label={s.label}
+                aria-current={active === s.id ? "true" : undefined}
+                className={cn("block rounded-full p-0.5", active === s.id && "shadow-[0_0_0_1.5px_rgba(255,213,0,0.95)]")}
+              >
+                {pin(s.id, s.color, 11)}
+              </button>
+            </li>
+          ))}
         </ol>
       </nav>
     </>

@@ -3,6 +3,7 @@ import { SectionShell } from "@/components/ui/SectionShell";
 import { IsoStack } from "@/components/ui/IsoStack";
 import { BRICK_SHADES, type BrickColor } from "@/lib/bricks";
 import { skillWalls } from "@/lib/derive";
+import { eyebrowOf } from "@/lib/sections";
 import { SkillBrick } from "./SkillBrick";
 
 const LIP: BrickColor[] = ["blue", "red", "green", "yellow"];
@@ -29,12 +30,12 @@ function LooseBits({ seed }: { seed: number }) {
 export function BrickStats() {
   const groups = skillWalls();
   return (
-    <SectionShell id="stats" labelledBy="stats-title" className="py-28 sm:py-36">
+    <SectionShell id="stats" labelledBy="stats-title" className="py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="stats-title"
-          eyebrow="Brick Stats"
-          title="The parts bin"
+          eyebrow={eyebrowOf("stats")}
+          title="Skills"
           intro="Every tool is a brick in the bin. It gets one stud for each build it was used in, plus one. Tap a brick to see those builds."
         />
 
