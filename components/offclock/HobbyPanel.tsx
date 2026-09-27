@@ -6,6 +6,8 @@ import type { Hobby } from "@/content/offTheClock";
 import type { Photo } from "@/lib/assets";
 import { IsoStack } from "@/components/ui/IsoStack";
 
+const SPINES = ["#7f1d1d", "#1e3a8a", "#14532d", "#581c87", "#9a3412", "#0f766e", "#831843", "#334155", "#713f12", "#155e75"];
+
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /** Detail panel for one hobby: blurb, extras from data, and its photos (lazy). */
@@ -72,13 +74,31 @@ export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; p
         {hobby.books && hobby.books.length > 0 && (
           <div className="mt-6">
             <h3 className="font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink-2">On the shelf</h3>
-            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-              {hobby.books.map((b) => (
-                <li key={b.title} className="flex items-baseline gap-2 rounded-lg bg-surface px-3 py-2 ring-1 ring-ink/10">
-                  <span className="font-semibold">{b.title}</span>
-                  {b.author && <span className="text-sm text-ink-2">{b.author}</span>}
-                </li>
-              ))}
+            <ul className="shelf-rows mt-4 flex flex-wrap gap-x-1.5 px-2 pb-[20px]" aria-label="Books">
+              {hobby.books.map((b, i) => {
+                const color = SPINES[i % SPINES.length];
+                return (
+                  <li key={b.title} className="flex h-[206px] items-end">
+                    <div
+                      className="spine relative flex flex-col items-center justify-between rounded-t-[4px] rounded-b-[2px] px-1 py-3 text-white"
+                      style={{ background: color, width: 52 + ((i * 7) % 3) * 8, height: 176 + ((i * 23) % 28) }}
+                      title={b.author ? `${b.title} · ${b.author}` : b.title}
+                    >
+                      <span aria-hidden className="spine-band absolute inset-x-0 top-2 h-[3px]" />
+                      <span aria-hidden className="spine-band absolute inset-x-0 top-[14px] h-px" />
+                      <span className="mt-3 max-h-[100px] overflow-hidden font-display text-[0.78rem] font-semibold leading-tight [writing-mode:vertical-rl]">
+                        {b.title}
+                      </span>
+                      {b.author && (
+                        <span className="mb-1 max-h-[70px] overflow-hidden text-[0.52rem] font-medium uppercase leading-[1.15] tracking-[0.04em] text-white/80 [writing-mode:vertical-rl]">
+                          {b.author.split(" · ")[0]}
+                        </span>
+                      )}
+                      <span aria-hidden className="spine-band absolute inset-x-0 bottom-2 h-[3px]" />
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
@@ -102,7 +122,7 @@ export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; p
               </li>
             ))}
           </ul>
-        ) : (
+        ) : hobby.books && hobby.books.length > 0 ? null : (
           <div className="mt-6 flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-ink/20 bg-surface/60 px-6 py-10 text-center" data-photos-placeholder>
             <IsoStack items={[{ color: "white", w: 2, h: 2, outline: true }]} size={20} shadow={false} />
             <p className="font-semibold">Photos on the way</p>

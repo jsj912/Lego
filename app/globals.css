@@ -314,3 +314,15 @@ html { scrollbar-gutter: stable; }
 }
 .walk-bob { animation: walk-bob 0.7s ease-in-out infinite; animation-play-state: var(--walk, paused); }
 @media (prefers-reduced-motion: reduce) { .walk-bob { animation: none !important; } }
+
+/* bookshelf in the Worldbuilder's Shelf panel: a plank under every row of books */
+.shelf-rows {
+  row-gap: 26px;
+  background-image: linear-gradient(to bottom, transparent 206px, #8a6541 206px, #6b4c2f 218px, rgb(0 0 0 / 0.12) 218px, transparent 224px);
+  background-size: 100% 232px;
+  background-repeat: repeat-y;
+}
+.spine {
+  box-shadow: inset 3px 0 0 rgb(255 255 255 / 0.14), inset -4px 0 0 rgb(0 0 0 / 0.22), 0 2px 3px rgb(0 0 0 / 0.25);
+}
+.spine-band { background: linear-gradient(180deg, #e3c26b, #b8913a); }
