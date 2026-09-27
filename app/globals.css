@@ -199,3 +199,25 @@ p { text-wrap: pretty; }
 @media (prefers-reduced-motion: reduce) {
   .animate-sway { animation: none !important; transform: none; }
 }
+
+/* gears in brick models: spin in their own plane */
+.gear-spin {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: gear-turn 14s linear infinite;
+}
+.gear-spin-rev .gear-spin { animation-direction: reverse; }
+.group:hover .gear-spin { animation-duration: 4s; }
+@keyframes gear-turn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .gear-spin { animation: none !important; }
+}
+
+.bin-sheen {
+  background: radial-gradient(ellipse at top, rgb(255 255 255 / 0.08), transparent 60%);
+}
+
+.book-spine {
+  background: linear-gradient(90deg, transparent, rgb(0 0 0 / 0.1) 42%, rgb(0 0 0 / 0.2) 50%, rgb(0 0 0 / 0.1) 58%, transparent);
+}
+html { scrollbar-gutter: stable; }

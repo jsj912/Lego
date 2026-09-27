@@ -1,4 +1,4 @@
-export type BrickColor = "red" | "yellow" | "blue" | "green" | "white" | "dark";
+export type BrickColor = "red" | "yellow" | "blue" | "green" | "white" | "dark" | "grey";
 
 type Shades = { base: string; light: string; dark: string; darker: string; text: string };
 
@@ -10,6 +10,7 @@ export const BRICK_SHADES: Record<BrickColor, Shades> = {
   green: { base: "#237841", light: "#3A9559", dark: "#1A5C32", darker: "#124424", text: "#FFFFFF" },
   white: { base: "#F2F1EC", light: "#FFFFFF", dark: "#D9D7CE", darker: "#BDBBB1", text: "#111111" },
   dark: { base: "#2A2A2A", light: "#3A3A3A", dark: "#1C1C1C", darker: "#111111", text: "#FFFFFF" },
+  grey: { base: "#9EA3A8", light: "#C3C7CA", dark: "#7A8085", darker: "#5C6166", text: "#111111" },
 };
 
 export const BRICK_CYCLE: BrickColor[] = ["red", "blue", "yellow", "green"];

@@ -14,7 +14,7 @@ import { buildBySlug, experienceById } from "@/lib/derive";
 export function Conveyor() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const beltRef = useRef<HTMLOListElement>(null);
-  const { reduced, place } = useMotionSafe();
+  const { reduced } = useMotionSafe();
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
   const stripeX = useTransform(scrollYProgress, [0, 1], [0, -480]);
 
@@ -64,21 +64,32 @@ export function Conveyor() {
               const exp = t.experience ? experienceById(t.experience) : undefined;
               const build = t.build ? buildBySlug(t.build) : undefined;
               return (
-                <motion.li
-                  key={t.label}
-                  data-timeline-item
-                  className="relative flex shrink-0 gap-4 pl-10 md:w-[300px] md:flex-col md:pl-0"
-                  initial={place.initial}
-                  whileInView={place.animate}
-                  viewport={{ once: true, amount: 0.6 }}
-                  transition={place.transition}
-                >
+                <li key={t.label} data-timeline-item className="relative flex shrink-0 gap-4 pl-10 md:w-[300px] md:flex-col md:pl-0">
                   <span aria-hidden className="absolute left-[3px] top-5 md:hidden">
                     <Brick color={t.upcoming ? "white" : color} studs={{ w: 1, h: 1 }} size={16} isometric outline={t.upcoming} />
                   </span>
-                  <div
+                  <div className="relative h-full w-full">
+                  {/* the empty slot on the belt */}
+                  {!t.upcoming && (
+                    <div aria-hidden className="absolute inset-0 rounded-[var(--radius-brick)] border-2 border-dashed border-ink/20 bg-ink/[0.02]">
+                      <span className="absolute -top-[9px] left-4 flex gap-3">
+                        {[0, 1, 2, 3].map((k) => (
+                          <span key={k} className="h-[7px] w-6 rounded-t-[4px] border-2 border-b-0 border-dashed border-ink/20" />
+                        ))}
+                      </span>
+                    </div>
+                  )}
+                  <motion.div
+                    initial={reduced || t.upcoming ? { opacity: 0 } : { x: 120, y: -40, rotate: 14, opacity: 0 }}
+                    whileInView={
+                      reduced || t.upcoming
+                        ? { opacity: 1 }
+                        : { x: [120, 0, 0, 0, 0], y: [-40, -40, 3, -1, 0], rotate: [14, -2, 0, 0, 0], scaleY: [1, 1, 0.94, 1.02, 1], opacity: [0, 1, 1, 1, 1] }
+                    }
+                    viewport={{ once: true, amount: 0.5 }}
+                    transition={reduced || t.upcoming ? { duration: 0.3 } : { duration: 0.95, times: [0, 0.5, 0.72, 0.86, 1], ease: "easeOut" }}
                     className={cn(
-                      "relative flex h-full w-full flex-col rounded-[var(--radius-brick)] p-5 pt-6",
+                      "relative flex h-full w-full origin-bottom flex-col rounded-[var(--radius-brick)] p-5 pt-6",
                       t.upcoming ? "border-2 border-dashed border-ink/25 bg-transparent" : "shadow-[var(--shadow-lift)]",
                     )}
                     style={t.upcoming ? undefined : { background: `linear-gradient(180deg, ${shade.light}, ${shade.base} 18px, ${shade.dark})`, color: shade.text }}
@@ -116,8 +127,9 @@ export function Conveyor() {
                         Open SET {build.set}
                       </a>
                     )}
+                  </motion.div>
                   </div>
-                </motion.li>
+                </li>
               );
             })}
           </ol>

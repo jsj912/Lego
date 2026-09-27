@@ -16,10 +16,19 @@ Choices made while building, and why.
 - Built HTML is scanned for banned strings and the trademark word. The disclaimer string is defined once, in `components/sections/Footer.tsx`.
 
 ## Design
-- **One isometric renderer (`components/ui/IsoStack.tsx`).** Several bricks share one 3D space, so stacked bricks sit exactly on each other's studs. `Brick isometric` is a single-item `IsoStack`.
+- **One isometric renderer (`components/ui/IsoStack.tsx`).** Several pieces share one 3D space, so stacked pieces sit exactly on each other's studs. It draws bricks, plates, tiles, round columns, beams with pin holes, and gears. Gears are drawn on a face's plane with an affine matrix and spin in that plane. `Brick isometric` is a single-item `IsoStack`.
+- **Models (`components/ui/models.ts`).** An original monument for the hero and seven generic box-art models. They're decorative and imply nothing about the builds. The style is inspired by technical construction sets, but no set is copied and no trademarked name is used.
 - **Motion policy.** `MotionConfig reducedMotion="user"` at the root, `useMotionSafe()` in components (swaps `place` for a fade and the spring for an instant change), and a CSS `prefers-reduced-motion` block that stops every CSS animation.
 - **Conveyor: no pinning.** The belt is a real horizontal scroll container, so keyboard focus and touch scrolling work. On ≥768px, vertical page scroll sets the belt's `scrollLeft`. Nothing intercepts the wheel. On mobile it's a vertical list.
-- **Brick Stats disclosure.** Linked builds show on hover and focus-within (CSS), and a tap/click pins them open (`aria-expanded`). Skills with no links are plain text at height 1.
+- **Brick Stats is a parts bin** (changed at Joan's request from stacked walls). Each category is a tub, and each skill is a brick whose **stud count = linked builds + 1**, the same mapping the spec used for wall height. No levels, no percentages. Linked builds show on hover and focus-within, and a tap pins them open (`aria-expanded`, Esc or an outside click closes).
 - **Experience bullets** have no dedicated section in the spec. They appear as "role details" on the matching Conveyor bricks, and the internship builds (001, 004) carry the same facts in their manuals.
 - **Brand icons.** This lucide version ships no brand marks, so LinkedIn/GitHub use generic glyphs with text labels or `aria-label`s.
 - **Trophy rotation is a slow ±22° sway**, not a full 360° turn. A flat SVG turned edge-on disappears.
+
+## Signature features (Phase 5)
+- **Manual URL: History API, not intercepting routes.** One document click listener on the home page intercepts any same-origin link to `/builds/[slug]`. The box lid lifts (~340ms), the manual opens as a dialog, and `history.pushState` sets `/builds/[slug]` (Next 16 integrates native pushState with its router). Back, Esc, the close button, or a backdrop click all close it via `history.back()`. A direct visit renders the standalone statically generated route with the same `Booklet` and `ManualPageView` components. This avoided parallel-route slot and back-navigation edge cases, and every build link on the page (Lab, Conveyor, Brick Stats, Trophy Shelf) gets the manual for free.
+- **Focus return.** Focus goes back to the link that opened the manual. It's re-asserted for a few frames because Next's router runs its own hash scroll/focus after Back to `/#…`.
+- **Booklet.** ≥1024px shows two-page spreads (the cover sits alone on the right, like a real book); below that it shows single pages. A page turn is one leaf with front and back faces, rotated with `rotateY` around the spine under CSS perspective, plus a moving shade gradient. Reduced motion turns it into a crossfade. The standalone route adds a "Read the whole manual as text" disclosure, so every page's text is in the HTML.
+- **The manual overlay is lazy-loaded** with `next/dynamic` (`ssr: false`).
+- **Conveyor snap.** Each brick rolls in along the belt (x + rotate), drops, and lands with a small squash onto a dashed slot. Reduced motion shows a fade instead.
+- **Progress tower.** Driven by the single `SectionProgressProvider` scroll source. Unplaced sections show as dashed slots that are still clickable. On completion a one-shot shimmer runs.

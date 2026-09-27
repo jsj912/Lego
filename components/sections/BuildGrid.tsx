@@ -2,9 +2,11 @@
 
 import { ArrowUpRight } from "lucide-react";
 import type { Build } from "@/content/types";
+import { useManual } from "@/components/manual/ManualController";
 import { SetCard } from "./SetCard";
 
 export function BuildGrid({ builds }: { builds: Build[] }) {
+  const { opening, open } = useManual();
   return (
     <ul className="mt-16 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {builds.map((b, i) => (
@@ -12,6 +14,7 @@ export function BuildGrid({ builds }: { builds: Build[] }) {
           <SetCard
             build={b}
             index={i}
+            lidOpen={opening === b.slug || open === b.slug}
             action={
               <a
                 href={`/builds/${b.slug}`}

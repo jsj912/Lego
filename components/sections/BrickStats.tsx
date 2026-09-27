@@ -1,29 +1,28 @@
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionShell } from "@/components/ui/SectionShell";
-import { BRICK_SHADES, brickColorAt } from "@/lib/bricks";
-import { skillWalls, type SkillWall } from "@/lib/derive";
-import { SkillToggle } from "./SkillToggle";
+import { IsoStack } from "@/components/ui/IsoStack";
+import { BRICK_SHADES, type BrickColor } from "@/lib/bricks";
+import { skillWalls } from "@/lib/derive";
+import { SkillBrick } from "./SkillBrick";
 
-function Wall({ wall, color }: { wall: SkillWall; color: ReturnType<typeof brickColorAt> }) {
-  const shade = BRICK_SHADES[color];
+const LIP: BrickColor[] = ["blue", "red", "green", "yellow"];
+const PALETTE: BrickColor[] = ["red", "yellow", "blue", "green", "white"];
+const TILT = [-5, 3, -2, 6, -4, 2, 5, -3, 1, -6];
+const LIFT = [0, 6, 2, 8, 4, 0, 5, 3];
+
+/** Loose decorative pieces scattered in each bin. */
+function LooseBits({ seed }: { seed: number }) {
+  const c1 = PALETTE[(seed + 1) % PALETTE.length];
+  const c2 = PALETTE[(seed + 3) % PALETTE.length];
   return (
-    <div aria-hidden className="flex flex-col-reverse items-center gap-[3px]" data-wall-height={wall.height}>
-      {Array.from({ length: wall.height }, (_, i) => (
-        <span
-          key={i}
-          className="relative block h-6 w-16 rounded-[4px]"
-          style={{ background: `linear-gradient(180deg, ${shade.light}, ${shade.base} 7px, ${shade.dark})` }}
-        >
-          {i === wall.height - 1 && (
-            <span className="absolute -top-[5px] left-2 right-2 flex justify-between">
-              {[0, 1].map((k) => (
-                <span key={k} className="h-[5px] w-4 rounded-t-[2px]" style={{ background: shade.base }} />
-              ))}
-            </span>
-          )}
-        </span>
-      ))}
-    </div>
+    <>
+      <li aria-hidden className="pointer-events-none self-end" style={{ transform: `rotate(${TILT[seed % TILT.length]}deg)` }}>
+        <IsoStack items={[{ color: c1, w: 2, h: 1 }]} size={11} shadow={false} />
+      </li>
+      <li aria-hidden className="pointer-events-none self-end">
+        <IsoStack items={[{ kind: "round", color: c2 }]} size={12} shadow={false} />
+      </li>
+    </>
   );
 }
 
@@ -36,30 +35,53 @@ export function BrickStats() {
           id="stats-title"
           eyebrow="Brick Stats"
           title="The parts bin"
-          intro="Each tool is a small wall. A wall grows one brick for every build it was used in. Select a wall to see those builds."
+          intro="Every tool is a brick in the bin. It gets one stud for each build it was used in, plus one. Tap a brick to see those builds."
         />
 
-        <div className="mt-16 grid gap-10 lg:grid-cols-2">
-          {groups.map((g, gi) => (
-            <section key={g.category} aria-labelledby={`cat-${gi}`} className="rounded-[var(--radius-card)] bg-surface p-7 shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
-              <h3 id={`cat-${gi}`} className="font-mono text-xs uppercase tracking-[0.2em] text-ink-2">
-                {g.category}
-              </h3>
-              <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3">
-                {g.walls.map((w, wi) => (
-                  <li key={w.name} className="flex flex-col items-center text-center">
-                    <div className="flex h-[5.5rem] items-end">
-                      <Wall wall={w} color={brickColorAt(gi + wi)} />
-                    </div>
-                    <SkillToggle
-                      name={w.name}
-                      builds={w.builds.map((b) => ({ slug: b.slug, set: b.set, title: b.title }))}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
+        <div className="mt-16 grid gap-x-10 gap-y-16 lg:grid-cols-2">
+          {groups.map((g, gi) => {
+            const lip = BRICK_SHADES[LIP[gi % LIP.length]];
+            let k = 0;
+            return (
+              <section key={g.category} aria-labelledby={`bin-${gi}`} className="relative" data-bin>
+                {/* tub */}
+                <div className="relative rounded-b-[2.25rem] rounded-t-2xl bg-[#262624] px-4 pb-20 pt-10 shadow-[0_40px_60px_-30px_rgba(17,17,17,0.45)] sm:px-6">
+                  {/* back rim + inner shading */}
+                  <div aria-hidden className="absolute inset-x-0 top-0 h-3 rounded-t-2xl bg-[#3a3a37]" />
+                  <div aria-hidden className="pointer-events-none absolute inset-0 rounded-b-[2.25rem] rounded-t-2xl bin-sheen" />
+
+                  <ul className="relative flex flex-wrap items-end justify-center gap-x-2.5 gap-y-5">
+                    {g.walls.map((w, wi) => {
+                      const color = PALETTE[(gi * 2 + wi) % PALETTE.length];
+                      const i = k++;
+                      return (
+                        <li key={w.name} className="relative" style={{ transform: `translateY(${LIFT[i % LIFT.length]}px)` }}>
+                          <SkillBrick
+                            name={w.name}
+                            studs={w.height}
+                            color={color}
+                            tilt={TILT[(gi + i) % TILT.length]}
+                            builds={w.builds.map((b) => ({ slug: b.slug, set: b.set, title: b.title }))}
+                          />
+                        </li>
+                      );
+                    })}
+                    <LooseBits seed={gi} />
+                  </ul>
+                </div>
+
+                {/* front lip with label plate */}
+                <div
+                  className="pointer-events-none absolute inset-x-0 bottom-0 flex h-16 items-center justify-center rounded-b-[2.25rem] rounded-t-md shadow-[inset_0_2px_0_rgba(255,255,255,0.35)]"
+                  style={{ background: `linear-gradient(180deg, ${lip.light}, ${lip.base} 18px, ${lip.dark})` }}
+                >
+                  <h3 id={`bin-${gi}`} className="rounded-md bg-white/95 px-3 py-1 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink shadow-sm">
+                    {g.category}
+                  </h3>
+                </div>
+              </section>
+            );
+          })}
         </div>
       </div>
     </SectionShell>

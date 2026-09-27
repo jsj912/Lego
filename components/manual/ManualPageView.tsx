@@ -2,30 +2,30 @@ import { ArrowUpRight } from "lucide-react";
 import type { Build } from "@/content/types";
 import { Badge } from "@/components/ui/Badge";
 import { Brick } from "@/components/ui/Brick";
+import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import { BoxArt } from "@/components/sections/SetCard";
 import { brickColorAt } from "@/lib/bricks";
+import { cn } from "@/lib/cn";
 import { KIND_COLOR, KIND_LABEL } from "@/lib/derive";
 import { PAGE_TITLE, type ManualPage } from "./pages";
 
-/** Generic exploded view: n-1 placed bricks, the n-th hovering above with a guide. */
+/** Generic exploded view: the build so far, with the next brick lowering into place. */
 function ExplodedView({ n }: { n: number }) {
   const placed = Math.min(n - 1, 4);
+  const stack: IsoItem[] = [
+    { kind: "plate", color: "grey", w: 4, h: 3, x: 0, y: 0, z: 0 },
+    ...Array.from({ length: placed }, (_, i): IsoItem => ({ color: brickColorAt(i), w: i % 2 ? 2 : 3, h: 2, x: i % 2 ? 1 : 0, y: 0, z: 1 + i * 3 })),
+  ];
   return (
-    <div aria-hidden className="relative flex h-64 flex-col items-center justify-end">
-      <div className="mb-3 flex flex-col items-center">
-        <Brick color={brickColorAt(n)} studs={{ w: 2, h: 2 }} size={26} isometric />
-        <svg width="2" height="46" className="my-1 overflow-visible">
-          <line x1="1" y1="0" x2="1" y2="46" stroke="#0055BF" strokeWidth="1.5" strokeDasharray="4 4" />
-          <path d="M-4 38 L1 46 L6 38" fill="none" stroke="#0055BF" strokeWidth="1.5" />
+    <div aria-hidden className="relative flex h-72 w-56 flex-col items-center justify-end">
+      <div className="mb-2 flex flex-col items-center">
+        <IsoStack items={[{ color: brickColorAt(n + 1), w: 2, h: 2 }]} size={22} shadow={false} />
+        <svg width="12" height="40" viewBox="0 0 12 40" className="mt-1 overflow-visible">
+          <line x1="6" y1="0" x2="6" y2="38" stroke="#0055BF" strokeWidth="1.5" strokeDasharray="4 4" />
+          <path d="M1 31 L6 39 L11 31" fill="none" stroke="#0055BF" strokeWidth="1.5" />
         </svg>
       </div>
-      <div className="flex flex-col-reverse items-center">
-        {Array.from({ length: placed }, (_, i) => (
-          <div key={i} className={i ? "-mb-[30px]" : ""}>
-            <Brick color={brickColorAt(i)} studs={{ w: 2, h: 2 }} size={26} isometric />
-          </div>
-        ))}
-      </div>
+      <IsoStack items={stack} size={22} />
     </div>
   );
 }
@@ -40,7 +40,7 @@ function PageLabel({ page, build }: { page: ManualPage; build: Build }) {
 }
 
 /** One page of the instruction manual. Shared by the overlay and the standalone route. */
-export function ManualPageView({ page, build, index }: { page: ManualPage; build: Build; index: number }) {
+export function ManualPageView({ page, build, index, className }: { page: ManualPage; build: Build; index: number; className?: string }) {
   const color = KIND_COLOR[build.kind];
 
   const body = (() => {
@@ -149,7 +149,7 @@ export function ManualPageView({ page, build, index }: { page: ManualPage; build
   })();
 
   return (
-    <div className="relative flex h-full flex-col gap-6 overflow-y-auto rounded-[var(--radius-card)] bg-paper p-6 sm:p-10">
+    <div className={cn("relative flex h-full flex-col gap-6 overflow-y-auto bg-paper p-6 text-ink sm:p-10", className ?? "rounded-[var(--radius-card)]")}>
       <div className="bp-dots pointer-events-none absolute inset-0 opacity-70" aria-hidden />
       <div className="relative">
         <PageLabel page={page} build={build} />

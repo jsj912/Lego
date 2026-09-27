@@ -34,7 +34,7 @@ export const education: Education[] = [
   },
   {
     school: "Indian Institute of Technology, Madras",
-    degree: "B.S. in Data Science & Applications (online, self-paced, concurrent with B.E.)",
+    degree: "B.S. in Data Science & Applications (part-time, self-paced, concurrent with B.E.)",
     detail: null,
     when: "In progress",
     where: null,

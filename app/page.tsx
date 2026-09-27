@@ -8,16 +8,19 @@ import { Lab } from "@/components/sections/Lab";
 import { Nav } from "@/components/sections/Nav";
 import { TrophyShelf } from "@/components/sections/TrophyShelf";
 import { Workshop } from "@/components/sections/Workshop";
+import { ManualController } from "@/components/manual/ManualController";
+import { ProgressTower } from "@/components/tower/ProgressTower";
 import { person } from "@/content/site";
 import { resumeHref } from "@/lib/resume";
 
 export default function Home() {
   return (
-    <>
+    <ManualController>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-toast focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-white">
         Skip to content
       </a>
       <Nav name={person.name} />
+      <ProgressTower />
       <main id="main" tabIndex={-1} className="outline-none">
         <Hero resumeHref={resumeHref()} />
         <Workshop />
@@ -29,6 +32,6 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
-    </>
+    </ManualController>
   );
 }
