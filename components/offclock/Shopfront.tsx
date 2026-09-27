@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
 import type { Hobby } from "@/content/offTheClock";
-import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import type { BrickColor } from "@/lib/bricks";
-import { BrickBouquet } from "./BrickBouquet";
 import { FlowerDisplay, HangingBasket } from "./FlowerDisplay";
 import { AFrame, FlatRoofFlag, PitchedRoof, SawtoothRoof, StepGable } from "./Buildings";
+import { ClubhouseInterior, FloristInterior, StudioInterior, WorkshopInterior } from "./Interiors";
 import { LibraryWindow } from "./LibraryWindow";
 
 export const HOBBY_COLOR: Record<Hobby["id"], BrickColor> = {
@@ -15,81 +14,34 @@ export const HOBBY_COLOR: Record<Hobby["id"], BrickColor> = {
   "build-table": "grey",
 };
 
-/** A tiny trail with a finish-line arch. Stats only from data. */
-function Track({ stats }: { stats: Hobby["runStats"] }) {
-  return (
-    <div className="flex h-full flex-col justify-end">
-      {stats && stats.length > 0 && (
-        <dl className="mb-2 grid grid-cols-2 gap-1.5">
-          {stats.map((s) => (
-            <div key={s.label} className="rounded-md bg-white/90 px-2 py-1 shadow-sm">
-              <dt className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-ink-2">{s.label}</dt>
-              <dd className="text-[0.8rem] font-semibold">{s.value}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
-      <svg viewBox="0 0 220 110" className="w-full" aria-hidden>
-        <path d="M0 100 C 50 70, 80 105, 120 80 S 190 60, 220 72" fill="none" stroke="#c2703d" strokeWidth="14" strokeLinecap="round" />
-        <path d="M0 100 C 50 70, 80 105, 120 80 S 190 60, 220 72" fill="none" stroke="#fff" strokeWidth="1.5" strokeDasharray="6 7" />
-        {/* finish arch */}
-        <rect x="150" y="18" width="7" height="58" rx="2" fill="#0055BF" />
-        <rect x="203" y="14" width="7" height="58" rx="2" fill="#0055BF" />
-        <rect x="146" y="10" width="68" height="16" rx="3" fill="#fff" stroke="#111" strokeWidth="1" />
-        {Array.from({ length: 8 }, (_, i) => (
-          <rect key={i} x={148 + i * 8} y={i % 2 ? 12 : 18} width="8" height="6" fill="#111" />
-        ))}
-      </svg>
-    </div>
-  );
-}
 
-const TABLE: IsoItem[] = [
-  { kind: "plate", color: "white", w: 5, h: 3, x: 0, y: 0, z: 3 },
-  { kind: "round", color: "dark", x: 0, y: 0, z: 0, studs: false },
-  { kind: "round", color: "dark", x: 4, y: 0, z: 0, studs: false },
-  { kind: "round", color: "dark", x: 0, y: 2, z: 0, studs: false },
-  { kind: "round", color: "dark", x: 4, y: 2, z: 0, studs: false },
-  { color: "red", w: 2, h: 2, x: 0.5, y: 0.5, z: 4 },
-  { color: "yellow", w: 2, h: 1, x: 0.5, y: 0.5, z: 7 },
-  { kind: "tile", color: "blue", w: 2, h: 2, x: 2.7, y: 0.6, z: 4 },
-];
 
-function Display({ hobby }: { hobby: Hobby }) {
+function Display({ hobby, photos }: { hobby: Hobby; photos: string[] }) {
   switch (hobby.id) {
     case "books":
       return <LibraryWindow books={hobby.books ?? []} current={hobby.currentlyReading} />;
     case "running":
-      return <Track stats={hobby.runStats} />;
+      return (
+        <>
+          <ClubhouseInterior />
+          {hobby.runStats && hobby.runStats.length > 0 && (
+            <dl className="absolute left-2 top-2 grid grid-cols-2 gap-1.5">
+              {hobby.runStats.map((st) => (
+                <div key={st.label} className="rounded-md bg-white/90 px-2 py-1 shadow-sm">
+                  <dt className="font-mono text-[0.56rem] uppercase tracking-[0.12em] text-ink-2">{st.label}</dt>
+                  <dd className="text-[0.8rem] font-semibold">{st.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </>
+      );
     case "flowers":
-      return (
-        <div className="flex h-full items-end justify-center">
-          <span aria-hidden className="flower-window absolute inset-0" />
-          <span aria-hidden className="wood absolute inset-x-0 bottom-0 h-3" />
-          <BrickBouquet className="relative mb-2 h-full max-h-[168px] w-auto drop-shadow-[0_6px_6px_rgba(0,0,0,0.22)]" />
-        </div>
-      );
+      return <FloristInterior />;
     case "scrapbook":
-      return (
-        <div className="flex h-full items-end justify-center">
-          <div className="relative flex h-[120px] w-[190px] rotate-[-3deg] rounded-sm bg-[#fdf6e3] shadow-md">
-            {[0, 1].map((p) => (
-              <div key={p} className="relative m-2 flex-1 rounded-[2px] bg-white shadow-inner">
-                <span className="washi absolute -left-2 -top-1.5 h-3 w-8 -rotate-[30deg]" />
-                <span className="washi absolute -right-2 -top-1.5 h-3 w-8 rotate-[30deg]" />
-                <div className="m-3 h-[60px] rounded-[2px] bg-[#e7e5dd]" />
-              </div>
-            ))}
-            <span aria-hidden className="absolute inset-y-2 left-1/2 w-px bg-ink/15" />
-          </div>
-        </div>
-      );
+      return <StudioInterior photos={photos} />;
     case "build-table":
-      return (
-        <div className="flex h-full items-end justify-center">
-          <IsoStack items={TABLE} size={18} />
-        </div>
-      );
+      return <WorkshopInterior />;
   }
 }
 
@@ -176,7 +128,7 @@ function Door({ kind, frame, isFlowers }: { kind: BuildingSpec["door"]; frame: s
 }
 
 /** One shop on the street: a distinct building per hobby. The whole front is a button. */
-export function Shopfront({ hobby, onOpen }: { hobby: Hobby; photoCount?: number; onOpen: (el: HTMLElement) => void }) {
+export function Shopfront({ hobby, photos, onOpen }: { hobby: Hobby; photoCount?: number; photos?: string[]; onOpen: (el: HTMLElement) => void }) {
   const b = BUILDINGS[hobby.id];
   const isFlowers = hobby.id === "flowers";
   const windowEl = (
@@ -184,11 +136,12 @@ export function Shopfront({ hobby, onOpen }: { hobby: Hobby; photoCount?: number
       className={
         hobby.id === "books"
           ? "relative h-[190px] flex-1 overflow-hidden rounded-b-md rounded-t-[80px] border-[6px]"
-          : "relative h-[190px] flex-1 overflow-hidden rounded-md border-[6px] bg-gradient-to-b from-[#dbeafe] to-[#f8fafc] p-3"
+          : "relative h-[190px] flex-1 overflow-hidden rounded-md border-[6px] bg-[#f4ede2]"
       }
       style={{ borderColor: b.frame }}
     >
-      <Display hobby={hobby} />
+      <Display hobby={hobby} photos={photos ?? []} />
+      <span aria-hidden className="window-glass pointer-events-none absolute inset-0" />
     </div>
   );
   const doorEl = <Door kind={b.door} frame={b.frame} isFlowers={isFlowers} />;

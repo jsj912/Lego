@@ -115,7 +115,7 @@ export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<s
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.4, delay: mode === "row" ? i * 0.05 : 0 }}
     >
-      <Shopfront hobby={h} photoCount={photos[h.id]?.length ?? 0} onOpen={(el) => openHobby(h.id, el)} />
+      <Shopfront hobby={h} photos={(photos[h.id] ?? []).map((p) => p.src)} onOpen={(el) => openHobby(h.id, el)} />
     </motion.div>
   ));
   const shops = shopEls.flatMap((el, i) => (i < shopEls.length - 1 ? [el, <StreetProp key={`prop-${i}`} i={i} />] : [el]));
