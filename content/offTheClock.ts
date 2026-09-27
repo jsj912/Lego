@@ -4,6 +4,7 @@
 // Photos: drop images into /public/interests/<folder>/ (jpg, jpeg, png, webp, avif).
 
 export type RunStat = { label: string; value: string };
+export type Book = { title: string; author?: string };
 
 export type Hobby = {
   id: "books" | "running" | "flowers" | "scrapbook" | "build-table";
@@ -12,7 +13,7 @@ export type Hobby = {
   blurb: string | null;
   /** folder name under /public/interests/ */
   folder: string;
-  bookTitles?: string[];
+  books?: Book[];
   currentlyReading?: string | null;
   runStats?: RunStat[];
 };
@@ -23,7 +24,18 @@ export const hobbies: Hobby[] = [
     title: "The Worldbuilder's Shelf",
     blurb: "I read mostly high fantasy, for the worldbuilding.",
     folder: "books",
-    bookTitles: [], // TODO: add book titles for the shelf spines
+    books: [
+      { title: "Mistborn", author: "Brandon Sanderson" },
+      { title: "Assassin's Apprentice", author: "Robin Hobb · Farseer trilogy" },
+      { title: "Fireborne", author: "Rosaria Munda" },
+      { title: "The Name of the Wind", author: "Patrick Rothfuss" },
+      { title: "The Wise Man's Fear", author: "Patrick Rothfuss" },
+      { title: "Every Dan Brown novel", author: "Dan Brown" },
+      { title: "Divergent", author: "Veronica Roth" },
+      { title: "The Hunger Games", author: "Suzanne Collins" },
+      { title: "The Maze Runner", author: "James Dashner" },
+      { title: "The Giver", author: "Lois Lowry" },
+    ],
     currentlyReading: null, // TODO: add the book you're currently reading
   },
   {

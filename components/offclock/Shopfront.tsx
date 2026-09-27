@@ -13,8 +13,8 @@ export const HOBBY_COLOR: Record<Hobby["id"], BrickColor> = {
 const SPINE_COLORS = ["#7c2d12", "#1e3a8a", "#14532d", "#6b21a8", "#9a3412", "#0f766e", "#831843", "#3f3f46"];
 
 /** A shelf of brick book spines. Titles only from data; blank spines otherwise. */
-function Bookshelf({ titles, current }: { titles: string[]; current: string | null | undefined }) {
-  const spines = titles.length ? titles : Array.from({ length: 9 }, () => "");
+function Bookshelf({ books, current }: { books: NonNullable<Hobby["books"]>; current: string | null | undefined }) {
+  const spines = books.length ? books.map((b) => b.title) : Array.from({ length: 9 }, () => "");
   return (
     <div className="flex h-full flex-col justify-end gap-2">
       {current && (
@@ -23,15 +23,15 @@ function Bookshelf({ titles, current }: { titles: string[]; current: string | nu
           {current}
         </div>
       )}
-      <div className="flex items-end gap-[3px] border-b-[6px] border-[#6b4f35] px-1">
+      <div className="flex items-end gap-[2px] border-b-[6px] border-[#6b4f35] px-1">
         {spines.map((t, i) => (
           <span
             key={i}
-            className="flex w-[22px] items-center justify-center rounded-t-[3px] shadow-[inset_-2px_0_0_rgba(0,0,0,0.18),inset_0_3px_0_rgba(255,255,255,0.2)]"
-            style={{ height: 70 + ((i * 17) % 34), background: SPINE_COLORS[i % SPINE_COLORS.length] }}
+            className="flex w-[19px] shrink-0 items-center justify-center rounded-t-[3px] shadow-[inset_-2px_0_0_rgba(0,0,0,0.18),inset_0_3px_0_rgba(255,255,255,0.2)]"
+            style={{ height: 96 + ((i * 17) % 34), background: SPINE_COLORS[i % SPINE_COLORS.length] }}
             title={t || undefined}
           >
-            {t && <span className="max-h-[92px] overflow-hidden text-[0.55rem] font-semibold leading-none text-white/90 [writing-mode:vertical-rl]">{t}</span>}
+            {t && <span className="max-h-[124px] overflow-hidden whitespace-nowrap text-[0.52rem] font-semibold leading-none text-white/90 [writing-mode:vertical-rl]">{t}</span>}
           </span>
         ))}
       </div>
@@ -92,7 +92,7 @@ const TABLE: IsoItem[] = [
 function Display({ hobby }: { hobby: Hobby }) {
   switch (hobby.id) {
     case "books":
-      return <Bookshelf titles={hobby.bookTitles ?? []} current={hobby.currentlyReading} />;
+      return <Bookshelf books={hobby.books ?? []} current={hobby.currentlyReading} />;
     case "running":
       return <Track stats={hobby.runStats} />;
     case "flowers":

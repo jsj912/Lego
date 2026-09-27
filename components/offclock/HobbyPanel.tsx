@@ -68,14 +68,18 @@ export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; p
             {hobby.currentlyReading}
           </p>
         )}
-        {hobby.bookTitles && hobby.bookTitles.length > 0 && (
-          <ul className="mt-5 flex flex-wrap gap-2">
-            {hobby.bookTitles.map((t) => (
-              <li key={t} className="rounded-md bg-surface px-2.5 py-1 text-sm ring-1 ring-ink/10">
-                {t}
-              </li>
-            ))}
-          </ul>
+        {hobby.books && hobby.books.length > 0 && (
+          <div className="mt-6">
+            <h3 className="font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink-2">On the shelf</h3>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {hobby.books.map((b) => (
+                <li key={b.title} className="flex items-baseline gap-2 rounded-lg bg-surface px-3 py-2 ring-1 ring-ink/10">
+                  <span className="font-semibold">{b.title}</span>
+                  {b.author && <span className="text-sm text-ink-2">{b.author}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
         {hobby.runStats && hobby.runStats.length > 0 && (
           <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
