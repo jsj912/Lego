@@ -387,3 +387,18 @@ html { scrollbar-gutter: stable; }
 .flame { background: radial-gradient(ellipse at 50% 70%, #fff6c8, #ffc23d 55%, #ff7a1a); border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%; }
 .wood { background: linear-gradient(180deg, #7a5532, #54391f); }
 .wood-v { background: linear-gradient(90deg, #5a3c21, #7a5532 50%, #4a3019); }
+
+/* building walls on the off-the-clock street */
+.wall-redbrick {
+  background:
+    linear-gradient(rgb(0 0 0 / 0.18) 1px, transparent 1px) 0 0 / 22px 11px,
+    linear-gradient(90deg, rgb(0 0 0 / 0.14) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(90deg, rgb(0 0 0 / 0.14) 1px, transparent 1px) 11px 11px / 22px 22px,
+    #b8452f;
+}
+.wall-panel { background: linear-gradient(180deg, #f7f7f4 0 70%, #0055bf 70% 76%, #f7f7f4 76%); }
+.wall-plaster { background: #efe7d6; }
+.wall-siding { background: repeating-linear-gradient(180deg, #ffe066 0 12px, #e6c24a 12px 14px); }
+.wall-corrugated { background: repeating-linear-gradient(90deg, #b9bdc1 0 6px, #9ea3a8 6px 9px, #c8ccd0 9px 12px); }
+.garage-door { background: repeating-linear-gradient(180deg, #d4d7db 0 13px, #a9aeb3 13px 15px); }
+.hazard-band { background: repeating-linear-gradient(45deg, #ffd500 0 8px, #1f2226 8px 16px); }

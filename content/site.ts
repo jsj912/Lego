@@ -66,7 +66,6 @@ export const focusAreas: string[] = [ // used in Workshop + Innovation Lab "rese
   "Computer vision & on-device detection",
   "Temporal graph learning for fraud-ring detection",
   "Explainability, calibration & reliability of AI systems",
-  "Backend & serverless systems",
 ];
 
 export const experience: Experience[] = [
@@ -76,7 +75,11 @@ export const experience: Experience[] = [
     role: "Software Engineering Intern",
     start: "June 2026", end: "August 2026",
     where: "Bengaluru, India",
-    bullets: [], // intentionally no detail about the internship work
+    bullets: [
+      "POC: moved production Java Spring Batch jobs from always-on EKS microservices to event-driven AWS Lambda, cutting idle infrastructure cost.",
+      "Designed an asynchronous Lambda chain without Step Functions, plus the job-level monitoring strategy.",
+      "Restructured the Maven build and shaded dependency JARs to fit Lambda package limits, cutting artifact size and cold-start weight.",
+    ],
   },
   {
     id: "samsung",

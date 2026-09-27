@@ -40,7 +40,7 @@ export function SkillBrick({ name, studs, color, tilt, builds }: Props) {
 
   const face = (
     <span
-      className="relative block rounded-[6px] px-3.5 pb-3 pt-3.5 text-left text-[0.85rem] font-semibold leading-tight shadow-[0_6px_10px_-4px_rgba(0,0,0,0.5),inset_0_-3px_0_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.4)]"
+      className="relative block rounded-[6px] px-3.5 pb-3 pt-3.5 text-left text-[0.86rem] font-semibold leading-tight shadow-[0_3px_0_rgba(0,0,0,0.18),0_6px_10px_-6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.4)]"
       style={{
         background: `linear-gradient(180deg, ${s.light}, ${s.base} 10px, ${s.dark})`,
         color: s.text,
