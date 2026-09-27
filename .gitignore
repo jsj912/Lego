@@ -50,3 +50,6 @@ next-env.d.ts
 # personal documents dropped next to the project
 *.docx
 *.doc
+
+# original (non-transparent) minifig export; the site uses public/minifig.webp/.png
+public/ChatGPT Image*

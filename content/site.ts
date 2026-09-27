@@ -31,6 +31,16 @@ export const highlights: string[] = [
   "#1 of 350+ · CySeck CTF 2026",
 ];
 
+// "Where I've built" strip under the hero, in this order. `logo` is the file name
+// (without extension) looked up in /public/logos/; if it's missing, the name is shown.
+// Role and dates come from `experience` (by id) or `education` (by index).
+export const builtAt: { name: string; logo: string; experience?: string; education?: number }[] = [
+  { name: "Samsung R&D Institute (PRISM)", logo: "samsung", experience: "samsung" },
+  { name: "Fidelity Investments", logo: "fidelity", experience: "fidelity" },
+  { name: "B.M.S. College of Engineering", logo: "bmsce", education: 0 },
+  { name: "IIT Madras", logo: "iitm", education: 1 },
+];
+
 // Projects shown as large cards, in this order. Other builds appear as compact "more sets".
 // RingShield lives with its paper in the Research section.
 export const featuredBuilds: string[] = ["moe-appliance-detection", "amsdds", "network-anomaly-detection"];

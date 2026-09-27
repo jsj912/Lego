@@ -43,6 +43,8 @@ export type IsoItem =
   | (Base & { kind?: "brick" | "plate" | "tile"; w: number; h: number; studs?: boolean })
   /** 1×1 round column piece */
   | (Base & { kind: "round"; w?: 1; h?: 1; studs?: boolean })
+  /** a large round plate of diameter `d` studs (x, y = its bounding square's corner) */
+  | (Base & { kind: "disc"; d: number; w?: number; h?: number; studs?: boolean })
   /** beam with pin holes on its visible faces, no studs */
   | (Base & { kind: "beam"; w: number; h: number })
   /** gear standing on a visible face: "front" is the plane y = at, "side" is x = at; cx/cz/radius in stud units */
@@ -63,9 +65,10 @@ type Props = {
 type Solid = Exclude<IsoItem, { kind: "gear" }>;
 type Gear = Extract<IsoItem, { kind: "gear" }>;
 
-const heightOf = (it: Solid) => (it.kind === "plate" || it.kind === "tile" ? PLATE : BRICK_H);
+const heightOf = (it: Solid) => (it.kind === "plate" || it.kind === "tile" || it.kind === "disc" ? PLATE : BRICK_H);
 const hasStuds = (it: Solid) => it.kind !== "tile" && it.kind !== "beam" && ("studs" in it ? it.studs !== false : true);
-const dims = (it: Solid) => ({ w: it.kind === "round" ? 1 : it.w, h: it.kind === "round" ? 1 : it.h });
+const dims = (it: Solid) =>
+  it.kind === "round" ? { w: 1, h: 1 } : it.kind === "disc" ? { w: it.d, h: it.d } : { w: it.w, h: it.h };
 
 function gearPath(cx: number, cy: number, radius: number, teeth: number) {
   const inner = radius * 0.8;
@@ -164,8 +167,9 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
     const dash = outline && !line ? "4 3" : undefined;
     const fill = (c: string) => (line ? line.fill : outline ? "none" : c);
 
-    if (it.kind === "round") {
-      const cx0 = x + 0.5, cy0 = y + 0.5, rad = 0.46;
+    if (it.kind === "round" || it.kind === "disc") {
+      const isDisc = it.kind === "disc";
+      const cx0 = x + w / 2, cy0 = y + h / 2, rad = isDisc ? w / 2 - 0.02 : 0.46;
       const rx = r(rad * Math.SQRT2 * C30 * u), ry = r(rad * Math.SQRT2 * 0.5 * u);
       const [cx, bot] = P(cx0, cy0, zb);
       const [, top] = P(cx0, cy0, zt);
@@ -185,8 +189,30 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
             strokeWidth={sw}
             strokeDasharray={dash}
           />
-          <ellipse cx={cx} cy={top} rx={rx} ry={ry} fill={fill(s.light)} stroke={stroke} strokeWidth={sw} />
-          {hasStuds(it) && stud("s", cx, r(top - STUD_H * u), top, s, outline)}
+          <ellipse cx={cx} cy={top} rx={rx} ry={ry} fill={fill(isDisc ? s.base : s.light)} stroke={stroke} strokeWidth={sw} />
+          {isDisc && !line && <ellipse cx={cx} cy={top} rx={rx} ry={ry} fill={`url(#t${uid}${idx}d)`} opacity={0.6} />}
+          {isDisc && (
+            <defs>
+              <linearGradient id={`t${uid}${idx}d`} x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor={s.light} />
+                <stop offset="1" stopColor={s.base} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+          )}
+          {isDisc && hasStuds(it)
+            ? (() => {
+                const cells: { cx: number; t: number; b: number; k: number }[] = [];
+                for (let i = 0; i < w; i++)
+                  for (let j = 0; j < h; j++) {
+                    const sx = x + i + 0.5, sy = y + j + 0.5;
+                    if (Math.hypot(sx - cx0, sy - cy0) > rad - 0.45) continue;
+                    const [scx, b] = P(sx, sy, zt);
+                    const [, t] = P(sx, sy, zt + STUD_H);
+                    cells.push({ cx: scx, t, b, k: i + j });
+                  }
+                return cells.sort((a, b) => a.k - b.k).map((c, i) => stud(`ds${i}`, c.cx, c.t, c.b, s, outline));
+              })()
+            : !isDisc && hasStuds(it) && stud("s", cx, r(top - STUD_H * u), top, s, outline)}
         </g>
       );
     }

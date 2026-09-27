@@ -13,3 +13,6 @@ Things I wasn't sure about. Nothing here was guessed on the site; each item is e
 9. **An LLM build.** The review points out there's no shipped LLM project. That's a content gap only you can fill.
 10. **Smart Glasses and Homomorphic Encryption** are now compact "More sets" rather than fully archived. Say the word and I'll remove them from the page (their manuals would still exist).
 11. **Hero role.** Now just "Machine Learning Engineer", per the review. Easy to change in `person.roles`.
+12. **Off the clock placeholders** (`content/offTheClock.ts`, marked `TODO`): book titles for the shelf, currently reading, running blurb, running stats, scrapbook blurb. They're hidden on the page until filled.
+13. **Logos:** add `samsung`, `fidelity`, `bmsce`, `iitm` (.svg/.png/.webp/.jpg) to `public/logos/`. Until then the tiles show names.
+14. **Hobby photos:** add images to `public/interests/{books,running,flowers,scrapbook,build-table}/`.

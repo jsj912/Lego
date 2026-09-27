@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 export const TRADEMARK_DISCLAIMER =
   "LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize or endorse this site.";
 
-export function Footer({ egg }: { egg?: ReactNode }) {
+export function Footer({ egg, offClockLink = true }: { egg?: ReactNode; offClockLink?: boolean }) {
   const year = new Date().getFullYear();
   return (
     <footer className="on-dark relative bg-surface-dark text-ink-inverse">
@@ -19,6 +19,11 @@ export function Footer({ egg }: { egg?: ReactNode }) {
               <p className="font-display text-xl font-semibold">{person.name}</p>
             </div>
             <p className="mt-3 max-w-sm text-sm text-ink-inverse-2">{person.tagline}</p>
+            {offClockLink && (
+              <a href="/off-the-clock" className="mt-4 inline-block text-sm font-semibold text-brick-yellow underline-offset-4 hover:underline" data-footer-offclock>
+                Off the clock →
+              </a>
+            )}
           </div>
 
           <div className="flex items-center gap-3" data-egg-slot>
