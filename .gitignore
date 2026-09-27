@@ -46,3 +46,7 @@ next-env.d.ts
 /blob-report/
 /playwright/.cache/
 /.screens/
+
+# personal documents dropped next to the project
+*.docx
+*.doc
