@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { IsoStack } from "@/components/ui/IsoStack";
+import { Stud } from "@/components/ui/Stud";
 import { cn } from "@/lib/cn";
 
 const BUBBLE = "Off the clock I run, read fantasy and make bouquets →";
@@ -72,6 +73,22 @@ export function HeroMinifig() {
         >
           {BUBBLE}
         </a>
+      </div>
+
+      {/* loose bricks on the table, beside the base (wide screens only, never over text) */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 hidden xl:block" data-hero-deco>
+        <span className="motion-float anim-pausable absolute -left-16 bottom-14 animate-float" style={{ ["--r" as string]: "-10deg" }}>
+          <IsoStack items={[{ color: "yellow", w: 2, h: 1 }]} size={14} shadow={false} />
+        </span>
+        <span className="motion-float anim-pausable absolute -left-8 top-40 animate-float" style={{ animationDelay: "-3s" }}>
+          <Stud color="red" size={18} />
+        </span>
+        <span className="motion-float anim-pausable absolute -right-14 bottom-20 animate-float" style={{ ["--r" as string]: "8deg", animationDelay: "-5s" }}>
+          <IsoStack items={[{ color: "blue", w: 2, h: 1 }]} size={12} shadow={false} />
+        </span>
+        <span className="motion-float anim-pausable absolute -right-6 top-28 animate-float" style={{ animationDelay: "-1.5s" }}>
+          <Stud color="green" size={15} />
+        </span>
       </div>
 
       {/* round display base */}

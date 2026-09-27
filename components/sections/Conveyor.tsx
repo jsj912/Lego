@@ -135,7 +135,7 @@ export function Conveyor() {
           <div className="relative hidden h-[320px] lg:block" data-conveyor-machine>
             {/* bricks riding the belt, clipped so they emerge from the factory */}
             <div className="absolute bottom-[98px] right-0 top-0 overflow-hidden" style={{ left: BELT_START }}>
-              <motion.div ref={rowRef} className="absolute bottom-0 left-0 flex items-end gap-5 pl-16 pr-2" style={{ x: rowX }}>
+              <motion.div ref={rowRef} className="absolute bottom-0 left-0 flex items-end gap-5 pl-[96px] pr-2" style={{ x: rowX }}>
                 {jobs.map((e, i) => (
                   <BeltBrick key={e.id} e={e} color={colorOf(i)} selected={i === selected} onSelect={() => setSelected(i)} />
                 ))}

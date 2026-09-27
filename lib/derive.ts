@@ -1,4 +1,4 @@
-import { awards, builds, experience, skillLinks, skills } from "@/content/site";
+import { awards, builds, experience, skillAliases, skills } from "@/content/site";
 import type { Build, BuildKind, Publication } from "@/content/types";
 
 export function buildBySlug(slug: string): Build | undefined {
@@ -30,17 +30,27 @@ export function venueLabel(p: Publication): string | null {
 
 export type SkillWall = { name: string; height: number; builds: Build[] };
 
-/** Wall height = number of explicitly linked builds + 1. Nothing else. */
+/** Does set tag `tag` count for `skill` (exact name, or via the alias map)? */
+function tagCounts(tag: string, skill: string): boolean {
+  return tag === skill || (skillAliases[tag] ?? []).includes(skill);
+}
+
+/** Studs = number of sets whose tags count for the skill, + 1. Nothing else. */
 export function skillWalls(): { category: string; walls: SkillWall[] }[] {
   return Object.entries(skills).map(([category, list]) => ({
     category,
     walls: list.map((name) => {
-      const linked = (skillLinks[name] ?? [])
-        .map(buildBySlug)
-        .filter((b): b is Build => Boolean(b));
+      const linked = builds.filter((b) => b.pieces.some((t) => tagCounts(t, name)));
       return { name, height: linked.length + 1, builds: linked };
     }),
   }));
+}
+
+/** Set tags that don't count for any skill in the bins (for review, not rendered). */
+export function unmatchedTags(): string[] {
+  const all = Object.values(skills).flat();
+  const tags = new Set(builds.flatMap((b) => b.pieces));
+  return [...tags].filter((t) => !all.some((skill) => tagCounts(t, skill)));
 }
 
 export function awardBuild(i: number): Build | undefined {

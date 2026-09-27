@@ -79,7 +79,6 @@
 /* ───────────────────────── Base ───────────────────────── */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--nav-h) + 1rem);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -359,3 +358,9 @@ html { scrollbar-gutter: stable; }
     #3a9559;
 }
 .roof-studs { background: radial-gradient(circle at 50% 70%, var(--rs) 0 5px, transparent 5.5px) 0 0 / 18px 10px repeat-x; }
+
+/* ≥1280px: keep all content clear of the fixed progress rail (40px wide + 24px) */
+@media (min-width: 1280px) {
+  #main > section,
+  body > footer { padding-left: 64px; }
+}

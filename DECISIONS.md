@@ -52,3 +52,13 @@ Choices made while building, and why.
 - **Strip:** `builtAt` in `content/site.ts`. Logos resolve at build time from `/public/logos/<name>.(svg|png|webp|jpg|jpeg)`, shown as-is; if missing, the organisation name is shown. Role and dates come from `experience`/`education`. The proof line was removed from the hero because the strip names the same employers.
 - **/off-the-clock:** data in `content/offTheClock.ts`, photos listed at build time from `/public/interests/<folder>/`. Desktop: a sticky, scroll-driven horizontal street with the minifig walking (walk cycle only while scrolling). Reduced motion on desktop: a plain horizontally scrollable row. Below 1024px: vertical stack. The detail panel is lazy-loaded with `next/dynamic`, and photos use `loading="lazy"`. The route is linked only from the hero bubble and the footer.
 - **Guard conflicts:** the empty-folder placeholder says "Photos on the way" because "coming soon" is on the content guard's banned list. The Build Table blurb says "brick-building sets" because the trademark word may only appear in the footer disclaimer.
+
+## Polish pass
+- **Progress rail** only at ≥1280px; there `#main > section` and the footer get a 64px left gutter (rail 40px + 24px). The narrow-screen bar was removed. `scripts/layout-audit.mjs` checks rail clearance, hero decoration overlap, nav-jump headings and the conveyor offset at 375/1366/1440/1920.
+- **Anchors:** sections use `scroll-margin-top: calc(var(--nav-h) + 24px)`; the old `scroll-padding-top` on `html` was removed so the two don't stack.
+- **Research lines** are drawn only inside their own empty boxes (beside the heading and beside the parts list), behind content (`z-0`, `pointer-events: none`). Sheets and the table are opaque.
+- **Hero decorations** anchor to the minifig column, beside the display base (≥1280px only), so they can't drift over text or tiles.
+- **Set numbers follow display order:** featured projects, then more sets, then RingShield (now in Projects, last). Cross-references read `build.set`, so they follow automatically; slugs are unchanged.
+- **Skills:** studs = sets whose tags count for the skill + 1, where a tag counts by exact name or via `skillAliases` (tag → skill) in `content/site.ts`. The explicit `skillLinks` map was removed.
+- **Fidelity:** no public detail about the internship work (bullets emptied); the Spring Batch → Lambda set and its manual were removed at Joan's request.
+- **Tests** run with at most 3 local workers: the SVG-heavy home page starved six parallel browsers into timeouts.

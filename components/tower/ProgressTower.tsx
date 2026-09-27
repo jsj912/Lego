@@ -14,8 +14,7 @@ function scrollToSection(id: SectionId) {
 /**
  * Progress as a liftarm: one pin hole per section. A pin snaps into its hole
  * once the section is half scrolled into view (it never un-builds); the active
- * section's pin glows. Wide screens: vertical at the left edge. Otherwise a
- * slim horizontal liftarm under the nav.
+ * section's pin glows. Shown only at ≥1280px, where sections reserve a gutter for it.
  */
 export function ProgressTower() {
   const { placed, active, complete } = useSectionProgress();
@@ -77,24 +76,6 @@ export function ProgressTower() {
         </ol>
       </nav>
 
-      {/* narrower screens: slim horizontal liftarm under the nav */}
-      <nav aria-label="Section progress" className="fixed inset-x-0 top-[var(--nav-h)] z-tower xl:hidden" data-tower-mobile>
-        <ol className="mx-auto flex max-w-md items-center justify-between rounded-b-xl bg-gradient-to-b from-[#b9bdc1] to-[#8d9297] px-2 py-1 shadow-[0_4px_10px_rgba(0,0,0,0.12)]">
-          {SECTIONS.map((s) => (
-            <li key={s.id}>
-              <button
-                type="button"
-                onClick={() => scrollToSection(s.id)}
-                aria-label={s.label}
-                aria-current={active === s.id ? "true" : undefined}
-                className={cn("block rounded-full p-0.5", active === s.id && "shadow-[0_0_0_1.5px_rgba(255,213,0,0.95)]")}
-              >
-                {pin(s.id, s.color, 11)}
-              </button>
-            </li>
-          ))}
-        </ol>
-      </nav>
     </>
   );
 }

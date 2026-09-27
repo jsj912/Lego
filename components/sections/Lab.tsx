@@ -1,4 +1,4 @@
-import { builds, focusAreas, publications, researchBuilds } from "@/content/site";
+import { builds, focusAreas, publications } from "@/content/site";
 import { Badge } from "@/components/ui/Badge";
 import { IsoStack } from "@/components/ui/IsoStack";
 import { BLUEPRINT_RIG, BUILD_MODELS, boxModel } from "@/components/ui/models";
@@ -30,23 +30,27 @@ function Callouts() {
 export function Lab() {
   return (
     <SectionShell id="lab" labelledBy="lab-title" dark className="bp-blueprint overflow-hidden py-28 sm:py-36">
-      <BlueprintLines />
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-end gap-10">
         <SectionHeading
           id="lab-title"
           eyebrow={eyebrowOf("lab")}
           title="Research"
           intro="Papers on the drafting table, all in preparation, plus the threads they come from."
           dark
+          className="shrink-0"
         />
+          <div aria-hidden className="relative hidden h-40 min-w-0 flex-1 lg:block">
+            <BlueprintLines variant="header" />
+          </div>
+        </div>
 
         <ol className="mt-16 grid gap-7 lg:grid-cols-3">
           {publications.map((p, i) => {
             const related = publicationBuild(p);
             const model = related ? (BUILD_MODELS[related.slug] ?? boxModel(builds.indexOf(related), "grey", "grey")) : BLUEPRINT_RIG;
-            const isResearchBuild = related ? researchBuilds.includes(related.slug) : false;
             return (
-              <li key={p.title} className="relative flex flex-col bg-blueprint-deep/60 p-2 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]">
+              <li key={p.title} className="relative flex flex-col bg-[#0a3068] p-2 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]">
                 {/* drawing frame */}
                 <div className="flex flex-1 flex-col border border-blueprint-line/60 p-1">
                   <div className="flex flex-1 flex-col border border-blueprint-line/30">
@@ -69,20 +73,12 @@ export function Lab() {
                     <div className="flex flex-1 flex-col p-5">
                       <h3 className="text-lg font-semibold leading-snug text-white">{p.title}</h3>
                       {p.detail && <p className="mt-3 text-[0.95rem] leading-relaxed text-blueprint-line/85">{p.detail}</p>}
-                      {related && isResearchBuild && (
-                        <div className="mt-4 border-l-2 border-brick-yellow pl-3">
-                          <p className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-blueprint-line/80">
-                            Build · SET {related.set} · {related.title}
-                          </p>
-                          <p className="mt-1 text-[0.92rem] leading-relaxed text-white">{related.outcome}</p>
-                        </div>
-                      )}
                       {related && (
                         <a
                           href={`/builds/${related.slug}`}
                           className="mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-brick-yellow underline-offset-4 hover:underline"
                         >
-                          {isResearchBuild ? "Open the build manual" : `Related build: SET ${related.set} · ${related.title}`}
+                          Related build: SET {related.set} · {related.title}
                         </a>
                       )}
                     </div>
@@ -122,9 +118,10 @@ export function Lab() {
         </ol>
 
         {/* parts list */}
-        <div className="mt-20 max-w-3xl">
+        <div className="mt-20 flex gap-10">
+        <div className="w-full max-w-3xl">
           <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-blueprint-line/80">Parts list · research threads</h3>
-          <table className="mt-5 w-full border border-blueprint-line/40 text-left">
+          <table className="mt-5 w-full border border-blueprint-line/40 bg-[#0a3068] text-left">
             <thead className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-blueprint-line/80">
               <tr className="border-b border-blueprint-line/40">
                 <th scope="col" className="w-20 border-r border-blueprint-line/40 px-4 py-2 font-medium">No.</th>
@@ -140,6 +137,10 @@ export function Lab() {
               ))}
             </tbody>
           </table>
+        </div>
+          <div aria-hidden className="relative hidden min-w-0 flex-1 lg:block">
+            <BlueprintLines variant="table" />
+          </div>
         </div>
       </div>
     </SectionShell>

@@ -4,7 +4,6 @@ import { BlueprintGrid } from "@/components/ui/BlueprintGrid";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { SnapButton } from "@/components/ui/SnapButton";
 import { BuiltAtStrip } from "./BuiltAtStrip";
-import { FloatingBricks } from "./FloatingBricks";
 import { HeroMinifig } from "./HeroMinifig";
 
 // The previous hero build (gear-train machine) lives on in ./HeroTower.tsx.
@@ -14,7 +13,6 @@ export function Hero({ resumeHref }: { resumeHref: string | null }) {
     <SectionShell id="start" labelledBy="start-title" className="overflow-hidden pt-[var(--nav-h)]">
       <div data-cursor-light className="cursor-light pointer-events-none absolute inset-0" aria-hidden />
       <BlueprintGrid variant="lines" />
-      <FloatingBricks />
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-6 px-4 pb-12 pt-8 sm:px-6 md:grid-cols-[1.25fr_1fr] lg:px-8 lg:pt-10">
         <div>

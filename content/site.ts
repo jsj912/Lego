@@ -41,10 +41,9 @@ export const builtAt: { name: string; logo: string; experience?: string; educati
   { name: "IIT Madras", logo: "iitm", education: 1 },
 ];
 
-// Projects shown as large cards, in this order. Other builds appear as compact "more sets".
-// RingShield lives with its paper in the Research section.
+// Projects shown as large cards, in this order. The other builds follow as compact
+// "more sets" in array order (set numbers follow display order).
 export const featuredBuilds: string[] = ["moe-appliance-detection", "amsdds", "network-anomaly-detection"];
-export const researchBuilds: string[] = ["ringshield"];
 
 export const education: Education[] = [
   {
@@ -73,17 +72,11 @@ export const focusAreas: string[] = [ // used in Workshop + Innovation Lab "rese
 export const experience: Experience[] = [
   {
     id: "fidelity",
-    deepDive: "lambda-migration",
     org: "Fidelity Investments",
     role: "Software Engineering Intern",
     start: "June 2026", end: "August 2026",
     where: "Bengaluru, India",
-    bullets: [
-      "Migrated production Java Spring Batch jobs to AWS Lambda, replacing always-on EKS microservices with event-driven serverless execution and cutting idle infrastructure cost.",
-      "Designed an asynchronous Lambda chain with and without Step Functions, integrating with AutoSys scheduling and an upstream Bloomberg SFTP data dependency; owned the architecture and delivery of the POC end to end.",
-      "Restructured the Maven build and trimmed/shaded dependency JARs to fit Lambda deployment package limits, cutting artifact size and reducing cold-start weight.",
-      "Designed the monitoring strategy for job-level observability, evaluating a two-table state-tracking design against a logs-only approach.",
-    ],
+    bullets: [], // intentionally no detail about the internship work
   },
   {
     id: "samsung",
@@ -124,26 +117,7 @@ export const builds: Build[] = [
     links: { github: null, report: null, demo: null },
   },
   {
-    set: "002", slug: "ringshield", kind: "flagship",
-    title: "RingShield",
-    context: "Fraud-Ring Detection with Temporal Graph Neural Networks",
-    when: "2025 – Present",
-    outcome: "Phase 1 complete: systematic review, gap taxonomy, system architecture and evaluation protocol. Implementation in progress.",
-    pieces: ["Temporal Graph Neural Networks", "Dynamic time-stamped graphs", "Explainability", "Drift monitoring", "AMLworld", "Elliptic", "IEEE-CIS", "PaySim"],
-    challenge: "Coordinated fraud rings that node-level and rule-based models miss.",
-    steps: [
-      { title: "Graph modelling", body: "Models financial transactions as a dynamic, time-stamped graph of users, devices, cards and merchants." },
-      { title: "Temporal GNNs", body: "Uses temporal GNNs to surface coordinated fraud rings." },
-      { title: "Explainability", body: "Adds analyst-actionable explainability, surfacing the suspicious transaction paths behind each decision." },
-      { title: "Drift monitoring", body: "Drift monitoring to adapt as fraud patterns shift." },
-    ],
-    finalModel: "Phase 1 complete: systematic review of ~50 papers with a nine-category gap taxonomy, system architecture, and evaluation protocol across AMLworld, Elliptic, IEEE-CIS and PaySim. Implementation in progress.",
-    lessons: [],
-    note: "Led the systematic review workflow, developed a PRISMA-based 9-category gap taxonomy, and authored the initial manuscript draft.",
-    links: { github: null, report: null, demo: null },
-  },
-  {
-    set: "003", slug: "amsdds", kind: "hackathon",
+    set: "002", slug: "amsdds", kind: "hackathon",
     title: "Adaptive Multi-Layer Skin Disease Detection (AMSDDS)",
     context: "Smart Horizon 2026",
     when: "2026",
@@ -167,25 +141,7 @@ export const builds: Build[] = [
     links: { github: null, report: null, demo: null },
   },
   {
-    set: "004", slug: "lambda-migration", kind: "internship",
-    title: "Spring Batch → AWS Lambda Migration",
-    context: "Fidelity Investments",
-    when: "June 2026 – August 2026",
-    outcome: "Serverless migration POC, architecture and delivery owned end to end.",
-    pieces: ["Java", "Spring Batch", "AWS Lambda", "Step Functions", "Maven", "AutoSys", "EKS"],
-    challenge: "Production Java Spring Batch jobs ran on always-on EKS microservices with idle infrastructure cost.",
-    steps: [
-      { title: "Lambda chain", body: "Designed an asynchronous Lambda chain with and without Step Functions, integrating with AutoSys scheduling and an upstream Bloomberg SFTP data dependency." },
-      { title: "Build restructuring", body: "Restructured the Maven build and trimmed/shaded dependency JARs to fit Lambda deployment package limits, cutting artifact size and reducing cold-start weight." },
-      { title: "Monitoring strategy", body: "Designed the monitoring strategy for job-level observability, evaluating a two-table state-tracking design against a logs-only approach." },
-    ],
-    finalModel: "Event-driven serverless execution replacing always-on EKS microservices; owned the architecture and delivery of the POC end to end.",
-    lessons: [],
-    note: null,
-    links: { github: null, report: null, demo: null },
-  },
-  {
-    set: "005", slug: "network-anomaly-detection", kind: "project",
+    set: "003", slug: "network-anomaly-detection", kind: "project",
     title: "ML-Based Network Traffic & Malware Anomaly Detection",
     context: null,
     when: "Sept 2025 – Dec 2025",
@@ -203,7 +159,7 @@ export const builds: Build[] = [
     links: { github: null, report: "https://drive.google.com/file/d/1RHb_D2x1-Yb0OIWUVPx_TvzyGQ9h3Pd3/view?usp=drive_link", demo: null },
   },
   {
-    set: "006", slug: "smart-glasses", kind: "project",
+    set: "004", slug: "smart-glasses", kind: "project",
     title: "Vision-Based Assistive Smart Glasses",
     context: null,
     when: "2025",
@@ -220,7 +176,7 @@ export const builds: Build[] = [
     links: { github: "https://github.com/jsj912/Smart-Glasses", report: "https://drive.google.com/file/d/10pxIxtpENJj9zUxnAg3Ka71C-AQFfdB6/view?usp=drive_link", demo: null },
   },
   {
-    set: "007", slug: "homomorphic-iot", kind: "project",
+    set: "005", slug: "homomorphic-iot", kind: "project",
     title: "Homomorphic Encryption for IoT Sensor Analytics",
     context: null,
     when: null,
@@ -231,6 +187,25 @@ export const builds: Build[] = [
     finalModel: "Built a secure analytics pipeline over homomorphically encrypted IoT sensor data with a Flask backend, enabling computation and visualization without decryption.",
     lessons: [],
     note: null,
+    links: { github: null, report: null, demo: null },
+  },
+  {
+    set: "006", slug: "ringshield", kind: "flagship",
+    title: "RingShield",
+    context: "Fraud-Ring Detection with Temporal Graph Neural Networks",
+    when: "2025 – Present",
+    outcome: "Phase 1 complete: systematic review, gap taxonomy, system architecture and evaluation protocol. Implementation in progress.",
+    pieces: ["Temporal Graph Neural Networks", "Dynamic time-stamped graphs", "Explainability", "Drift monitoring", "AMLworld", "Elliptic", "IEEE-CIS", "PaySim"],
+    challenge: "Coordinated fraud rings that node-level and rule-based models miss.",
+    steps: [
+      { title: "Graph modelling", body: "Models financial transactions as a dynamic, time-stamped graph of users, devices, cards and merchants." },
+      { title: "Temporal GNNs", body: "Uses temporal GNNs to surface coordinated fraud rings." },
+      { title: "Explainability", body: "Adds analyst-actionable explainability, surfacing the suspicious transaction paths behind each decision." },
+      { title: "Drift monitoring", body: "Drift monitoring to adapt as fraud patterns shift." },
+    ],
+    finalModel: "Phase 1 complete: systematic review of ~50 papers with a nine-category gap taxonomy, system architecture, and evaluation protocol across AMLworld, Elliptic, IEEE-CIS and PaySim. Implementation in progress.",
+    lessons: [],
+    note: "Led the systematic review workflow, developed a PRISMA-based 9-category gap taxonomy, and authored the initial manuscript draft.",
     links: { github: null, report: null, demo: null },
   },
 ];
@@ -278,27 +253,26 @@ export const leadership: Leadership[] = [
 ];
 
 export const skills: Skills = {
-  "Machine Learning / AI": ["PyTorch", "Object Detection", "OpenCV", "Graph Neural Networks", "Mixture-of-Experts", "SHAP", "Model training & evaluation"],
+  "Machine Learning / AI": ["PyTorch", "timm", "Object Detection", "OpenCV", "Graph Neural Networks", "Mixture-of-Experts", "SHAP", "Model training & evaluation"],
   "Languages": ["Python", "Java", "C/C++", "SQL", "JavaScript"],
   "Backend & Cloud": ["AWS (Lambda, API Gateway, EKS, Step Functions)", "Spring Batch", "Maven", "Flask", "Docker", "Git/GitHub"],
   "Data": ["Pandas", "MySQL", "MongoDB", "PCAP / network telemetry"],
 };
 
-// Explicit skill → builds map for Brick Stats. Wall height = number of linked builds + 1. Nothing else.
-export const skillLinks: Record<string, string[]> = {
-  "PyTorch": ["amsdds"],
-  "Object Detection": ["moe-appliance-detection"],
-  "OpenCV": ["moe-appliance-detection"],
-  "Graph Neural Networks": ["ringshield"],
-  "Mixture-of-Experts": ["moe-appliance-detection"],
-  "SHAP": ["network-anomaly-detection"],
-  "Java": ["lambda-migration"],
-  "AWS (Lambda, API Gateway, EKS, Step Functions)": ["lambda-migration"],
-  "Spring Batch": ["lambda-migration"],
-  "Maven": ["lambda-migration"],
-  "Flask": ["amsdds", "homomorphic-iot"],
-  "Docker": ["amsdds"],
-  "PCAP / network telemetry": ["network-anomaly-detection"],
+// Brick Stats: studs = number of sets whose tags (`pieces`) include the skill, + 1.
+// A tag counts for a skill if it matches the skill's name exactly, or through this
+// alias map (tag → skill). Aliases only cover tags that exist in the set data.
+export const skillAliases: Record<string, string[]> = {
+  PyTorch: ["Python"],
+  timm: ["Python"],
+  OpenCV: ["Python"],
+  Flask: ["Python"],
+  Pandas: ["Python"],
+  "Spring Batch": ["Java"],
+  Maven: ["Java"],
+  TreeSHAP: ["SHAP"],
+  "Temporal Graph Neural Networks": ["Graph Neural Networks"],
+  PCAP: ["PCAP / network telemetry"],
 };
 
 // Conveyor timeline, labels shown exactly as written. Each entry rides one belt (lane);

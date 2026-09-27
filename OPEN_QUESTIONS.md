@@ -16,3 +16,6 @@ Things I wasn't sure about. Nothing here was guessed on the site; each item is e
 12. **Off the clock placeholders** (`content/offTheClock.ts`, marked `TODO`): currently reading, running blurb, running stats, scrapbook blurb. They're hidden on the page until filled.
 13. **Logos:** add `samsung`, `fidelity`, `bmsce`, `iitm` (.svg/.png/.webp/.jpg) to `public/logos/`. Until then the tiles show names.
 14. **Hobby photos:** flowers (4), build-table (2) and scrapbook (2, incl. pencil sketches) added; `books` and `running` are still empty.
+15. **Unmatched set tags** (not counted for any skill brick): ResNet-18 (Places365), RF-DETR Nano, CPU-only deployment, MobileNetV3, PanDerm ViT-B/16, HAM10000, PAD-UFES-20, Isolation Forest, Feature engineering, Haar Cascade, LBPH, OCR, Adaptive thresholding, Homomorphic encryption, IoT sensor data, Dynamic time-stamped graphs, Explainability, Drift monitoring, AMLworld, Elliptic, IEEE-CIS, PaySim.
+16. **Skills with no set** now show 1 stud, including Object Detection (previously linked by hand to SET 001), Java, AWS, Spring Batch and Maven (their only set was the removed Fidelity one). Add aliases (e.g. RF-DETR Nano → Object Detection) if you want them counted.
+17. **Minifig feet:** a few light flecks of leftover studio-floor reflection at the shoe soles (visible on dark backgrounds). Not edited.

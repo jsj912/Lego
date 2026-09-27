@@ -23,7 +23,7 @@ export function SectionShell({ id, labelledBy, dark, className, children }: Prop
       id={id}
       ref={ref}
       aria-labelledby={labelledBy}
-      className={cn("relative scroll-mt-24", dark && "on-dark bg-surface-dark text-ink-inverse", className)}
+      className={cn("relative scroll-mt-[calc(var(--nav-h)+24px)]", dark && "on-dark bg-surface-dark text-ink-inverse", className)}
     >
       {children}
     </section>
