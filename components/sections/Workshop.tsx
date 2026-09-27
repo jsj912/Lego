@@ -1,11 +1,12 @@
 import { GraduationCap } from "lucide-react";
 import { education, focusAreas, leadership } from "@/content/site";
-import { Brick } from "@/components/ui/Brick";
+import { IsoStack } from "@/components/ui/IsoStack";
+import { CAMPUS_HALL, CAMPUS_TOWER, FOCUS_MODELS } from "@/components/ui/models";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionShell } from "@/components/ui/SectionShell";
-import { brickColorAt } from "@/lib/bricks";
-import { cn } from "@/lib/cn";
-import { BRICK_SHADES } from "@/lib/bricks";
+import { BRICK_SHADES, brickColorAt } from "@/lib/bricks";
+
+const CAMPUS = [CAMPUS_HALL, CAMPUS_TOWER];
 
 export function Workshop() {
   return (
@@ -15,101 +16,106 @@ export function Workshop() {
           id="workshop-title"
           eyebrow="Workshop"
           title="The workbench"
-          intro="Where the foundations were laid: study, focus, and the teams along the way."
+          intro="Where the foundations were laid: the campuses, the focus areas, and the crews along the way."
         />
 
-        {/* Education: milestone bricks */}
+        {/* Education: campus dioramas */}
         <div className="mt-16 grid gap-6 md:grid-cols-2">
           {education.map((ed, i) => (
-            <article
-              key={ed.school}
-              className="group relative overflow-hidden rounded-[var(--radius-card)] bg-surface p-8 shadow-[var(--shadow-soft)] ring-1 ring-ink/5 transition-shadow hover:shadow-[var(--shadow-lift)]"
-            >
-              <div className="flex items-start justify-between gap-6">
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-bg ring-1 ring-ink/5">
-                    <GraduationCap size={20} aria-hidden />
-                  </span>
-                  <p className="font-mono text-xs uppercase tracking-[0.16em] text-ink-2">Milestone {String(i + 1).padStart(2, "0")}</p>
+            <article key={ed.school} className="group overflow-hidden rounded-[var(--radius-card)] bg-surface shadow-[var(--shadow-soft)] ring-1 ring-ink/5 transition-shadow duration-300 hover:shadow-[var(--shadow-deep)]">
+              <div className="sky relative flex h-72 items-end justify-center overflow-hidden px-6 pb-4 sm:h-80">
+                <div className="bp-lines pointer-events-none absolute inset-0 opacity-40" aria-hidden />
+                <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-ink shadow-sm">
+                  <GraduationCap size={14} aria-hidden /> Milestone {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="relative transition-transform duration-500 ease-[var(--ease-settle)] group-hover:-translate-y-1.5">
+                  <IsoStack items={CAMPUS[i % CAMPUS.length]} size={17} />
                 </div>
-                <Brick color={i === 0 ? "red" : "blue"} studs={{ w: 2, h: 2 }} size={18} isometric className="shrink-0 transition-transform duration-300 group-hover:-translate-y-1" />
               </div>
-              <h3 className="mt-6 text-2xl font-semibold leading-tight">{ed.school}</h3>
-              <p className="mt-2 leading-relaxed text-ink">{ed.degree}</p>
-              <dl className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[0.8rem] text-ink-2">
-                <div>
-                  <dt className="sr-only">When</dt>
-                  <dd>{ed.when}</dd>
-                </div>
-                {ed.where && (
-                  <div>
-                    <dt className="sr-only">Where</dt>
-                    <dd>{ed.where}</dd>
+              <div className="p-7 sm:p-8">
+                <h3 className="text-2xl font-semibold leading-tight">{ed.school}</h3>
+                <p className="mt-2 leading-relaxed text-ink">{ed.degree}</p>
+                <dl className="mt-6 flex flex-wrap gap-2 font-mono text-[0.78rem]">
+                  <div className="rounded-md bg-bg px-2.5 py-1 ring-1 ring-ink/8">
+                    <dt className="sr-only">When</dt>
+                    <dd>{ed.when}</dd>
                   </div>
-                )}
-                {ed.detail && (
-                  <div>
-                    <dt className="sr-only">Detail</dt>
-                    <dd className="font-semibold text-ink">{ed.detail}</dd>
-                  </div>
-                )}
-              </dl>
+                  {ed.where && (
+                    <div className="rounded-md bg-bg px-2.5 py-1 ring-1 ring-ink/8">
+                      <dt className="sr-only">Where</dt>
+                      <dd>{ed.where}</dd>
+                    </div>
+                  )}
+                  {ed.detail && (
+                    <div className="rounded-md bg-brick-yellow px-2.5 py-1 font-semibold text-ink">
+                      <dt className="sr-only">Detail</dt>
+                      <dd>{ed.detail}</dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
             </article>
           ))}
         </div>
 
-        {/* Focus areas: collectible bricks */}
-        <div className="mt-20">
-          <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-ink-2">Collectible bricks · focus areas</h3>
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Focus areas: parts on a pegboard */}
+        <div className="mt-24">
+          <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-ink-2">Focus areas · the parts I keep reaching for</h3>
+          <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {focusAreas.map((area, i) => {
-              const color = brickColorAt(i);
-              const shade = BRICK_SHADES[color];
+              const shade = BRICK_SHADES[brickColorAt(i)];
               return (
-                <li
-                  key={area}
-                  className="relative rounded-[var(--radius-brick)] px-5 pb-5 pt-7 shadow-[var(--shadow-soft)]"
-                  style={{ background: `linear-gradient(180deg, ${shade.light}, ${shade.base} 22px, ${shade.dark})`, color: shade.text }}
-                >
-                  <span aria-hidden className="absolute -top-[7px] left-4 flex gap-3">
-                    {[0, 1, 2, 3].map((k) => (
-                      <span key={k} className="h-[7px] w-6 rounded-t-[4px]" style={{ background: shade.base, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35)" }} />
-                    ))}
-                  </span>
-                  <p className="font-display text-lg font-semibold leading-snug">{area}</p>
+                <li key={area} className="group relative overflow-hidden rounded-[var(--radius-card)] bg-surface shadow-[var(--shadow-soft)] ring-1 ring-ink/5 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]">
+                  <div aria-hidden className="h-1.5" style={{ background: shade.base }} />
+                  <div className="bp-dots relative flex h-40 items-center justify-center bg-[#f1efe7]">
+                    <IsoStack items={FOCUS_MODELS[i % FOCUS_MODELS.length]} size={20} />
+                  </div>
+                  <div className="p-5">
+                    <p className="font-mono text-[0.7rem] font-semibold tracking-[0.18em] text-ink-2">PART {String(i + 1).padStart(2, "0")}</p>
+                    <p className="mt-2 font-display text-lg font-semibold leading-snug">{area}</p>
+                  </div>
                 </li>
               );
             })}
           </ul>
         </div>
 
-        {/* Pull quote + leadership shelf */}
-        <div className="mt-24 grid gap-12 lg:grid-cols-[1fr_1.3fr] lg:items-start">
-          <figure className="relative">
-            <blockquote className="font-display text-3xl font-medium leading-tight tracking-[-0.03em] sm:text-4xl">
-              <span aria-hidden className="mb-4 block h-1.5 w-14 rounded-full bg-brick-yellow" />
-              Great systems aren&rsquo;t discovered. They&rsquo;re assembled.
-            </blockquote>
-          </figure>
-
-          <div>
-            <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-ink-2">The shelf · leadership</h3>
-            <ul className="mt-6 space-y-0">
-              {leadership.map((l, i) => (
-                <li key={`${l.org}-${l.role}`} className="relative border-b-[6px] border-[#d9d4c4] pb-5 pt-5 first:pt-0">
-                  <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-                    <p className="flex items-center gap-2.5 font-semibold">
-                      <span aria-hidden className={cn("inline-block h-3 w-5 rounded-[3px]", ["bg-brick-red", "bg-brick-blue", "bg-brick-green", "bg-brick-yellow"][i % 4])} />
-                      {l.role}
-                      <span className="font-normal text-ink-2">· {l.org}</span>
-                    </p>
-                    <p className="font-mono text-xs text-ink-2">{l.when}</p>
-                  </div>
-                  {l.detail && <p className="mt-2 max-w-2xl pl-[1.875rem] text-[0.95rem] leading-relaxed text-ink-2">{l.detail}</p>}
-                </li>
+        {/* Pull quote on a baseplate */}
+        <figure className="baseplate relative mt-24 overflow-hidden rounded-[var(--radius-panel)] px-5 py-14 shadow-[var(--shadow-lift)] sm:px-10 sm:py-20">
+          <blockquote className="relative mx-auto max-w-3xl rounded-2xl bg-surface px-7 py-9 text-center shadow-[0_2px_0_rgba(0,0,0,0.08),0_20px_40px_-20px_rgba(0,0,0,0.5)] sm:px-12 sm:py-12">
+            <span aria-hidden className="absolute -top-2 left-1/2 flex -translate-x-1/2 gap-3">
+              {[0, 1, 2, 3].map((k) => (
+                <span key={k} className="h-2 w-7 rounded-t-md bg-surface shadow-[inset_0_1px_0_rgba(0,0,0,0.06)]" />
               ))}
-            </ul>
-          </div>
+            </span>
+            <p className="font-display text-3xl font-semibold leading-tight tracking-[-0.03em] sm:text-5xl">
+              Great systems aren&rsquo;t discovered.
+              <span className="block text-brick-red">They&rsquo;re assembled.</span>
+            </p>
+          </blockquote>
+        </figure>
+
+        {/* Leadership: crew tiles */}
+        <div className="mt-24">
+          <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-ink-2">The crew · leadership &amp; communities</h3>
+          <ul className="mt-6 grid gap-4 md:grid-cols-2">
+            {leadership.map((l, i) => {
+              const color = brickColorAt(i);
+              return (
+                <li key={`${l.org}-${l.role}`} className="flex gap-5 rounded-[var(--radius-card)] bg-surface p-6 shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
+                  <div className="shrink-0 pt-1">
+                    <IsoStack items={[{ color, w: 2, h: 2 }]} size={14} shadow={false} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-display text-lg font-semibold leading-snug">{l.role}</p>
+                    <p className="text-ink-2">{l.org}</p>
+                    <p className="mt-2 inline-block rounded-md bg-bg px-2 py-0.5 font-mono text-[0.74rem] ring-1 ring-ink/8">{l.when}</p>
+                    {l.detail && <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-2">{l.detail}</p>}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
     </SectionShell>

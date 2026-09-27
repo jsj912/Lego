@@ -18,6 +18,9 @@
   --color-line: #e7e5dd;
   --color-line-dark: #34342f;
   --color-paper: #fbfaf4;
+  --color-blueprint: #0b3a78;
+  --color-blueprint-deep: #082c5e;
+  --color-blueprint-line: #dce9ff;
 
   /* type */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -221,3 +224,29 @@ p { text-wrap: pretty; }
   background: linear-gradient(90deg, transparent, rgb(0 0 0 / 0.1) 42%, rgb(0 0 0 / 0.2) 50%, rgb(0 0 0 / 0.1) 58%, transparent);
 }
 html { scrollbar-gutter: stable; }
+
+/* a studded baseplate surface */
+.baseplate {
+  background-color: var(--color-brick-green);
+  background-image:
+    radial-gradient(circle at 50% 42%, rgb(255 255 255 / 0.2) 0 4px, transparent 4.5px),
+    radial-gradient(circle at 50% 50%, rgb(0 0 0 / 0.22) 0 6.5px, transparent 7px);
+  background-size: 26px 26px;
+}
+.sky {
+  background: linear-gradient(180deg, #e6eff9 0%, #f4f6f2 70%, #eef0e8 100%);
+}
+
+/* blueprint drafting grid */
+.bp-blueprint {
+  background-color: var(--color-blueprint);
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.1) 1px, transparent 1px),
+    linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+}
+.dim-arrow-l, .dim-arrow-r { width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
+.dim-arrow-l { border-right: 7px solid currentColor; }
+.dim-arrow-r { border-left: 7px solid currentColor; }

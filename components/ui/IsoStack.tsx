@@ -10,8 +10,24 @@ const STUD_H = 0.18;
 
 const r = (n: number) => Math.round(n * 100) / 100;
 
+/** A flat decal (window, door, clock face) on a solid's visible face. Coords in studs, relative to the face. */
+export type Decal = {
+  face: "front" | "side";
+  /** offset along the face from the item's x (front) or y (side) */
+  a: number;
+  /** offset up from the item's bottom, in studs (a brick is 1.2) */
+  z: number;
+  w: number;
+  h: number;
+  fill?: string;
+  /** draw window mullions */
+  mullions?: boolean;
+  round?: boolean;
+};
+
 type Base = {
   color: BrickColor;
+  decals?: Decal[];
   /** position in stud units (x, y) and plates (z) */
   x?: number;
   y?: number;
@@ -36,6 +52,8 @@ type Props = {
   shadow?: boolean;
   className?: string;
   label?: string;
+  /** line-art (blueprint) mode: hidden lines are occluded by `fill` */
+  line?: { stroke: string; fill: string };
 };
 
 type Solid = Exclude<IsoItem, { kind: "gear" }>;
@@ -61,7 +79,8 @@ function gearPath(cx: number, cy: number, radius: number, teeth: number) {
  * Original brick models drawn in a shared isometric space: bricks, plates,
  * tiles, round columns, beams with pin holes and gears. Pure SVG.
  */
-export function IsoStack({ items, size = 24, glow, shadow = true, className, label }: Props) {
+export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, className, label, line }: Props) {
+  const shadow = shadowProp && !line;
   const uid = useId().replace(/:/g, "");
   const u = size;
   const P = (x: number, y: number, z: number) => [r((x - y) * C30 * u), r(((x + y) * 0.5 - z) * u)] as const;
@@ -103,26 +122,31 @@ export function IsoStack({ items, size = 24, glow, shadow = true, className, lab
     ? { role: "img" as const, "aria-label": label }
     : { "aria-hidden": true as const, focusable: "false" as const };
 
-  const hole = (key: string, transform: string, a: number, z: number) => (
-    <g key={key} transform={transform}>
-      <circle cx={a} cy={z} r={0.3} fill="rgba(0,0,0,0.28)" vectorEffect="non-scaling-stroke" />
-      <circle cx={a} cy={z} r={0.19} fill="rgba(0,0,0,0.55)" />
-    </g>
-  );
+  const hole = (key: string, transform: string, a: number, z: number) =>
+    line ? (
+      <g key={key} transform={transform}>
+        <circle cx={a} cy={z} r={0.26} fill="none" stroke={line.stroke} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+      </g>
+    ) : (
+      <g key={key} transform={transform}>
+        <circle cx={a} cy={z} r={0.3} fill="rgba(0,0,0,0.28)" />
+        <circle cx={a} cy={z} r={0.19} fill="rgba(0,0,0,0.55)" />
+      </g>
+    );
 
   const stud = (key: string, cx: number, cyTop: number, cyBot: number, s: (typeof BRICK_SHADES)[BrickColor], outline?: boolean) => {
     const rx = r(STUD_R * Math.SQRT2 * C30 * u);
     const ry = r(STUD_R * Math.SQRT2 * 0.5 * u);
-    const stroke = outline ? s.dark : "none";
+    const stroke = line ? line.stroke : outline ? s.dark : "none";
     return (
       <g key={key}>
         <path
           d={`M${r(cx - rx)},${cyTop} L${r(cx - rx)},${cyBot} A${rx},${ry} 0 0 0 ${r(cx + rx)},${cyBot} L${r(cx + rx)},${cyTop} Z`}
-          fill={outline ? "none" : s.dark}
+          fill={line ? line.fill : outline ? "none" : s.dark}
           stroke={stroke}
-          strokeWidth={outline ? 1.2 : 0}
+          strokeWidth={line ? 0.8 : outline ? 1.2 : 0}
         />
-        <ellipse cx={cx} cy={cyTop} rx={rx} ry={ry} fill={outline ? "none" : s.light} stroke={outline ? s.dark : "rgba(255,255,255,0.35)"} strokeWidth={outline ? 1.2 : 0.6} />
+        <ellipse cx={cx} cy={cyTop} rx={rx} ry={ry} fill={line ? line.fill : outline ? "none" : s.light} stroke={line ? line.stroke : outline ? s.dark : "rgba(255,255,255,0.35)"} strokeWidth={line ? 0.8 : outline ? 1.2 : 0.6} />
       </g>
     );
   };
@@ -131,10 +155,10 @@ export function IsoStack({ items, size = 24, glow, shadow = true, className, lab
     const s = BRICK_SHADES[it.color];
     const outline = it.outline;
     const zt = zb + heightOf(it);
-    const stroke = outline ? s.dark : "rgba(0,0,0,0.1)";
-    const sw = outline ? 1.5 : 0.6;
-    const dash = outline ? "4 3" : undefined;
-    const fill = (c: string) => (outline ? "none" : c);
+    const stroke = line ? line.stroke : outline ? s.dark : "rgba(0,0,0,0.1)";
+    const sw = line ? 1 : outline ? 1.5 : 0.6;
+    const dash = outline && !line ? "4 3" : undefined;
+    const fill = (c: string) => (line ? line.fill : outline ? "none" : c);
 
     if (it.kind === "round") {
       const cx0 = x + 0.5, cy0 = y + 0.5, rad = 0.46;
@@ -152,7 +176,7 @@ export function IsoStack({ items, size = 24, glow, shadow = true, className, lab
           </defs>
           <path
             d={`M${r(cx - rx)},${top} L${r(cx - rx)},${bot} A${rx},${ry} 0 0 0 ${r(cx + rx)},${bot} L${r(cx + rx)},${top} Z`}
-            fill={outline ? "none" : `url(#r${uid}${idx})`}
+            fill={line ? line.fill : outline ? "none" : `url(#r${uid}${idx})`}
             stroke={stroke}
             strokeWidth={sw}
             strokeDasharray={dash}
@@ -179,6 +203,30 @@ export function IsoStack({ items, size = 24, glow, shadow = true, className, lab
       cells.sort((a, b) => a.k - b.k).forEach((c, i) => studs.push(stud(`s${i}`, c.cx, c.t, c.b, s, outline)));
     }
 
+    const decals = (it.decals ?? []).map((d, i) => {
+      const t = d.face === "front" ? frontM(y + h) : sideM(x + w);
+      const a0 = (d.face === "front" ? x : y) + d.a;
+      const z0 = zb + d.z;
+      const fillC = line ? "none" : d.fill ?? "#2b4a6b";
+      const strokeC = line ? line.stroke : "rgba(0,0,0,0.25)";
+      return (
+        <g key={`d${i}`} transform={t}>
+          {d.round ? (
+            <ellipse cx={a0 + d.w / 2} cy={z0 + d.h / 2} rx={d.w / 2} ry={d.h / 2} fill={fillC} stroke={strokeC} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+          ) : (
+            <rect x={a0} y={z0} width={d.w} height={d.h} rx={0.06} fill={fillC} stroke={strokeC} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+          )}
+          {!line && !d.round && <path d={`M${a0 + d.w * 0.15},${z0 + d.h * 0.25} L${a0 + d.w * 0.45},${z0 + d.h * 0.85}`} stroke="rgba(255,255,255,0.35)" strokeWidth={1.2} vectorEffect="non-scaling-stroke" />}
+          {d.mullions && (
+            <>
+              <line x1={a0 + d.w / 2} y1={z0} x2={a0 + d.w / 2} y2={z0 + d.h} stroke={line ? line.stroke : "rgba(255,255,255,0.7)"} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+              <line x1={a0} y1={z0 + d.h / 2} x2={a0 + d.w} y2={z0 + d.h / 2} stroke={line ? line.stroke : "rgba(255,255,255,0.7)"} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+            </>
+          )}
+        </g>
+      );
+    });
+
     const holes: ReactNode[] = [];
     if (it.kind === "beam") {
       const zc = zb + heightOf(it) / 2;
@@ -196,8 +244,9 @@ export function IsoStack({ items, size = 24, glow, shadow = true, className, lab
         </defs>
         <polygon points={left} fill={fill(s.base)} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" strokeDasharray={dash} />
         <polygon points={right} fill={fill(s.dark)} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" strokeDasharray={dash} />
-        <polygon points={top} fill={outline ? "none" : `url(#t${uid}${idx})`} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" strokeDasharray={dash} />
-        {!outline && (
+        <polygon points={top} fill={line ? line.fill : outline ? "none" : `url(#t${uid}${idx})`} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" strokeDasharray={dash} />
+        {decals}
+        {!outline && !line && (
           <polyline points={pts(P(x, y + h, zt), P(x, y, zt), P(x + w, y, zt))} fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth={1} strokeLinecap="round" />
         )}
         {holes}
@@ -214,10 +263,10 @@ export function IsoStack({ items, size = 24, glow, shadow = true, className, lab
     const body = (d: number, fillC: string) => (
       <g transform={m(d)}>
         <g className={g.spin ? "gear-spin" : undefined}>
-          <path d={gearPath(g.cx, g.cz, g.radius, teeth)} fill={fillC} stroke="rgba(0,0,0,0.18)" strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+          <path d={gearPath(g.cx, g.cz, g.radius, teeth)} fill={line ? line.fill : fillC} stroke={line ? line.stroke : "rgba(0,0,0,0.18)"} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
           {d > 0 && (
             <>
-              <circle cx={g.cx} cy={g.cz} r={g.radius * 0.55} fill="none" stroke="rgba(0,0,0,0.12)" strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+              <circle cx={g.cx} cy={g.cz} r={g.radius * 0.55} fill="none" stroke={line ? line.stroke : "rgba(0,0,0,0.12)"} strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
               {[0, 1, 2, 3].map((k) => {
                 const a = (k * Math.PI) / 2 + Math.PI / 4;
                 return <circle key={k} cx={g.cx + Math.cos(a) * g.radius * 0.45} cy={g.cz + Math.sin(a) * g.radius * 0.45} r={g.radius * 0.12} fill="rgba(0,0,0,0.25)" />;

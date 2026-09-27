@@ -20,7 +20,7 @@ export function BlueprintLines() {
         <motion.path
           key={d}
           d={d}
-          stroke="rgba(120,170,255,0.35)"
+          stroke="rgba(220,233,255,0.35)"
           strokeWidth={1.2}
           strokeDasharray={i % 2 ? "6 6" : undefined}
           vectorEffect="non-scaling-stroke"

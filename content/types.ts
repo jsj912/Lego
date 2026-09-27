@@ -87,8 +87,12 @@ export type Leadership = {
 
 export type Skills = Record<string, string[]>;
 
+export type TimelineLane = "work" | "builds" | "campus";
+
 export type TimelineEntry = {
   label: string;
+  /** which conveyor belt the entry rides on */
+  lane: TimelineLane;
   when: string;
   build?: string;
   experience?: string;

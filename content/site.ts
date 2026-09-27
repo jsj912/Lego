@@ -278,15 +278,16 @@ export const skillLinks: Record<string, string[]> = {
   "PCAP / network telemetry": ["network-anomaly-detection"],
 };
 
-// Conveyor timeline, rendered in this order, labels shown exactly as written.
+// Conveyor timeline, labels shown exactly as written. Each entry rides one belt (lane);
+// within a belt, entries keep this order.
 export const timeline: TimelineEntry[] = [
-  { label: "Sensored (BMSCE) — Junior Core", when: "Nov 2024" },
-  { label: "Phase Shift — Department Coordinator (CSE ICB)", when: "Aug 2025 – Oct 2025" },
-  { label: "Sensored (BMSCE) — Vice President", when: "Sep 2025 – Present" },
-  { label: "Network Traffic & Malware Anomaly Detection", when: "Sept 2025 – Dec 2025", build: "network-anomaly-detection" },
-  { label: "Samsung R&D Institute (PRISM) — Research Intern", when: "Jan 2026 – June 2026", experience: "samsung" },
-  { label: "1st Place (Solo) — CySeck Grand CTF Challenge", when: "2026" },
-  { label: "Fidelity Investments — Software Engineering Intern", when: "June 2026 – August 2026", experience: "fidelity" },
-  { label: "Finalist — Smart Horizon International Hackathon", when: "2026", build: "amsdds" },
-  { label: "B.E., B.M.S. College of Engineering", when: "Expected June 2027", upcoming: true },
+  { label: "Sensored (BMSCE) — Junior Core", when: "Nov 2024", lane: "campus" },
+  { label: "Phase Shift — Department Coordinator (CSE ICB)", when: "Aug 2025 – Oct 2025", lane: "campus" },
+  { label: "Sensored (BMSCE) — Vice President", when: "Sep 2025 – Present", lane: "campus" },
+  { label: "Network Traffic & Malware Anomaly Detection", when: "Sept 2025 – Dec 2025", build: "network-anomaly-detection", lane: "builds" },
+  { label: "Samsung R&D Institute (PRISM) — Research Intern", when: "Jan 2026 – June 2026", experience: "samsung", lane: "work" },
+  { label: "1st Place (Solo) — CySeck Grand CTF Challenge", when: "2026", lane: "builds" },
+  { label: "Fidelity Investments — Software Engineering Intern", when: "June 2026 – August 2026", experience: "fidelity", lane: "work" },
+  { label: "Finalist — Smart Horizon International Hackathon", when: "2026", build: "amsdds", lane: "builds" },
+  { label: "B.E., B.M.S. College of Engineering", when: "Expected June 2027", upcoming: true, lane: "campus" },
 ];
