@@ -81,14 +81,14 @@ export function Workshop() {
         </div>
 
         {/* Pull quote on a baseplate */}
-        <figure className="baseplate relative mt-24 overflow-hidden rounded-[var(--radius-panel)] px-5 py-14 shadow-[var(--shadow-lift)] sm:px-10 sm:py-20">
-          <blockquote className="relative mx-auto max-w-3xl rounded-2xl bg-surface px-7 py-9 text-center shadow-[0_2px_0_rgba(0,0,0,0.08),0_20px_40px_-20px_rgba(0,0,0,0.5)] sm:px-12 sm:py-12">
-            <span aria-hidden className="absolute -top-2 left-1/2 flex -translate-x-1/2 gap-3">
+        <figure className="baseplate relative mx-auto mt-16 max-w-3xl overflow-hidden rounded-[var(--radius-card)] px-4 py-7 shadow-[var(--shadow-soft)] sm:px-8 sm:py-9">
+          <blockquote className="relative mx-auto max-w-xl rounded-xl bg-surface px-5 py-5 text-center shadow-[0_2px_0_rgba(0,0,0,0.08),0_14px_28px_-16px_rgba(0,0,0,0.5)] sm:px-8 sm:py-6">
+            <span aria-hidden className="absolute -top-1.5 left-1/2 flex -translate-x-1/2 gap-2.5">
               {[0, 1, 2, 3].map((k) => (
-                <span key={k} className="h-2 w-7 rounded-t-md bg-surface shadow-[inset_0_1px_0_rgba(0,0,0,0.06)]" />
+                <span key={k} className="h-1.5 w-5 rounded-t bg-surface" />
               ))}
             </span>
-            <p className="font-display text-3xl font-semibold leading-tight tracking-[-0.03em] sm:text-5xl">
+            <p className="font-display text-xl font-semibold leading-tight tracking-[-0.02em] sm:text-2xl">
               Great systems aren&rsquo;t discovered.
               <span className="block text-brick-red">They&rsquo;re assembled.</span>
             </p>
@@ -96,21 +96,21 @@ export function Workshop() {
         </figure>
 
         {/* Leadership: crew tiles */}
-        <div className="mt-24">
+        <div className="mt-16">
           <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-ink-2">The crew · leadership &amp; communities</h3>
-          <ul className="mt-6 grid gap-4 md:grid-cols-2">
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {leadership.map((l, i) => {
               const color = brickColorAt(i);
               return (
-                <li key={`${l.org}-${l.role}`} className="flex gap-5 rounded-[var(--radius-card)] bg-surface p-6 shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
+                <li key={`${l.org}-${l.role}`} className="flex gap-3.5 rounded-2xl bg-surface p-4 shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
                   <div className="shrink-0 pt-1">
-                    <IsoStack items={[{ color, w: 2, h: 2 }]} size={14} shadow={false} />
+                    <IsoStack items={[{ color, w: 2, h: 2 }]} size={9} shadow={false} />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-display text-lg font-semibold leading-snug">{l.role}</p>
-                    <p className="text-ink-2">{l.org}</p>
-                    <p className="mt-2 inline-block rounded-md bg-bg px-2 py-0.5 font-mono text-[0.74rem] ring-1 ring-ink/8">{l.when}</p>
-                    {l.detail && <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-2">{l.detail}</p>}
+                    <p className="font-display text-[0.95rem] font-semibold leading-snug">{l.role}</p>
+                    <p className="text-sm text-ink-2">{l.org}</p>
+                    <p className="mt-1.5 inline-block rounded bg-bg px-1.5 py-0.5 font-mono text-[0.68rem] ring-1 ring-ink/8">{l.when}</p>
+                    {l.detail && <p className="mt-2 text-[0.82rem] leading-snug text-ink-2">{l.detail}</p>}
                   </div>
                 </li>
               );
