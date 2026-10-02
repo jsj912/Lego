@@ -133,14 +133,54 @@ export const builds: Build[] = [
       { title: "Escalation model rebuild", body: "Replaced the escalation backbone with a fine-tuned PanDerm ViT-B/16 (layer-wise LR decay, mixup/cutmix, class-balanced sampler on a single T4), lifting macro F1 0.736 → 0.788, with the rare classes at 89 training images each reaching 0.842 and 0.927 F1." },
       { title: "Domain adaptation", body: "Domain-adapted across dermoscopy and smartphone imaging with an explicit 6→7 class mapping and patient-level splits to prevent leakage, raising cross-domain macro F1 0.550 → 0.704." },
       { title: "Serving stack", body: "Dockerised Flask API, config-driven thresholds, one-line backbone rollback, selectable heads, and a parity test verifying served predictions reproduce notebook results. Cached frozen features cut experiment turnaround from ~50 min to seconds, enabling a 24-config sweep selected on validation with test reported once." },
+      {
+        title: "Ink-marking shortcut audit",
+        body: "Inspired by Janizek, Xu, Lateef & Daneshjou, \"Visual concept ranking uncovers medical shortcuts used by large multimodal models\" (MLHC 2026), which found models use biopsy ink markings as a malignancy shortcut.",
+        sections: [
+          { heading: "Method", text: "Reproduced the saved test accuracy (0.8508) through my own pipeline first. Took the 1,064 benign HAM10000 test lesions the model already classified correctly. Drew 4 purple dots (RGB 60,34,112) on each, and, as a control, identical grey dots (RGB 128,128,128) in the same spots." },
+          { heading: "Results", text: "P(malignant) rose in 83% of images with purple vs 49% with grey. At the deployed 95%-sensitivity threshold, purple pushed 7.1% of these benign lesions into the malignant bucket vs 3.1% for grey. Mean shift is small (+0.011 vs +0.008), concentrated in keratoses, not nevi." },
+          { heading: "Takeaway", text: "A small but consistent ink-specific bias that accuracy, F1 and calibration error never showed." },
+        ],
+        figure: {
+          src: "/amsdds/amsdds-ink-summary.png",
+          alt: "Three bar charts comparing purple and grey dots: share of images where P(malignant) rose, share that crossed the 95%-sensitivity threshold, and mean change in P(malignant).",
+          width: 2000,
+          height: 640,
+        },
+        pieceCount: 1,
+        link: { label: "Read the full audit write-up (PDF)", href: "/amsdds/AMSDDS_Project_Notes_Joan_Sara_Joe.pdf" },
+      },
     ],
     finalModel: "86.9% accuracy vs 86.4% for running the transformer on every image, at ~30% of its compute; ECE 0.025.",
     lessons: [
       "The first escalation model beat the fast path by only 1.2 points because a COCO-pretrained detection backbone learns object-vs-background separation rather than fine-grained texture.",
       "Dermoscopy fine-tuning improved clinical-photo transfer, motivating a shared-backbone / per-domain-head design.",
+      "Accuracy hid a shortcut. A controlled intervention (purple vs grey dots) exposed an ink bias at the operating threshold that no aggregate metric showed.",
     ],
     note: null,
-    ownership: "5-person team · I owned the data pipeline, Flask decision engine, OOD gate and Layer 2.",
+    ownership: "Started as a 5-person hackathon team (top-5 finalist). I owned the data pipeline, Flask decision engine, OOD gate and Layer 2. After the hackathon I kept building solo: PanDerm Layer 2 rebuild, smartphone-photo head, and an ink-marking shortcut audit.",
+    writeup: { label: "Read the full audit write-up (PDF)", href: "/amsdds/AMSDDS_Project_Notes_Joan_Sara_Joe.pdf" },
+    figurePages: [
+      {
+        title: "Audit evidence",
+        figures: [
+          {
+            src: "/amsdds/amsdds-ink-examples.png",
+            alt: "Four benign lesions shown clean, with purple dots and with grey dots, each labelled with the model's P(malignant).",
+            caption: "The 4 images ink moved most. Rows 1 and 4 react to purple specifically; rows 2–3 react to any dots — the ink-specific effect is in the aggregate.",
+            width: 857,
+            height: 1180,
+          },
+          {
+            src: "/amsdds/amsdds-ink-byclass.png",
+            alt: "Bar chart of the mean change in P(malignant) by benign class (nv, bkl, vasc, df) for purple versus grey dots.",
+            caption: "Dermatofibroma has ≤9 test images, so that bar isn't reliable.",
+            width: 1240,
+            height: 560,
+          },
+        ],
+      },
+    ],
     links: { github: null, report: null, demo: null },
   },
   {

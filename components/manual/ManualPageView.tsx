@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
-import type { Build } from "@/content/types";
+import type { Build, DocLink, Figure } from "@/content/types";
+import { FileText } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import { BUILD_MODELS, boxModel } from "@/components/ui/models";
@@ -110,6 +111,40 @@ function ExplodedView({ build, index, n, total }: { build: Build; index: number;
   );
 }
 
+/** A figure that always fits its page: full width, natural aspect ratio, never overflowing. */
+function FigureView({ figure }: { figure: Figure }) {
+  return (
+    <figure className="min-w-0">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={figure.src}
+        alt={figure.alt}
+        width={figure.width}
+        height={figure.height}
+        loading="lazy"
+        decoding="async"
+        className="block h-auto w-full max-w-full rounded-lg bg-white ring-1 ring-ink/10"
+      />
+      {figure.caption && <figcaption className="mt-2 text-[0.85rem] leading-snug text-ink-2">{figure.caption}</figcaption>}
+    </figure>
+  );
+}
+
+/** Prominent link to a document, opened in a new tab. */
+function DocButton({ link }: { link: DocLink }) {
+  return (
+    <a
+      href={link.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-doc-link
+      className="inline-flex w-fit items-center gap-2 rounded-full bg-brick-blue px-4 py-2.5 text-sm font-semibold text-white shadow hover:bg-brick-red"
+    >
+      <FileText size={16} aria-hidden /> {link.label}
+    </a>
+  );
+}
+
 function PageLabel({ page, build }: { page: ManualPage; build: Build }) {
   return (
     <div className="flex items-center justify-between font-mono text-[0.7rem] uppercase tracking-[0.18em] text-ink-2">
@@ -168,6 +203,7 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
               <p className="mt-1 font-semibold leading-snug">{page.result}</p>
             </div>
             {page.ownership && <p className="leading-snug text-ink-2">{page.ownership}</p>}
+            {page.writeup && <DocButton link={page.writeup} />}
             <div>
               <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-ink-2">Stack</p>
               <ul className="mt-1.5 flex flex-wrap gap-1.5">
@@ -236,20 +272,72 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
           </div>
         );
       }
-      case "step":
+      case "step": {
+        const st = page.step;
+        const heading = (
+          <>
+            <p className="font-display text-7xl font-semibold leading-none text-brick-blue sm:text-8xl">{page.n}</p>
+            <p className="mt-2 font-mono text-xs uppercase tracking-[0.18em] text-ink-2">
+              Step {page.n} of {page.total}
+            </p>
+            <h2 className="mt-6 text-2xl font-semibold sm:text-3xl">{st.title}</h2>
+          </>
+        );
+        if (st.figure) {
+          return (
+            <div className="flex min-w-0 flex-col gap-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>{heading}</div>
+                {st.pieceCount !== undefined && (
+                  <span className="mt-2 shrink-0 rounded-md bg-white/80 px-2 py-1 font-mono text-[0.62rem] font-semibold text-ink-2 ring-1 ring-ink/10">
+                    {st.pieceCount} piece{st.pieceCount === 1 ? "" : "s"} this step
+                  </span>
+                )}
+              </div>
+              <p className="leading-relaxed">{st.body}</p>
+              {st.sections?.map((sec) => (
+                <div key={sec.heading}>
+                  <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-blue">{sec.heading}</p>
+                  <p className="mt-1 leading-relaxed">{sec.text}</p>
+                </div>
+              ))}
+              <FigureView figure={st.figure} />
+              {st.link && <DocButton link={st.link} />}
+            </div>
+          );
+        }
+        // the model is split across the steps that build it (figure steps don't add bricks)
+        const modelSteps = build.steps.filter((x) => !x.figure).length;
         return (
           <div className="grid h-full gap-8 sm:grid-cols-[1fr_auto] sm:items-center">
             <div>
-              <p className="font-display text-7xl font-semibold leading-none text-brick-blue sm:text-8xl">{page.n}</p>
-              <p className="mt-2 font-mono text-xs uppercase tracking-[0.18em] text-ink-2">
-                Step {page.n} of {page.total}
-              </p>
-              <h2 className="mt-6 text-2xl font-semibold sm:text-3xl">{page.step.title}</h2>
-              <p className="mt-4 text-lg leading-relaxed">{page.step.body}</p>
+              {heading}
+              <p className="mt-4 text-lg leading-relaxed">{st.body}</p>
+              {st.sections?.map((sec) => (
+                <div key={sec.heading} className="mt-3">
+                  <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-blue">{sec.heading}</p>
+                  <p className="mt-1 leading-relaxed">{sec.text}</p>
+                </div>
+              ))}
+              {st.link && (
+                <div className="mt-4">
+                  <DocButton link={st.link} />
+                </div>
+              )}
             </div>
             <div className="hidden sm:block">
-              <ExplodedView build={build} index={index} n={page.n} total={page.total} />
+              <ExplodedView build={build} index={index} n={page.n} total={modelSteps} />
             </div>
+          </div>
+        );
+      }
+      case "figures":
+        return (
+          <div className="flex min-w-0 flex-col gap-5">
+            <h2 className="text-2xl font-semibold sm:text-3xl">{page.title}</h2>
+            {page.figures.map((f) => (
+              <FigureView key={f.src} figure={f} />
+            ))}
           </div>
         );
       case "final":

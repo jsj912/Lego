@@ -35,9 +35,28 @@ export type Experience = {
 
 export type BuildKind = "internship" | "flagship" | "hackathon" | "project";
 
+/** An image shown inside a manual page. */
+export type Figure = {
+  src: string;
+  alt: string;
+  caption?: string;
+  width: number;
+  height: number;
+};
+
+/** A labelled link to a document (e.g. a PDF write-up). */
+export type DocLink = { label: string; href: string };
+
 export type BuildStep = {
   title: string;
   body: string;
+  /** optional labelled paragraphs under the body (e.g. Method / Results / Takeaway) */
+  sections?: { heading: string; text: string }[];
+  /** optional figure shown on the step page instead of the exploded model */
+  figure?: Figure;
+  /** optional explicit "N pieces this step" count */
+  pieceCount?: number;
+  link?: DocLink;
 };
 
 export type BuildLinks = {
@@ -62,6 +81,10 @@ export type Build = {
   note: string | null;
   /** team size / what I owned, when it was a team build */
   ownership?: string | null;
+  /** full write-up, linked from the TL;DR page */
+  writeup?: DocLink;
+  /** extra figure pages inserted right after the build steps */
+  figurePages?: { title: string; figures: Figure[] }[];
   links: BuildLinks;
 };
 
