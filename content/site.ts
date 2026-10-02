@@ -138,7 +138,7 @@ export const builds: Build[] = [
         body: "Inspired by Janizek, Xu, Lateef & Daneshjou, \"Visual concept ranking uncovers medical shortcuts used by large multimodal models\" (MLHC 2026), which found models use biopsy ink markings as a malignancy shortcut.",
         sections: [
           { heading: "Method", text: "Reproduced the saved test accuracy (0.8508) through my own pipeline first. Took the 1,064 benign HAM10000 test lesions the model already classified correctly. Drew 4 purple dots (RGB 60,34,112) on each, and, as a control, identical grey dots (RGB 128,128,128) in the same spots." },
-          { heading: "Results", text: "P(malignant) rose in 83% of images with purple vs 49% with grey. At the deployed 95%-sensitivity threshold, purple pushed 7.1% of these benign lesions into the malignant bucket vs 3.1% for grey. Mean shift is small (+0.011 vs +0.008), concentrated in keratoses, not nevi." },
+          { heading: "Results", text: "P(malignant) rose in 83% of images with purple vs 49% with grey. At the deployed 95%-sensitivity threshold, purple pushed 7.0% of these benign lesions into the malignant bucket vs 3.1% for grey. Mean shift is small (+0.011 vs +0.008), concentrated in keratoses, not nevi." },
           { heading: "Takeaway", text: "A small but consistent ink-specific bias that accuracy, F1 and calibration error never showed." },
         ],
         figure: {
