@@ -30,6 +30,7 @@ export function BrickStats() {
                 key={g.category}
                 aria-labelledby={`tray-${gi}`}
                 data-bin
+                data-reveal
                 className="rounded-[var(--radius-card)] bg-[#ecebe5] p-5 shadow-[inset_0_2px_8px_rgba(17,17,17,0.08)] ring-1 ring-ink/5 sm:p-6"
               >
                 <header className="mb-6 flex items-center gap-3">

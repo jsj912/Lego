@@ -14,7 +14,7 @@ export function Workshop() {
         <SectionHeading id="workshop-title" eyebrow={eyebrowOf("workshop")} title="Education" />
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {education.map((ed, i) => (
-            <article key={ed.school} className="group flex overflow-hidden rounded-[var(--radius-card)] bg-surface shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
+            <article key={ed.school} data-reveal className="group flex overflow-hidden rounded-[var(--radius-card)] bg-surface shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
               <div className="sky hidden w-48 shrink-0 items-end justify-center pb-3 sm:flex">
                 <div className="transition-transform duration-500 group-hover:-translate-y-1">
                   <IsoStack items={CAMPUS[i % CAMPUS.length]} size={9} />

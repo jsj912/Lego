@@ -9,6 +9,9 @@ import { Nav } from "@/components/sections/Nav";
 import { TrophyShelf } from "@/components/sections/TrophyShelf";
 import { Workshop } from "@/components/sections/Workshop";
 import { ManualController } from "@/components/manual/ManualController";
+import { Playground } from "@/components/play/Playground";
+import { BrickTrain } from "@/components/sections/BrickTrain";
+import { PageEffects } from "@/components/ui/PageEffects";
 import { ProgressTower } from "@/components/tower/ProgressTower";
 import { LazyLayers } from "@/components/eggs/LazyLayers";
 import { UnfinishedBrick } from "@/components/eggs/UnfinishedBrick";
@@ -34,10 +37,13 @@ export default function Home() {
         <BrickStats />
         <TrophyShelf />
         <Workshop />
+        <Playground />
         <Contact resumeHref={resume} />
       </main>
+      <BrickTrain />
       <Footer egg={<UnfinishedBrick />} />
       <LazyLayers />
+      <PageEffects />
       </div>
     </ManualController>
   );

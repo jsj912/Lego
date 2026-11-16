@@ -18,7 +18,7 @@ export function TrophyShelf() {
           {awards.map((a, i) => {
             const related = awardBuild(i);
             return (
-              <li key={a.title} className="flex items-end gap-6">
+              <li key={a.title} data-reveal className="flex items-end gap-6">
                 <div className="relative flex h-56 w-40 shrink-0 items-end justify-center [perspective:800px]">
                   <div aria-hidden className="absolute bottom-0 h-40 w-44 rounded-full bg-[radial-gradient(closest-side,rgba(255,213,0,0.28),transparent)] blur-xl" />
                   <div className="animate-sway relative origin-bottom scale-[0.8]" style={{ animationDelay: i ? "-4.5s" : "0s" }}>
@@ -43,7 +43,7 @@ export function TrophyShelf() {
           <h3 className="font-mono text-[0.8rem] font-semibold uppercase tracking-[0.18em] text-ink-2">Leadership &amp; communities</h3>
           <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {leadership.map((l, i) => (
-              <li key={`${l.org}-${l.role}`} className="flex gap-3.5 rounded-2xl bg-surface p-4 shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
+              <li key={`${l.org}-${l.role}`} data-reveal className="flex gap-3.5 rounded-2xl bg-surface p-4 shadow-[var(--shadow-soft)] ring-1 ring-ink/5">
                 <div className="shrink-0 pt-1">
                   <IsoStack items={[{ color: brickColorAt(i), w: 2, h: 2 }]} size={9} shadow={false} />
                 </div>

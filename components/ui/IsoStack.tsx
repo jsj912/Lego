@@ -37,7 +37,13 @@ type Base = {
   y?: number;
   z?: number;
   outline?: boolean;
+  /** stable key, so a piece keeps its DOM node when the list changes */
+  id?: string | number;
+  /** class on the piece's group (e.g. a drop-in animation) */
+  cls?: string;
 };
+
+export type IsoProject = (x: number, y: number, z: number) => readonly [number, number];
 
 export type IsoItem =
   | (Base & { kind?: "brick" | "plate" | "tile"; w: number; h: number; studs?: boolean })
@@ -62,6 +68,8 @@ type Props = {
   line?: { stroke: string; fill: string };
   /** compute the viewBox from these items instead (keeps separate stacks aligned) */
   boundsItems?: IsoItem[];
+  /** extra SVG drawn over the model in the same space (e.g. click targets); z in stud units */
+  overlay?: (project: IsoProject) => ReactNode;
 };
 
 type Solid = Exclude<IsoItem, { kind: "gear" }>;
@@ -88,7 +96,7 @@ function gearPath(cx: number, cy: number, radius: number, teeth: number) {
  * Original brick models drawn in a shared isometric space: bricks, plates,
  * tiles, round columns, beams with pin holes and gears. Pure SVG.
  */
-export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, className, label, line, boundsItems }: Props) {
+export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, className, label, line, boundsItems, overlay }: Props) {
   const shadow = shadowProp && !line;
   const uid = useId().replace(/:/g, "");
   const u = size;
@@ -179,7 +187,7 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
       const [cx, bot] = P(cx0, cy0, zb);
       const [, top] = P(cx0, cy0, zt);
       return (
-        <g key={idx}>
+        <g key={it.id !== undefined ? `k${it.id}` : idx} className={it.cls}>
           <defs>
             <linearGradient id={`r${uid}${idx}`} x1="0" x2="1" y1="0" y2="0">
               <stop offset="0" stopColor={s.base} />
@@ -292,7 +300,7 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
     }
 
     return (
-      <g key={idx}>
+      <g key={it.id !== undefined ? `k${it.id}` : idx} className={it.cls}>
         <defs>
           <linearGradient id={`t${uid}${idx}`} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stopColor={s.light} />
@@ -371,6 +379,7 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
         })}
       {order.map(renderSolid)}
       {gears.map(renderGear)}
+      {overlay?.(P)}
     </svg>
   );
 }

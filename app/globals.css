@@ -404,3 +404,49 @@ html { scrollbar-gutter: stable; }
 .hazard-band { background: repeating-linear-gradient(45deg, #ffd500 0 8px, #1f2226 8px 16px); }
 
 .flower-window { background: radial-gradient(ellipse at 50% 30%, #fff8f0, #f6ecdf 70%); }
+
+/* snap-in on scroll (components/ui/PageEffects.tsx sets the states) */
+[data-reveal="pending"] { opacity: 0; }
+[data-reveal="in"] {
+  animation: snap-in 600ms var(--ease-settle) both;
+  animation-delay: calc(var(--reveal-i, 0) * 80ms);
+}
+@keyframes snap-in {
+  0% { transform: translateY(-36px) scale(0.98); opacity: 0; }
+  55% { transform: translateY(4px) scale(1); opacity: 1; }
+  78% { transform: translateY(-1.5px); }
+  100% { transform: none; opacity: 1; }
+}
+@media print { [data-reveal] { opacity: 1 !important; } }
+
+/* free-build baseplate: a brick dropping onto the stack */
+.brick-drop { animation: brick-drop 380ms var(--ease-settle) both; }
+@keyframes brick-drop {
+  0% { transform: translateY(-70px); opacity: 0; }
+  30% { opacity: 1; }
+  70% { transform: translateY(2px); }
+  100% { transform: none; }
+}
+
+/* brick train above the footer */
+.train-yard { background: linear-gradient(180deg, transparent 0 60%, rgb(17 17 17 / 0.04)); }
+.train-rail {
+  background:
+    linear-gradient(#8a8f94, #6b7075) 0 0 / 100% 3px no-repeat,
+    repeating-linear-gradient(90deg, #6b4c2f 0 10px, transparent 10px 26px) 0 3px / 100% 5px no-repeat,
+    var(--color-surface-dark);
+}
+.train-run { animation: train-run 30s linear infinite; will-change: transform; }
+@keyframes train-run {
+  from { transform: translateX(-480px); }
+  to { transform: translateX(100vw); }
+}
+.wheel-spin { transform-box: fill-box; transform-origin: center; animation: gear-turn 1.1s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .train-run { animation: none !important; transform: translateX(8vw); }
+  .wheel-spin, .brick-drop { animation: none !important; }
+}
+
+/* hero: the figure and the loose bricks lean a little with the pointer */
+[data-hero-minifig] .hero-lean { transform: translate3d(calc(var(--px, 0) * 6px), calc(var(--py, 0) * 4px), 0); transition: transform 200ms ease-out; }
+[data-hero-minifig] .hero-lean-far { transform: translate3d(calc(var(--px, 0) * -16px), calc(var(--py, 0) * -10px), 0); transition: transform 300ms ease-out; }

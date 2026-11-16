@@ -389,7 +389,8 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
   })();
 
   return (
-    <div className={cn("relative flex h-full flex-col gap-6 overflow-y-auto bg-paper p-6 text-ink sm:p-10", className ?? "rounded-[var(--radius-card)]")}>
+    // focusable so a long page can be scrolled from the keyboard
+    <div tabIndex={0} className={cn("relative flex h-full flex-col gap-6 overflow-y-auto bg-paper p-6 text-ink sm:p-10", className ?? "rounded-[var(--radius-card)]")}>
       <div className="bp-dots pointer-events-none absolute inset-0 opacity-70" aria-hidden />
       <div className="relative">
         <PageLabel page={page} build={build} />

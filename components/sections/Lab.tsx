@@ -52,7 +52,7 @@ export function Lab() {
             const related = publicationBuild(p);
             const model = related ? (BUILD_MODELS[related.slug] ?? boxModel(builds.indexOf(related), "grey", "grey")) : BLUEPRINT_RIG;
             return (
-              <li key={p.title} className="relative flex flex-col bg-[#0a3068] p-2 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]">
+              <li key={p.title} data-reveal className="relative flex flex-col bg-[#0a3068] p-2 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]">
                 {/* drawing frame */}
                 <div className="flex flex-1 flex-col border border-blueprint-line/60 p-1">
                   <div className="flex flex-1 flex-col border border-blueprint-line/30">

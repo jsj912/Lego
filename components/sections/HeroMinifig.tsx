@@ -30,6 +30,30 @@ export function HeroMinifig() {
     };
   }, [open]);
 
+  // the figure and the loose bricks lean a little with the pointer (mouse only)
+  useEffect(() => {
+    const el = wrap.current;
+    if (!el || !window.matchMedia("(hover: hover) and (pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    let px = 0;
+    let py = 0;
+    const paint = () => {
+      raf = 0;
+      el.style.setProperty("--px", px.toFixed(3));
+      el.style.setProperty("--py", py.toFixed(3));
+    };
+    const onMove = (e: PointerEvent) => {
+      px = (e.clientX / window.innerWidth) * 2 - 1;
+      py = (e.clientY / window.innerHeight) * 2 - 1;
+      if (!raf) raf = requestAnimationFrame(paint);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
     <div ref={wrap} className="group relative mx-auto flex w-[300px] flex-col items-center pt-16" data-hero-minifig>
       {/* the figure */}
@@ -38,7 +62,7 @@ export function HeroMinifig() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={id}
-        className="relative z-[1] block rounded-2xl"
+        className="hero-lean relative z-[1] block rounded-2xl"
       >
         <picture>
           <source srcSet="/minifig.webp" type="image/webp" />
@@ -76,7 +100,7 @@ export function HeroMinifig() {
       </div>
 
       {/* loose bricks on the table, beside the base (wide screens only, never over text) */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 hidden xl:block" data-hero-deco>
+      <div aria-hidden className="hero-lean-far pointer-events-none absolute inset-0 hidden xl:block" data-hero-deco>
         <span className="motion-float anim-pausable absolute -left-16 bottom-14 animate-float" style={{ ["--r" as string]: "-10deg" }}>
           <IsoStack items={[{ color: "yellow", w: 2, h: 1 }]} size={14} shadow={false} />
         </span>

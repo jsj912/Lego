@@ -59,6 +59,9 @@ This runs, in order: `lint` → `typecheck` → `check:content` → `build` → 
 - Five hidden studs are tucked into sections. Find them all for a surprise.
 - Type `BUILD` anywhere outside a text field.
 - The footer has one unfinished brick.
+- **Your turn** (between Education and Contact): a baseplate anyone can build on. Click a stud, or use the arrow keys and Enter. "Build for me" cycles through a rocket, a robot, a house and the duck (`components/play/plateModels.ts`).
+- A brick freight train runs along the top of the footer.
+- Cards below the fold drop into place as you scroll to them; the hero figure leans with the pointer.
 - Unknown URLs show a "BUILD INCOMPLETE" page.
 
 All motion respects `prefers-reduced-motion`.

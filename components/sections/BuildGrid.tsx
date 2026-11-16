@@ -30,7 +30,7 @@ export function BuildGrid({ featured, more }: { featured: Build[]; more: Build[]
     <>
       <ul className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {featured.map((b) => (
-          <li key={b.slug}>
+          <li key={b.slug} data-reveal>
             <SetCard build={b} index={idx(b)} lidOpen={opening === b.slug || open === b.slug} action={<OpenLink b={b} />} />
           </li>
         ))}
@@ -40,7 +40,7 @@ export function BuildGrid({ featured, more }: { featured: Build[]; more: Build[]
           <h3 className="font-mono text-[0.8rem] font-semibold uppercase tracking-[0.18em] text-ink-2">More sets</h3>
           <ul className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {more.map((b) => (
-              <li key={b.slug}>
+              <li key={b.slug} data-reveal>
                 <SetCard variant="compact" build={b} index={idx(b)} action={<OpenLink b={b} compact />} />
               </li>
             ))}

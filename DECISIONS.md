@@ -69,3 +69,10 @@ Choices made while building, and why.
 - **404:** the house is split into one stack per piece, all sharing the full model's viewBox (`IsoStack boundsItems`), so the pieces land exactly in place.
 - **CI** runs `npm run verify` with `CI=true`. Playwright's webServer then only runs `next start`, because verify has already built the app.
 - **Tests added:** notfound, eggs, intro/reduced motion, content, links, contact, nav, a11y (axe; zero serious/critical on /, a manual, /off-the-clock and /nope). The a11y spec caught an invalid `<dl>` nesting in the Research title block, now fixed.
+
+## Free build, snap-in, train
+- **Free-build baseplate** (`components/play/`). Drawn by the same `IsoStack` renderer, which gained three small options: `id` (stable keys), `cls` (a class on one piece, used for the drop animation) and `overlay` (extra SVG in the model's space, used for invisible per-stud click targets). Only full-height bricks can be placed, so the renderer's layer-then-depth paint order is always right. It is a plain `<section id="playground">`, not one of the eight nav sections, so the nav, the progress rail and old anchors are unchanged. Nothing is saved: a reload brings the duck back.
+- **Snap-in on scroll** is DOM-only (`components/ui/PageEffects.tsx`): the server HTML is fully visible, and after hydration only `[data-reveal]` elements below the fold are hidden until scrolled to. Elements jumped past (a nav link) are shown without the animation. Off for reduced motion.
+- **Cursor light.** `.cursor-light` read `--lx` / `--ly`, but nothing ever set them, so the glow sat still. `PageEffects` now sets them from the pointer.
+- **Brick train** is a flat side-on SVG, like the off-the-clock street, because an isometric model sliding sideways looks wrong. It pauses off screen and stands still for reduced motion.
+- **Local builds on this laptop:** Windows Application Control blocks Next's native compiler, so Turbopack cannot start here. Use `npx next dev --webpack` / `npx next build --webpack` locally. The package scripts are unchanged; Vercel and CI are not affected.
