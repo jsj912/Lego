@@ -85,3 +85,9 @@ Choices made while building, and why.
 - **Trophies** are isometric models (plinth with plaque, column, flared two-handled cup, jewel) drawn by `IsoStack`, replacing the flat stacks.
 - **Research sheets** cycle between the line drawing and the finished colour build (hover or focus holds the build), with a scan line, corner pins and a drawing that inks itself in on arrival. All off for reduced motion.
 - **Backdrop** (home page only): a studded baseplate texture that is strong along the page edges and faint behind the reading column, plus three slow blurred colour lights. Decorative, `aria-hidden`, transform-only animation.
+
+## Off the clock: a village, not just a street
+- Same five shops and the same scroll-driven walk, with a village built around them (`components/offclock/VillageLife.tsx`): houses, windmills and a church on the far hills (raised so they show behind the shops), a sun, birds and a balloon in the sky, bunting, a fountain, benches and a mailbox between the shops, cars on the road, and a meadow in front with a picket fence, ponds, ducks, flowers and a cat.
+- The meadow height is one CSS variable (`--meadow`, a clamp on the viewport height), so the scene always reaches the bottom of the screen and nothing below the road is left blank.
+- No figures other than Joan's: the village is populated by animals and vehicles.
+- Phone layout keeps the stacked shops, now with a hill banner on top, props between shops, and the road and meadow at the end. Everything new is decorative, `aria-hidden`, and still for reduced motion.

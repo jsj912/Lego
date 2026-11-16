@@ -1,5 +1,6 @@
 import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import type { BrickColor } from "@/lib/bricks";
+import { Bench, Bunting, FarVillage, Fountain, Mailbox } from "./VillageLife";
 
 // Original brick-village props for the /off-the-clock street. Decorative.
 
@@ -30,22 +31,41 @@ const LAMP: IsoItem[] = [
   { kind: "plate", color: "dark", w: 2, h: 2, x: 0, y: 0, z: 20 },
 ];
 
-/** A prop that stands between two shops. */
-export function StreetProp({ i }: { i: number }) {
-  const kind = i % 3;
+/** What stands between two shops: trees, lamps, the fountain, a bench, and bunting overhead. */
+export function StreetProp({ i, bunting = true }: { i: number; bunting?: boolean }) {
+  const kind = i % 4;
   return (
-    <div aria-hidden className="flex shrink-0 items-end gap-2 self-end pb-[34px]">
-      {kind === 0 && <IsoStack items={TREE} size={16} />}
+    <div aria-hidden className="relative flex shrink-0 items-end gap-3 self-end pb-[34px]">
+      {bunting && (
+        <span className="pointer-events-none absolute -inset-x-12 bottom-[250px] flex justify-center">
+          <Bunting width={kind === 2 ? 330 : 280} />
+        </span>
+      )}
+      {kind === 0 && (
+        <>
+          <IsoStack items={TREE} size={16} />
+          <Bench />
+        </>
+      )}
       {kind === 1 && (
         <>
           <IsoStack items={LAMP} size={13} />
           <IsoStack items={flowerBed("red", "yellow")} size={12} />
+          <Mailbox />
         </>
       )}
       {kind === 2 && (
         <>
+          <IsoStack items={LAMP} size={13} />
+          <Fountain />
+          <IsoStack items={LAMP} size={13} />
+        </>
+      )}
+      {kind === 3 && (
+        <>
           <IsoStack items={flowerBed("blue", "white")} size={12} />
           <IsoStack items={TREE} size={13} />
+          <Bench />
         </>
       )}
     </div>
@@ -76,7 +96,7 @@ export function BrickCloud({ w = 120 }: { w?: number }) {
   );
 }
 
-/** Rolling studded hills: a long strip meant to sit behind the street. */
+/** Rolling studded hills with a far village on them: a long strip that sits behind the street. */
 export function BrickHills({ width = 3200 }: { width?: number }) {
   const h = 150;
   const hills = [
@@ -95,6 +115,7 @@ export function BrickHills({ width = 3200 }: { width?: number }) {
       </defs>
       <path d={hills[0]} fill="#6fae6a" />
       <path d={hills[0]} fill="url(#hill-studs-a)" />
+      <FarVillage width={width} />
       <path d={hills[1]} fill="#3f8f4f" />
       <path d={hills[1]} fill="url(#hill-studs-b)" />
     </svg>

@@ -565,3 +565,62 @@ html { scrollbar-gutter: stable; }
   to { transform: translate3d(9vmax, 6vmax, 0) scale(1.15); }
 }
 @media (prefers-reduced-motion: reduce) { .backdrop-light > span { animation: none !important; } }
+
+/* off-the-clock village: sky, traffic and the meadow */
+.sun-rays { transform-box: fill-box; transform-origin: center; animation: gear-turn 60s linear infinite; }
+.windmill-spin { transform-box: fill-box; transform-origin: center; animation: gear-turn 9s linear infinite; }
+.bird-fly { animation: bird-fly 34s linear infinite; }
+@keyframes bird-fly {
+  from { transform: translate(-120px, 0); }
+  50% { transform: translate(55vw, -34px); }
+  to { transform: translate(110vw, 6px); }
+}
+.balloon-drift { animation: balloon-drift 11s ease-in-out infinite alternate; }
+@keyframes balloon-drift {
+  from { transform: translate(0, 0) rotate(-2deg); }
+  to { transform: translate(26px, -22px) rotate(2deg); }
+}
+.bunting-sway { transform-origin: 50% 0; animation: bunting-sway 5s ease-in-out infinite alternate; }
+@keyframes bunting-sway { from { transform: skewX(-1.5deg); } to { transform: skewX(1.5deg); } }
+.fountain-drop { animation: fountain-drop 1.5s ease-in infinite; }
+@keyframes fountain-drop {
+  0% { transform: translate(-50%, 0) scale(0.6); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx, 0px)), 34px) scale(1); opacity: 0; }
+}
+.car-drive { animation: car-drive var(--drive-time, 38s) linear infinite; will-change: transform; }
+.car-drive-back { animation-direction: reverse; animation-duration: calc(var(--drive-time, 38s) * 1.3); }
+@keyframes car-drive {
+  from { transform: translateX(-140px); }
+  to { transform: translateX(var(--drive-to, 3400px)); }
+}
+.meadow-plate {
+  background:
+    radial-gradient(circle at 50% 42%, rgb(255 255 255 / 0.16) 0 3.4px, transparent 4px) 0 0 / 18px 18px,
+    linear-gradient(180deg, #4aa565, #2f8a4b);
+}
+/* a white picket fence along the far edge of the meadow */
+.picket {
+  background:
+    linear-gradient(#f5f3ea, #f5f3ea) 0 7px / 100% 3px no-repeat,
+    linear-gradient(#f5f3ea, #f5f3ea) 0 16px / 100% 3px no-repeat,
+    repeating-linear-gradient(90deg, #ffffff 0 7px, transparent 7px 18px);
+  filter: drop-shadow(0 2px 0 rgb(0 0 0 / 0.18));
+}
+.pond-ripple { transform-box: fill-box; transform-origin: center; animation: pond-ripple 3.2s ease-out infinite; }
+@keyframes pond-ripple { from { transform: scale(0.3); opacity: 0.9; } to { transform: scale(1.3); opacity: 0; } }
+.duck-bob { animation: duck-bob 2.6s ease-in-out infinite; }
+@keyframes duck-bob { 0%, 100% { translate: 0 0; } 50% { translate: 5px -1.5px; } }
+.cat-tail { transform-box: fill-box; transform-origin: 100% 100%; animation: cat-tail 2.4s ease-in-out infinite alternate; }
+@keyframes cat-tail { from { transform: rotate(-8deg); } to { transform: rotate(10deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .sun-rays, .windmill-spin, .bird-fly, .balloon-drift, .bunting-sway, .fountain-drop, .pond-ripple, .duck-bob, .cat-tail { animation: none !important; }
+  .car-drive { animation: none !important; transform: translateX(420px); }
+  .car-drive-back { transform: translateX(1300px); }
+  .fountain-drop { opacity: 0; }
+}
+.hill-fill {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgb(255 255 255 / 0.14) 0 4px, transparent 4.5px) 9px 0 / 18px 14px,
+    #3f8f4f;
+}

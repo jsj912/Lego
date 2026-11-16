@@ -10,7 +10,7 @@ import { interestPhotos } from "@/lib/assets";
 
 export const metadata: Metadata = {
   title: `Off the clock · ${person.name}`,
-  description: `A little street of hobbies, built by ${person.name}.`,
+  description: `A little village of hobbies, built by ${person.name}.`,
   alternates: { canonical: "/off-the-clock" },
 };
 
@@ -39,7 +39,7 @@ export default function OffTheClockPage() {
             </Link>
             <p className="mt-10 font-mono text-[0.8rem] font-semibold uppercase tracking-[0.18em] text-ink-2">Book nook</p>
             <h1 className="mt-2 text-4xl font-semibold sm:text-5xl">Off the clock</h1>
-            <p className="mt-3 max-w-xl text-lg text-ink-2">A little street between two books. Scroll to stroll; step into any shop.</p>
+            <p className="mt-3 max-w-xl text-lg text-ink-2">A little village between two books. Scroll to stroll; step into any shop.</p>
           </div>
         </div>
         <Street hobbies={hobbies} photos={photos} />

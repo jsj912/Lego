@@ -10,6 +10,7 @@ import type { Photo } from "@/lib/assets";
 import type { BrickColor } from "@/lib/bricks";
 import { Shopfront } from "./Shopfront";
 import { BrickCloud, BrickHills, StreetProp } from "./Village";
+import { Balloon, Birds, BrickCar, BrickSun, Bush, Cat, Flowers, Pond } from "./VillageLife";
 
 const HobbyPanel = dynamic(() => import("./HobbyPanel"), { ssr: false });
 
@@ -120,10 +121,31 @@ export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<s
   ));
   const shops = shopEls.flatMap((el, i) => (i < shopEls.length - 1 ? [el, <StreetProp key={`prop-${i}`} i={i} />] : [el]));
 
+  // ground, back to front: grass verge, road with traffic, then a meadow that fills the rest of the view
   const ground = (
     <>
-      <div aria-hidden className="grass-plate absolute inset-x-0 bottom-[84px] h-7" />
-      <div aria-hidden className="road-plate absolute inset-x-0 bottom-4 h-[68px] rounded-b-md" />
+      <div aria-hidden className="grass-plate absolute inset-x-0 bottom-[calc(var(--meadow)+68px)] h-7" />
+      <div aria-hidden className="road-plate absolute inset-x-0 bottom-[var(--meadow)] h-[68px] overflow-hidden">
+        <span className="car-drive absolute bottom-1 left-0"><BrickCar color="red" /></span>
+        <span className="car-drive car-drive-back absolute bottom-6 left-0"><BrickCar color="blue" flip /></span>
+        <span className="car-drive absolute bottom-1 left-0" style={{ animationDelay: "-19s" }}><BrickCar color="yellow" /></span>
+      </div>
+      <div aria-hidden className="meadow-plate absolute inset-x-0 bottom-0 h-[var(--meadow)] overflow-hidden">
+        <div className="picket absolute inset-x-0 top-0 h-6" />
+        <span className="absolute bottom-3 left-[300px]"><Pond width={230} /></span>
+        <span className="absolute bottom-6 left-[120px]"><Bush /></span>
+        <span className="absolute bottom-10 left-[620px]"><Flowers /></span>
+        <span className="absolute bottom-4 left-[760px]"><Cat /></span>
+        <span className="absolute bottom-8 left-[980px]"><Bush size={80} /></span>
+        <span className="absolute bottom-5 left-[1120px]"><Flowers colors={["#0055bf", "#ffffff", "#ffd500"]} /></span>
+        <span className="absolute bottom-3 left-[1500px]"><Pond width={190} /></span>
+        <span className="absolute bottom-9 left-[1380px]"><Flowers colors={["#ffd500", "#d01012", "#ffd500"]} /></span>
+        <span className="absolute bottom-6 left-[1800px]"><Bush /></span>
+        <span className="absolute bottom-8 left-[2040px]"><Flowers /></span>
+        <span className="absolute bottom-3 left-[2260px]"><Pond width={220} /></span>
+        <span className="absolute bottom-7 left-[2560px]"><Bush size={76} /></span>
+        <span className="absolute bottom-5 left-[2720px]"><Flowers colors={["#ffffff", "#d01012", "#0055bf"]} /></span>
+      </div>
     </>
   );
   const clouds = (
@@ -133,23 +155,34 @@ export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<s
       <span className="absolute left-[62vw] top-4"><BrickCloud w={150} /></span>
       <span className="absolute left-[96vw] top-14"><BrickCloud w={110} /></span>
       <span className="absolute left-[130vw] top-8"><BrickCloud w={130} /></span>
+      <span className="balloon-drift absolute left-[48vw] top-10"><Balloon /></span>
     </>
   );
+  // things that stay put in the sky while the street moves
+  const sky = (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <span className="absolute right-[6vw] top-6"><BrickSun /></span>
+      <span className="bird-fly absolute left-0 top-24"><Birds /></span>
+    </div>
+  );
+  const meadowVar = { ["--meadow" as string]: "clamp(96px, 20vh, 210px)" };
 
   return (
     <>
       {mode === "scroll" && (
         <div ref={sectionRef} className="relative" style={{ height: travel + dims.vh }} data-street-mode="scroll">
-          <div className="village-sky sticky top-0 flex h-dvh flex-col justify-center overflow-hidden">
+          <div className="village-sky sticky top-0 flex h-dvh flex-col justify-end overflow-hidden" style={meadowVar}>
+            {sky}
             <motion.div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40" style={{ x: cloudX }}>
               {clouds}
             </motion.div>
             {/* the track and the walker share this box, so the walker stands on the road */}
             <div className="relative">
-              <motion.div aria-hidden className="pointer-events-none absolute bottom-[104px] left-0" style={{ x: hillX }}>
+              <motion.div aria-hidden className="pointer-events-none absolute bottom-[calc(var(--meadow)+88px)] left-0" style={{ x: hillX }}>
                 <BrickHills />
+                <div className="hill-fill h-[130px]" />
               </motion.div>
-              <motion.div ref={trackRef} className="relative flex w-max items-end gap-10 px-10 pb-24" style={{ x: trackX }}>
+              <motion.div ref={trackRef} className="relative flex w-max items-end gap-10 px-10 pb-[calc(var(--meadow)+80px)]" style={{ x: trackX }}>
                 {ground}
                 <div aria-hidden className="shrink-0 self-end">
                   <IsoStack items={giantBook("blue")} size={34} />
@@ -160,7 +193,7 @@ export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<s
                 </div>
               </motion.div>
               {/* the builder walking along the street */}
-              <motion.div ref={figRef} aria-hidden className="pointer-events-none absolute bottom-7 left-0 z-10" style={{ x: figX }}>
+              <motion.div ref={figRef} aria-hidden className="pointer-events-none absolute bottom-[calc(var(--meadow)+12px)] left-0 z-10" style={{ x: figX }}>
                 <div className="walk-bob">
                   <Minifig height={130} />
                 </div>
@@ -171,11 +204,12 @@ export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<s
       )}
 
       {mode === "row" && (
-        <div className="village-sky relative overflow-x-auto pb-6" data-street-mode="row">
+        <div className="village-sky relative overflow-x-auto" style={meadowVar} data-street-mode="row">
           <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40">{clouds}</div>
-          <div className="relative flex w-max items-end gap-10 px-10 pb-24 pt-24">
-            <div aria-hidden className="pointer-events-none absolute bottom-[104px] left-0">
+          <div className="relative flex w-max items-end gap-10 px-10 pb-[calc(var(--meadow)+80px)] pt-24">
+            <div aria-hidden className="pointer-events-none absolute bottom-[calc(var(--meadow)+88px)] left-0">
               <BrickHills />
+              <div className="hill-fill h-[130px]" />
             </div>
             {ground}
             <div aria-hidden className="shrink-0">
@@ -193,13 +227,40 @@ export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<s
       )}
 
       {mode === "stack" && (
-        <div className="village-sky relative mx-auto flex flex-col items-center gap-12 px-4 pb-16 pt-6" data-street-mode="stack">
-          <div aria-hidden className="flex items-end gap-6">
-            <IsoStack items={giantBook("blue")} size={14} />
-            <Minifig height={110} />
-            <IsoStack items={giantBook("red")} size={14} />
+        <div className="village-sky relative overflow-hidden" data-street-mode="stack">
+          {/* the village on the hill, the sun, and the two books that bracket the street */}
+          <div aria-hidden className="relative h-56 overflow-hidden">
+            <span className="absolute right-4 top-3"><BrickSun size={70} /></span>
+            <span className="absolute left-4 top-4"><BrickCloud w={90} /></span>
+            <span className="bird-fly absolute left-0 top-16"><Birds /></span>
+            <div className="absolute bottom-0 left-0">
+              <BrickHills width={900} />
+            </div>
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-6">
+              <IsoStack items={giantBook("blue")} size={12} />
+              <Minifig height={104} />
+              <IsoStack items={giantBook("red")} size={12} />
+            </div>
           </div>
-          {shopEls}
+          <div className="grass-plate h-5" aria-hidden />
+          <div className="flex flex-col items-center gap-10 bg-[#e9f3e4] px-4 pb-12 pt-10">
+            {shopEls.flatMap((el, i) =>
+              i < shopEls.length - 1
+                ? [el, <div key={`prop-${i}`} className="flex justify-center"><StreetProp i={i} bunting={false} /></div>]
+                : [el],
+            )}
+          </div>
+          {/* the road and the meadow at the end of the village */}
+          <div aria-hidden className="road-plate relative h-[68px] overflow-hidden" style={{ ["--drive-to" as string]: "110vw", ["--drive-time" as string]: "9s" }}>
+            <span className="car-drive absolute bottom-1 left-0"><BrickCar color="red" /></span>
+            <span className="car-drive car-drive-back absolute bottom-6 left-0" style={{ animationDelay: "-4s" }}><BrickCar color="blue" flip /></span>
+          </div>
+          <div aria-hidden className="meadow-plate relative h-36 overflow-hidden">
+            <div className="picket absolute inset-x-0 top-0 h-6" />
+            <span className="absolute bottom-3 left-1/2 -translate-x-1/2"><Pond width={210} /></span>
+            <span className="absolute bottom-6 left-2"><Flowers /></span>
+            <span className="absolute bottom-5 right-2"><Cat /></span>
+          </div>
         </div>
       )}
 
