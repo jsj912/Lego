@@ -233,72 +233,125 @@ export const HERO_MACHINE: IsoItem[] = [
 ];
 
 // ───────── Box art that shows what each project is ─────────
-const ring = (n: number, cx: number, cy: number, r: number) =>
+/** n bricks stacked from plate height z0 */
+const col = (color: BrickColor, x: number, y: number, z0: number, n: number, w = 1, h = 1): IsoItem[] =>
+  Array.from({ length: n }, (_, i) => ({ color, w, h, x, y, z: z0 + i * 3 }));
+const SCREEN = "#16324f";
+
+/** a ring of account nodes; three neighbours stand taller: the fraud ring */
+const ring = (n: number, cx: number, cy: number, r: number): IsoItem[] =>
   Array.from({ length: n }, (_, i) => {
     const a = (i / n) * Math.PI * 2 - Math.PI / 4;
-    return { kind: "round" as const, color: (i % 2 ? "white" : "red") as BrickColor, x: cx + Math.cos(a) * r - 0.5, y: cy + Math.sin(a) * r - 0.5, z: 1 };
-  });
+    const x = cx + Math.cos(a) * r - 0.5;
+    const y = cy + Math.sin(a) * r - 0.5;
+    const fraud = i >= 1 && i <= 3;
+    const base = { kind: "round" as const, x, y };
+    return fraud
+      ? [
+          { ...base, color: "red" as BrickColor, z: 1, studs: false },
+          { ...base, color: "red" as BrickColor, z: 4, studs: false },
+          { ...base, color: "yellow" as BrickColor, z: 7 },
+        ]
+      : [{ ...base, color: (i % 2 ? "white" : "blue") as BrickColor, z: 1 }];
+  }).flat();
 
 export const BUILD_MODELS: Record<string, IsoItem[]> = {
-  // a router block dispatching to three specialist arms
+  // camera → scene router → manifold → three specialist detectors, with a feedback path
   "moe-appliance-detection": [
-    { kind: "plate", color: "grey", w: 7, h: 5, x: 0, y: 0, z: 0 },
-    { color: "dark", w: 2, h: 2, x: 0, y: 1.5, z: 1 },
-    { color: "dark", w: 2, h: 2, x: 0, y: 1.5, z: 4, decals: [{ face: "front", a: 0.4, z: 0.25, w: 1.2, h: 0.7, fill: "#ffd500", text: "R" }] },
-    { kind: "round", color: "yellow", x: 0.5, y: 2, z: 7 },
-    { kind: "beam", color: "grey", w: 3, h: 1, x: 2, y: 0, z: 4 },
-    { kind: "beam", color: "grey", w: 3, h: 1, x: 2, y: 2, z: 4 },
-    { kind: "beam", color: "grey", w: 3, h: 1, x: 2, y: 4, z: 4 },
-    { color: "red", w: 1, h: 1, x: 5, y: 0, z: 1 },
-    { color: "red", w: 1, h: 1, x: 5, y: 0, z: 4 },
-    { color: "blue", w: 1, h: 1, x: 5, y: 2, z: 1 },
-    { color: "blue", w: 1, h: 1, x: 5, y: 2, z: 4 },
-    { color: "green", w: 1, h: 1, x: 5, y: 4, z: 1 },
-    { color: "green", w: 1, h: 1, x: 5, y: 4, z: 4 },
-  ],
-  // a ring of linked bricks guarding a shield
-  ringshield: [
-    { kind: "plate", color: "grey", w: 6, h: 6, x: 0, y: 0, z: 0 },
-    ...ring(8, 3, 3, 2.3),
-    { color: "white", w: 2, h: 1, x: 2, y: 2, z: 1 },
-    { color: "white", w: 2, h: 1, x: 2, y: 2, z: 4 },
+    { kind: "plate", color: "grey", w: 10, h: 7, x: 0, y: 0, z: 0 },
+    { kind: "tile", color: "yellow", w: 6, h: 1, x: 2, y: 6, z: 1 },
+    // camera on a tripod
+    { kind: "round", color: "dark", x: 0.5, y: 3, z: 1, studs: false },
+    { kind: "round", color: "dark", x: 0.5, y: 3, z: 4, studs: false },
+    { color: "dark", w: 2, h: 1, x: 0, y: 3, z: 7, studs: false, decals: [{ face: "side", a: 0.15, z: 0.2, w: 0.7, h: 0.8, round: true, fill: "#6fb3e8" }] },
+    // scene router
+    ...col("dark", 3, 2.5, 1, 2, 2, 2),
     {
-      color: "white",
-      w: 2,
-      h: 1,
-      x: 2,
-      y: 2,
-      z: 7,
-      // the shield spans the whole wall; it's drawn with the top brick so the lower bricks don't cover it
+      color: "dark", w: 2, h: 2, x: 3, y: 2.5, z: 7,
       decals: [
-        { face: "front", a: 0.15, z: -2.3, w: 1.7, h: 3.3, shape: "shield", fill: "#0055BF" },
-        { face: "front", a: 0.45, z: -1.75, w: 1.1, h: 2.35, shape: "shield", fill: "#ffd500" },
+        { face: "front", a: 0.4, z: 0.25, w: 1.2, h: 0.7, fill: "#ffd500", text: "R" },
+        { face: "side", a: 0.4, z: 0.25, w: 1.2, h: 0.7, fill: "#ffd500", text: "R" },
       ],
     },
-    { kind: "tile", color: "white", w: 2, h: 1, x: 2, y: 2, z: 10 },
+    { kind: "plate", color: "yellow", w: 2, h: 2, x: 3, y: 2.5, z: 10 },
+    { kind: "round", color: "yellow", x: 3.5, y: 3, z: 11 },
+    // dispatch manifold and arms
+    { kind: "beam", color: "dark", w: 1, h: 6, x: 5, y: 0.5, z: 4 },
+    { kind: "beam", color: "grey", w: 2, h: 1, x: 6, y: 0.5, z: 4 },
+    { kind: "beam", color: "grey", w: 2, h: 1, x: 6, y: 3, z: 4 },
+    { kind: "beam", color: "grey", w: 2, h: 1, x: 6, y: 5.5, z: 4 },
+    // three specialist detectors, each with its screen
+    ...(["red", "blue", "green"] as BrickColor[]).flatMap((c, i): IsoItem[] => {
+      const y = 0.5 + i * 2.5;
+      return [
+        { color: c, w: 2, h: 1, x: 8, y, z: 1 },
+        { color: c, w: 2, h: 1, x: 8, y, z: 4, decals: [{ face: "side", a: 0.15, z: 0.2, w: 0.7, h: 0.8, fill: SCREEN }] },
+        { color: c, w: 2, h: 1, x: 8, y, z: 7 },
+        { kind: "tile", color: "white", w: 2, h: 1, x: 8, y, z: 10 },
+      ];
+    }),
+    { kind: "gear", color: "yellow", face: "front", at: 4.5, cx: 4, cz: 1.05, radius: 0.6, spin: true },
   ],
-  // fast stage → gate → heavy stage
+  // twelve account nodes around a shield tower; three of them stand out as a ring
+  ringshield: [
+    { kind: "plate", color: "grey", w: 9, h: 9, x: 0, y: 0, z: 0 },
+    ...ring(12, 4.5, 4.5, 3.5),
+    ...col("grey", 3, 3, 1, 2, 3, 1),
+    ...col("white", 3, 4, 1, 3, 3, 1),
+    {
+      color: "white", w: 3, h: 1, x: 3, y: 4, z: 10,
+      // the shield spans the whole wall; it is drawn with the top brick so the lower bricks don't cover it
+      decals: [
+        { face: "front", a: 0.25, z: -3.3, w: 2.5, h: 4.2, shape: "shield", fill: "#0055BF" },
+        { face: "front", a: 0.7, z: -2.6, w: 1.6, h: 3, shape: "shield", fill: "#ffd500" },
+      ],
+    },
+    { kind: "tile", color: "dark", w: 3, h: 1, x: 3, y: 4, z: 13 },
+    { kind: "plate", color: "dark", w: 3, h: 1, x: 3, y: 3, z: 7 },
+    { kind: "round", color: "yellow", x: 4, y: 3, z: 8 },
+    // the clock: detection is temporal
+    { kind: "gear", color: "grey", face: "side", at: 6, cx: 4.5, cz: 3.9, radius: 0.48, spin: true },
+  ],
+  // OOD gate → fast stage → uncertainty gate → heavy stage → phone head → triage lights
   amsdds: [
-    { kind: "plate", color: "grey", w: 7, h: 3, x: 0, y: 0, z: 0 },
-    { color: "blue", w: 2, h: 2, x: 0, y: 0.5, z: 1 },
-    { kind: "beam", color: "dark", w: 2, h: 1, x: 2, y: 1, z: 1 },
-    { color: "red", w: 2, h: 2, x: 4, y: 0.5, z: 1 },
-    { color: "red", w: 2, h: 2, x: 4, y: 0.5, z: 4 },
-    { color: "red", w: 2, h: 2, x: 4, y: 0.5, z: 7 },
-    { kind: "round", color: "white", x: 4.5, y: 1, z: 10 },
-    { kind: "gear", color: "yellow", face: "front", at: 2, cx: 3, cz: 1.9, radius: 0.55, spin: true },
+    { kind: "plate", color: "grey", w: 11, h: 4, x: 0, y: 0, z: 0 },
+    ...col("green", 0, 0, 1, 2),
+    ...col("green", 0, 3, 1, 2),
+    { kind: "beam", color: "dark", w: 1, h: 4, x: 0, y: 0, z: 7 },
+    ...col("blue", 2, 1, 1, 2, 2, 2),
+    { kind: "plate", color: "white", w: 2, h: 2, x: 2, y: 1, z: 7 },
+    { kind: "round", color: "blue", x: 2.5, y: 1.5, z: 8 },
+    { kind: "beam", color: "dark", w: 2, h: 1, x: 4, y: 1.5, z: 1 },
+    ...col("red", 6, 1, 1, 2, 2, 2),
+    { color: "red", w: 2, h: 2, x: 6, y: 1, z: 7, decals: [{ face: "front", a: 0.35, z: 0.25, w: 1.3, h: 0.7, fill: "#ffffff", text: "L2" }] },
+    { color: "red", w: 2, h: 2, x: 6, y: 1, z: 10 },
+    { kind: "plate", color: "white", w: 2, h: 2, x: 6, y: 1, z: 13 },
+    { kind: "round", color: "white", x: 6.5, y: 1.5, z: 14 },
+    { color: "white", w: 1, h: 2, x: 8.5, y: 1, z: 1 },
+    { color: "white", w: 1, h: 2, x: 8.5, y: 1, z: 4, studs: false, decals: [{ face: "side", a: 0.2, z: -0.9, w: 1.6, h: 1.9, fill: SCREEN }] },
+    { kind: "round", color: "green", x: 10, y: 0, z: 1 },
+    { kind: "round", color: "yellow", x: 10, y: 1.5, z: 1 },
+    { kind: "round", color: "red", x: 10, y: 3, z: 1 },
+    { kind: "gear", color: "yellow", face: "front", at: 2.5, cx: 5, cz: 2.05, radius: 0.62, spin: true },
   ],
-  // a network of nodes with one raised alarm
+  // two packet lanes of hosts, an isolation forest, and one raised alarm
   "network-anomaly-detection": [
-    { kind: "plate", color: "white", w: 6, h: 5, x: 0, y: 0, z: 0 },
-    { kind: "beam", color: "grey", w: 5, h: 1, x: 0.5, y: 0.5, z: 1 },
-    { kind: "beam", color: "grey", w: 1, h: 3, x: 0.5, y: 1.5, z: 1 },
-    ...[[0.5, 4], [2.5, 3.5], [4.5, 2.5]].map(([x, y]) => ({ kind: "round" as const, color: "blue" as BrickColor, x, y, z: 1 })),
-    { kind: "round", color: "blue", x: 0.5, y: 0.5, z: 4 },
-    { kind: "round", color: "blue", x: 4.5, y: 0.5, z: 4 },
-    { kind: "round", color: "red", x: 3, y: 1.5, z: 1, studs: false },
-    { kind: "round", color: "red", x: 3, y: 1.5, z: 4, studs: false },
-    { kind: "round", color: "yellow", x: 3, y: 1.5, z: 7 },
+    { kind: "plate", color: "white", w: 9, h: 7, x: 0, y: 0, z: 0 },
+    { kind: "beam", color: "grey", w: 7, h: 1, x: 1, y: 1, z: 1 },
+    { kind: "beam", color: "grey", w: 7, h: 1, x: 1, y: 5, z: 1 },
+    { kind: "beam", color: "grey", w: 1, h: 3, x: 4, y: 2, z: 1 },
+    ...[[0, 1], [8, 1], [0, 5], [8, 5]].map(([x, y]) => ({ kind: "round" as const, color: "blue" as BrickColor, x, y, z: 1 })),
+    ...[[2, 1], [6, 1], [2, 5], [6, 5]].map(([x, y]) => ({ kind: "round" as const, color: "blue" as BrickColor, x, y, z: 4 })),
+    // trees
+    ...[1, 7].flatMap((x): IsoItem[] => [
+      { kind: "round", color: "dark", x, y: 3, z: 1, studs: false },
+      { color: "green", w: 2, h: 2, x: x - 0.5, y: 2.5, z: 4 },
+      { kind: "round", color: "green", x, y: 3, z: 7 },
+    ]),
+    // the alarm
+    { kind: "round", color: "red", x: 4, y: 3, z: 4, studs: false },
+    { kind: "round", color: "red", x: 4, y: 3, z: 7, studs: false },
+    { kind: "round", color: "yellow", x: 4, y: 3, z: 10 },
   ],
   // an always-on rack handing work up to a serverless cloud
   "lambda-migration": [
@@ -319,35 +372,56 @@ export const BUILD_MODELS: Record<string, IsoItem[]> = {
     { kind: "round", color: "white", x: 4.5, y: 1, z: 11 },
     { kind: "round", color: "white", x: 5.5, y: 0, z: 11 },
   ],
-  // glasses
+  // glasses on a stand reading a face and a page, with a camera and an ear speaker
   "smart-glasses": [
-    { kind: "plate", color: "white", w: 7, h: 5, x: 0, y: 0, z: 0 },
+    { kind: "plate", color: "white", w: 8, h: 6, x: 0, y: 0, z: 0 },
+    // the page being read
+    { kind: "plate", color: "blue", w: 2, h: 2, x: 6, y: 0, z: 1 },
+    { kind: "tile", color: "white", w: 2, h: 2, x: 6, y: 0, z: 2 },
+    // the face being recognised
+    { color: "yellow", w: 2, h: 2, x: 2.5, y: 1.5, z: 1 },
+    {
+      color: "yellow", w: 2, h: 2, x: 2.5, y: 1.5, z: 4,
+      decals: [
+        { face: "front", a: 0.35, z: 0.5, w: 0.4, h: 0.4, round: true, fill: "#111111" },
+        { face: "front", a: 1.25, z: 0.5, w: 0.4, h: 0.4, round: true, fill: "#111111" },
+      ],
+    },
     { kind: "round", color: "grey", x: 0.5, y: 4, z: 1, studs: false },
     { kind: "round", color: "grey", x: 5.5, y: 4, z: 1, studs: false },
     { kind: "beam", color: "dark", w: 1, h: 4, x: 0.5, y: 0, z: 4 },
     { kind: "beam", color: "dark", w: 1, h: 4, x: 5.5, y: 0, z: 4 },
     {
-      color: "dark",
-      w: 6,
-      h: 1,
-      x: 0.5,
-      y: 4,
-      z: 4,
-      studs: false,
+      color: "dark", w: 6, h: 1, x: 0.5, y: 4, z: 4, studs: false,
       decals: [
         { face: "front", a: 0.35, z: 0.08, w: 2.3, h: 1.04, round: true, fill: "#6fb3e8" },
         { face: "front", a: 3.35, z: 0.08, w: 2.3, h: 1.04, round: true, fill: "#6fb3e8" },
       ],
     },
+    { kind: "round", color: "red", x: 5.5, y: 4, z: 7 },
+    { kind: "round", color: "yellow", x: 0.5, y: 0, z: 7 },
   ],
-  // a safe with a dial
+  // sensors → encrypted stream → a locked safe → analytics that never see the raw data
   "homomorphic-iot": [
-    { kind: "plate", color: "green", w: 4, h: 4, x: 0, y: 0, z: 0 },
-    { color: "grey", w: 3, h: 3, x: 0, y: 0.5, z: 1 },
-    { color: "grey", w: 3, h: 3, x: 0, y: 0.5, z: 4, decals: [{ face: "front", a: 2.3, z: 0.3, w: 0.35, h: 0.6, fill: "#2a2a2a" }] },
-    { color: "grey", w: 3, h: 3, x: 0, y: 0.5, z: 7 },
-    { kind: "plate", color: "dark", w: 3, h: 3, x: 0, y: 0.5, z: 10 },
-    { kind: "gear", color: "yellow", face: "front", at: 3.5, cx: 1.2, cz: 2.4, radius: 0.75, spin: true },
+    { kind: "plate", color: "green", w: 9, h: 6, x: 0, y: 0, z: 0 },
+    ...(["blue", "red", "yellow"] as BrickColor[]).flatMap((c, i): IsoItem[] => [
+      { kind: "round", color: "white", x: 0, y: 0.5 + i * 2, z: 1, studs: false },
+      { kind: "round", color: c, x: 0, y: 0.5 + i * 2, z: 4 },
+    ]),
+    { kind: "beam", color: "dark", w: 2, h: 1, x: 1, y: 2.5, z: 1 },
+    { kind: "tile", color: "yellow", w: 2, h: 1, x: 1, y: 0.5, z: 1 },
+    { kind: "tile", color: "yellow", w: 2, h: 1, x: 1, y: 4.5, z: 1 },
+    { color: "grey", w: 3, h: 3, x: 3, y: 1.5, z: 1 },
+    { color: "grey", w: 3, h: 3, x: 3, y: 1.5, z: 4, decals: [{ face: "front", a: 2.3, z: 0.3, w: 0.35, h: 0.6, fill: "#2a2a2a" }] },
+    { color: "grey", w: 3, h: 3, x: 3, y: 1.5, z: 7 },
+    { kind: "plate", color: "dark", w: 3, h: 3, x: 3, y: 1.5, z: 10 },
+    { kind: "round", color: "yellow", x: 4, y: 2.5, z: 11 },
+    { kind: "beam", color: "dark", w: 2, h: 1, x: 6, y: 2.5, z: 1 },
+    // the answer: a bar chart
+    ...col("blue", 8, 1, 1, 1),
+    ...col("blue", 8, 2.5, 1, 2),
+    ...col("blue", 8, 4, 1, 3),
+    { kind: "gear", color: "yellow", face: "front", at: 4.5, cx: 4.2, cz: 2.4, radius: 0.75, spin: true },
   ],
 };
 

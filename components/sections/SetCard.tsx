@@ -15,8 +15,8 @@ export function BoxArt({ build, index, size = 17, className }: { build: Build; i
   const next = brickColorAt(index + 1);
   const accent = next === main ? "white" : next;
   return (
-    <div aria-hidden className={cn("relative flex h-44 items-end justify-center", className)}>
-      <IsoStack items={BUILD_MODELS[build.slug] ?? boxModel(index, main, accent)} size={size} />
+    <div aria-hidden className={cn("relative h-44", className)}>
+      <IsoStack items={BUILD_MODELS[build.slug] ?? boxModel(index, main, accent)} size={size} className="absolute inset-0 h-full w-full" />
     </div>
   );
 }
@@ -84,8 +84,10 @@ export function SetCard({ build, index, action, lidOpen, variant = "featured" }:
     return (
       <article className="group relative flex h-full overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-soft)] ring-1 ring-ink/5 transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]">
         <div aria-hidden className="w-1.5 shrink-0" style={{ background: shade.base }} />
-        <div className="bp-dots flex w-28 shrink-0 items-center justify-center bg-[#f1efe7]">
-          <IsoStack items={BUILD_MODELS[build.slug] ?? boxModel(index, color, "white")} size={9} shadow={false} />
+        <div className="bp-dots relative w-28 shrink-0 bg-[#f1efe7]">
+          <div className="absolute inset-2">
+            <IsoStack items={BUILD_MODELS[build.slug] ?? boxModel(index, color, "white")} size={9} shadow={false} className="h-full w-full" />
+          </div>
         </div>
         <div className="flex min-w-0 flex-1 flex-col p-4">
           <p className="font-mono text-[0.72rem] font-semibold tracking-[0.14em] text-ink-2">
@@ -109,7 +111,7 @@ export function SetCard({ build, index, action, lidOpen, variant = "featured" }:
       <div className="relative overflow-hidden border-b border-ink/5 bg-[#f1efe7]">
         <div className="bp-lines pointer-events-none absolute inset-0 opacity-80" aria-hidden />
         <div className={cn("relative px-6 pt-3 transition-transform duration-500 ease-[var(--ease-settle)] group-hover:-translate-y-1.5", lidOpen && "-translate-y-3 scale-[1.04]")}>
-          <BoxArt build={build} index={index} size={18} className="h-52" />
+          <BoxArt build={build} index={index} size={18} className="mb-3 h-52" />
         </div>
       </div>
 

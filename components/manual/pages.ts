@@ -14,8 +14,9 @@ export type ManualPage =
     }
   | { kind: "challenge"; text: string }
   | { kind: "pieces"; pieces: string[] }
-  | { kind: "step"; n: number; total: number; step: BuildStep }
-  | { kind: "figures"; title: string; figures: Figure[] }
+  /** a long step is split: "main" (text + model), "more" (labelled paragraphs), then its figure on a page of its own */
+  | { kind: "step"; n: number; total: number; step: BuildStep; part?: "main" | "more" }
+  | { kind: "figures"; title: string; figures: Figure[]; n: number; count: number }
   | { kind: "final"; finalModel: string | null; outcome: string }
   | { kind: "lessons"; lessons: string[] }
   | { kind: "back"; note: string | null; links: { label: string; href: string }[] };
@@ -33,8 +34,15 @@ export function manualPages(b: Build): ManualPage[] {
   ];
   if (b.challenge) pages.push({ kind: "challenge", text: b.challenge });
   if (b.pieces.length) pages.push({ kind: "pieces", pieces: b.pieces });
-  b.steps.forEach((step, i) => pages.push({ kind: "step", n: i + 1, total: b.steps.length, step }));
-  (b.figurePages ?? []).forEach((f) => pages.push({ kind: "figures", title: f.title, figures: f.figures }));
+  b.steps.forEach((step, i) => {
+    const base = { kind: "step" as const, n: i + 1, total: b.steps.length, step };
+    if (step.sections?.length) {
+      pages.push({ ...base, part: "main" }, { ...base, part: "more" });
+      if (step.figure) pages.push({ kind: "figures", title: step.title, figures: [step.figure], n: 1, count: 1 });
+    } else pages.push(base);
+  });
+  // one figure per page, so each gets the whole page
+  (b.figurePages ?? []).forEach((f) => f.figures.forEach((fig, i) => pages.push({ kind: "figures", title: f.title, figures: [fig], n: i + 1, count: f.figures.length })));
   if (b.finalModel || b.outcome) pages.push({ kind: "final", finalModel: b.finalModel, outcome: b.outcome });
   if (b.lessons.length) pages.push({ kind: "lessons", lessons: b.lessons });
   if (b.note || links.length) pages.push({ kind: "back", note: b.note, links });

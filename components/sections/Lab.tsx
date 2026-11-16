@@ -31,6 +31,9 @@ function Callouts() {
 export function Lab() {
   return (
     <SectionShell id="lab" labelledBy="lab-title" dark className="bp-blueprint overflow-hidden py-28 sm:py-36">
+      {/* drafting-table light and a slow ruler sweep across the whole sheet */}
+      <div aria-hidden className="lab-glow pointer-events-none absolute inset-0" />
+      <div aria-hidden className="lab-sweep anim-pausable pointer-events-none absolute inset-y-0 left-0 w-40" />
       <HiddenStud id="lab" className="bottom-8 left-1/2" />
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-end gap-10">
@@ -52,15 +55,28 @@ export function Lab() {
             const related = publicationBuild(p);
             const model = related ? (BUILD_MODELS[related.slug] ?? boxModel(builds.indexOf(related), "grey", "grey")) : BLUEPRINT_RIG;
             return (
-              <li key={p.title} data-reveal className="relative flex flex-col bg-[#0a3068] p-2 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]">
+              <li key={p.title} data-reveal className="lab-sheet group relative flex flex-col bg-[#0a3068] p-2 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)] transition-transform duration-300 hover:-translate-y-1.5" style={{ ["--sheet-i" as string]: i }}>
+                {/* corner pins */}
+                {["left-1.5 top-1.5", "right-1.5 top-1.5", "left-1.5 bottom-1.5", "right-1.5 bottom-1.5"].map((pos) => (
+                  <span key={pos} aria-hidden className={`lab-pin absolute ${pos} z-10 h-2.5 w-2.5 rounded-full`} />
+                ))}
                 {/* drawing frame */}
                 <div className="flex flex-1 flex-col border border-blueprint-line/60 p-1">
                   <div className="flex flex-1 flex-col border border-blueprint-line/30">
                     {/* drawing area */}
-                    <div className="relative flex h-56 items-center justify-center border-b border-blueprint-line/30">
+                    <div className="relative flex h-64 items-center justify-center overflow-hidden border-b border-blueprint-line/30">
+                      <span aria-hidden className="lab-scan anim-pausable absolute inset-x-0 top-0 h-10" />
+                      <span aria-hidden className="lab-state absolute right-3 top-3 rounded-sm border border-blueprint-line/50 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-blueprint-line">
+                        <span className="lab-state-draft">Drawing</span>
+                        <span className="lab-state-built">Built</span>
+                      </span>
                       <Callouts />
-                      <div className="relative">
-                        <IsoStack items={model} size={17} line={LINE} />
+                      {/* the drawing, and the finished build it turns into */}
+                      <div className="lab-line absolute inset-x-12 bottom-9 top-6">
+                        <IsoStack items={model} size={17} line={LINE} className="h-full w-full" />
+                      </div>
+                      <div className="lab-built anim-pausable absolute inset-x-12 bottom-9 top-6">
+                        <IsoStack items={model} size={17} shadow={false} className="h-full w-full" />
                       </div>
                       {/* dimension line */}
                       <div aria-hidden className="absolute inset-x-10 bottom-4 flex items-center text-blueprint-line/80">

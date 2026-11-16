@@ -29,6 +29,7 @@ This runs, in order: `lint` → `typecheck` → `check:content` → `build` → 
 - `check:content` (`scripts/check-content.mjs`) fails the build if UI code contains invented metrics, stray URLs, placeholder text, banned phrases, or the protected trademark outside the footer disclaimer.
 - `node scripts/layout-audit.mjs` (needs a running server on port 3100) checks rail clearance, hero overlap, nav-jump headings and horizontal overflow at 375/1366/1440/1920px.
 - `node scripts/screens.mjs` screenshots every section at 1440px and 390px into `.screens/`.
+- `node scripts/manual-fit.mjs` (needs a running server on port 3100) turns every page of every manual at four screen sizes and fails if any page does not fit.
 
 ## How to update content
 

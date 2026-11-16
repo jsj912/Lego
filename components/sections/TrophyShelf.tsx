@@ -19,9 +19,9 @@ export function TrophyShelf() {
             const related = awardBuild(i);
             return (
               <li key={a.title} data-reveal className="flex items-end gap-6">
-                <div className="relative flex h-56 w-40 shrink-0 items-end justify-center [perspective:800px]">
+                <div className="relative flex h-64 w-44 shrink-0 items-end justify-center [perspective:800px]">
                   <div aria-hidden className="absolute bottom-0 h-40 w-44 rounded-full bg-[radial-gradient(closest-side,rgba(255,213,0,0.28),transparent)] blur-xl" />
-                  <div className="animate-sway relative origin-bottom scale-[0.8]" style={{ animationDelay: i ? "-4.5s" : "0s" }}>
+                  <div className="animate-sway relative origin-bottom" style={{ animationDelay: i ? "-4.5s" : "0s" }}>
                     <Trophy variant={i === 0 ? 0 : 1} />
                   </div>
                 </div>

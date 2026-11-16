@@ -9,7 +9,7 @@ Things I wasn't sure about. Nothing here was guessed on the site; each item is e
 5. **Items from the prompt's Section 12** (Samsung/Fidelity titles and dates, the merged Department Coordinator entry, LinkedIn-only roles, CGPA/prize visibility, missing GitHub URLs, RingShield results, hero roles, form endpoint) are still yours to confirm. Edit `content/site.ts` and the site follows.
 6. **mAP variant.** Is 0.140 → 0.932 mAP@50 or mAP@50:95? The site now says the SSD-MobileNet baseline scored 0.140 and the RF-DETR Nano experts 0.932, without naming the variant.
 7. **Single RF-DETR Nano without the router.** If you have that number, adding it would show what the MoE routing itself contributes.
-8. **RingShield evidence.** No implementation yet. An architecture diagram or the evaluation protocol would strengthen the Research card.
+8. **RingShield.** Updated from the README of `github.com/jsj912/Ring-Shield` (ring-F1 0.589, quiet-member recall 0.5% → 21%, the four headline findings, two dashboard screenshots). Check three things I could not get from the repo: the dates (still "2025 – Present"), whether teammates should be named, and whether the research paper entry (still "PRISMA-based screening of 49 papers") should mention the implementation.
 9. **An LLM build.** The review points out there's no shipped LLM project. That's a content gap only you can fill.
 10. **Smart Glasses and Homomorphic Encryption** are now compact "More sets" rather than fully archived. Say the word and I'll remove them from the page (their manuals would still exist).
 11. **Hero role.** Now just "Machine Learning Engineer", per the review. Easy to change in `person.roles`.

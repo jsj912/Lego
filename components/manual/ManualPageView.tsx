@@ -4,7 +4,6 @@ import { FileText } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
 import { BUILD_MODELS, boxModel } from "@/components/ui/models";
-import { BoxArt } from "@/components/sections/SetCard";
 import { cn } from "@/lib/cn";
 import { KIND_COLOR, KIND_LABEL } from "@/lib/derive";
 import { PAGE_TITLE, type ManualPage } from "./pages";
@@ -91,7 +90,7 @@ function partsInventory(model: IsoItem[]): Part[] {
  * from earlier steps is placed, this step's pieces hover above a dashed outline
  * of where they go. The last step completes the Final Model.
  */
-function ExplodedView({ build, index, n, total }: { build: Build; index: number; n: number; total: number }) {
+function ExplodedView({ build, index, n, total, className }: { build: Build; index: number; n: number; total: number; className?: string }) {
   const model = BUILD_MODELS[build.slug] ?? boxModel(index, KIND_COLOR[build.kind], "white");
   const { base, groups } = subAssemblies(model, total);
   const placed = [...base, ...groups.slice(0, n - 1).flat()];
@@ -102,30 +101,37 @@ function ExplodedView({ build, index, n, total }: { build: Build; index: number;
     ...incoming.map(lift),
   ];
   return (
-    <div aria-hidden className="relative flex h-72 w-60 flex-col items-center justify-end">
-      <span className="absolute right-0 top-2 rounded-md bg-white/80 px-2 py-1 font-mono text-[0.62rem] font-semibold text-ink-2 ring-1 ring-ink/10">
-        {incoming.length} piece{incoming.length === 1 ? "" : "s"} this step
-      </span>
-      <IsoStack items={items} size={20} />
+    <div aria-hidden className={cn("relative", className)}>
+      <IsoStack items={items} size={20} className="absolute inset-0 h-full w-full" />
+      {incoming.length > 0 && (
+        <span className="absolute right-0 top-0 rounded-md bg-white/85 px-2 py-1 font-mono text-[0.62rem] font-semibold text-ink-2 ring-1 ring-ink/10">
+          {incoming.length} piece{incoming.length === 1 ? "" : "s"} this step
+        </span>
+      )}
     </div>
   );
 }
 
-/** A figure that always fits its page: full width, natural aspect ratio, never overflowing. */
+/**
+ * A figure that always fits its page: it takes the height the page has left and
+ * scales the image down inside it. The image opens full size in a new tab.
+ */
 function FigureView({ figure }: { figure: Figure }) {
   return (
-    <figure className="min-w-0">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={figure.src}
-        alt={figure.alt}
-        width={figure.width}
-        height={figure.height}
-        loading="lazy"
-        decoding="async"
-        className="block h-auto w-full max-w-full rounded-lg bg-white ring-1 ring-ink/10"
-      />
-      {figure.caption && <figcaption className="mt-2 text-[0.85rem] leading-snug text-ink-2">{figure.caption}</figcaption>}
+    <figure className="flex min-h-[9rem] min-w-0 flex-1 basis-0 flex-col">
+      <a href={figure.src} target="_blank" rel="noopener noreferrer" className="relative block min-h-0 flex-1 rounded-lg bg-white ring-1 ring-ink/10" title="Open full size">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={figure.src}
+          alt={figure.alt}
+          width={figure.width}
+          height={figure.height}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full rounded-lg object-contain"
+        />
+      </a>
+      {figure.caption && <figcaption className="mt-2 shrink-0 text-[0.8rem] leading-snug text-ink-2">{figure.caption}</figcaption>}
     </figure>
   );
 }
@@ -167,18 +173,18 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
               <Badge tone={color === "yellow" ? "yellow" : color}>{KIND_LABEL[build.kind]}</Badge>
               {build.when && <span className="font-mono text-xs text-ink-2">{build.when}</span>}
             </div>
-            <p className="mt-8 font-mono text-sm font-semibold tracking-[0.2em] text-ink-2">INSTRUCTION MANUAL · SET {build.set}</p>
-            <h2 className="mt-3 text-3xl font-semibold leading-[1.05] sm:text-5xl">{build.title}</h2>
+            <p className="mt-6 font-mono text-sm font-semibold tracking-[0.2em] text-ink-2">INSTRUCTION MANUAL · SET {build.set}</p>
+            <h2 className="mt-3 text-3xl font-semibold leading-[1.05] @lg:text-[2.6rem]">{build.title}</h2>
             {build.context && <p className="mt-4 text-lg text-ink-2">{build.context}</p>}
-            <div className="mt-auto pt-8">
-              <BoxArt build={build} index={index} />
+            <div aria-hidden className="relative mt-6 min-h-[9rem] flex-1">
+              <IsoStack items={BUILD_MODELS[build.slug] ?? boxModel(index, color, "white")} size={24} className="absolute inset-0 h-full w-full" />
             </div>
           </div>
         );
       case "tldr":
         return (
-          <div className="flex h-full flex-col gap-4 text-[0.95rem]">
-            <h2 className="text-2xl font-semibold sm:text-3xl">TL;DR</h2>
+          <div className="flex h-full flex-col gap-2.5 text-[0.9rem]">
+            <h2 className="text-xl font-semibold @lg:text-2xl">TL;DR</h2>
             {page.problem && (
               <div>
                 <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-red">Problem</p>
@@ -202,9 +208,10 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
               <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-green">Result</p>
               <p className="mt-1 font-semibold leading-snug">{page.result}</p>
             </div>
-            {page.ownership && <p className="leading-snug text-ink-2">{page.ownership}</p>}
+            {page.ownership && <p className="text-[0.85rem] leading-snug text-ink-2">{page.ownership}</p>}
             {page.writeup && <DocButton link={page.writeup} />}
-            <div>
+            {/* on a narrow page the stack is left to the Pieces Used page */}
+            <div className="hidden @md:block">
               <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-ink-2">Stack</p>
               <ul className="mt-1.5 flex flex-wrap gap-1.5">
                 {page.stack.map((p) => (
@@ -232,7 +239,7 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
           <div className="flex h-full flex-col justify-center">
             <p className="font-mono text-sm text-brick-red">!</p>
             <h2 className="mt-2 text-sm font-semibold uppercase tracking-[0.2em] text-ink-2">The Challenge</h2>
-            <p className="mt-6 font-display text-2xl font-medium leading-snug sm:text-3xl">{page.text}</p>
+            <p className="mt-6 font-display text-2xl font-medium leading-snug @lg:text-3xl">{page.text}</p>
           </div>
         );
       case "pieces": {
@@ -242,19 +249,18 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
         return (
           <div>
             <div className="flex items-baseline justify-between gap-4">
-              <h2 className="text-2xl font-semibold sm:text-3xl">Pieces Used</h2>
+              <h2 className="text-2xl font-semibold">Pieces Used</h2>
               <p className="font-mono text-xs font-semibold text-ink-2">{total} pieces</p>
             </div>
-            <ul className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+            <ul className="mt-4 grid grid-cols-2 gap-1.5 @lg:grid-cols-3">
               {inventory.map((p) => (
-                <li key={p.key} className="flex items-center gap-3 rounded-xl bg-white/80 p-2.5 ring-1 ring-ink/8">
-                  <span className="flex h-11 w-12 shrink-0 items-end justify-center">
-                    <IsoStack items={[p.icon]} size={isGear(p.icon) ? 14 : p.span <= 2 ? 15 : p.span <= 4 ? 10 : 6} shadow={false} className="max-h-11 max-w-12 drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" />
+                <li key={p.key} className="flex items-center gap-2 rounded-lg bg-white/80 px-2 py-1 ring-1 ring-ink/8">
+                  <span className="flex h-7 w-8 shrink-0 items-center justify-center">
+                    <IsoStack items={[p.icon]} size={isGear(p.icon) ? 14 : p.span <= 2 ? 15 : p.span <= 4 ? 10 : 6} shadow={false} className="h-full w-full drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" />
                   </span>
-                  <span className="min-w-0 leading-tight">
-                    <span className="block font-mono text-sm font-bold">{p.count}×</span>
-                    <span className="block text-[0.8rem]">{p.name}</span>
-                    <span className="block font-mono text-[0.62rem] uppercase tracking-[0.1em] text-ink-2">{p.color}</span>
+                  <span className="min-w-0 truncate text-[0.78rem] leading-tight">
+                    <span className="font-mono font-bold">{p.count}×</span> {p.name}
+                    <span className="sr-only">, {p.color}</span>
                   </span>
                 </li>
               ))}
@@ -274,67 +280,66 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
       }
       case "step": {
         const st = page.step;
-        const heading = (
-          <>
-            <p className="font-display text-7xl font-semibold leading-none text-brick-blue sm:text-8xl">{page.n}</p>
-            <p className="mt-2 font-mono text-xs uppercase tracking-[0.18em] text-ink-2">
+        const label = (
+          <div className="flex items-end gap-3">
+            <p className="font-display text-6xl font-semibold leading-[0.85] text-brick-blue">{page.n}</p>
+            <p className="pb-0.5 font-mono text-xs uppercase tracking-[0.18em] text-ink-2">
               Step {page.n} of {page.total}
             </p>
-            <h2 className="mt-6 text-2xl font-semibold sm:text-3xl">{st.title}</h2>
-          </>
+          </div>
         );
-        if (st.figure) {
+        const sections = st.sections?.map((sec) => (
+          <div key={sec.heading}>
+            <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-blue">{sec.heading}</p>
+            <p className="mt-1 text-[0.9rem] leading-snug @lg:text-[0.95rem] @lg:leading-normal">{sec.text}</p>
+          </div>
+        ));
+        // second page of a long step: the labelled paragraphs
+        if (page.part === "more") {
           return (
-            <div className="flex min-w-0 flex-col gap-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>{heading}</div>
-                {st.pieceCount !== undefined && (
-                  <span className="mt-2 shrink-0 rounded-md bg-white/80 px-2 py-1 font-mono text-[0.62rem] font-semibold text-ink-2 ring-1 ring-ink/10">
-                    {st.pieceCount} piece{st.pieceCount === 1 ? "" : "s"} this step
-                  </span>
-                )}
-              </div>
-              <p className="leading-relaxed">{st.body}</p>
-              {st.sections?.map((sec) => (
-                <div key={sec.heading}>
-                  <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-blue">{sec.heading}</p>
-                  <p className="mt-1 leading-relaxed">{sec.text}</p>
-                </div>
-              ))}
-              <FigureView figure={st.figure} />
+            <div className="flex h-full min-w-0 flex-col gap-3">
+              <p className="font-mono text-xs uppercase tracking-[0.18em] text-brick-blue">
+                Step {page.n} of {page.total} · continued
+              </p>
+              <h2 className="text-xl font-semibold">{st.title}</h2>
+              {sections}
               {st.link && <DocButton link={st.link} />}
             </div>
           );
         }
-        // the model is split across the steps that build it (figure steps don't add bricks)
+        const long = page.part === "main";
+        // the model is split across the steps that build it
+        // (a figure step adds no bricks: it shows the finished model)
         const modelSteps = build.steps.filter((x) => !x.figure).length;
+        const modelStep = st.figure ? modelSteps + 1 : build.steps.slice(0, page.n).filter((x) => !x.figure).length;
         return (
-          <div className="grid h-full gap-8 sm:grid-cols-[1fr_auto] sm:items-center">
-            <div>
-              {heading}
-              <p className="mt-4 text-lg leading-relaxed">{st.body}</p>
-              {st.sections?.map((sec) => (
-                <div key={sec.heading} className="mt-3">
-                  <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brick-blue">{sec.heading}</p>
-                  <p className="mt-1 leading-relaxed">{sec.text}</p>
-                </div>
-              ))}
-              {st.link && (
-                <div className="mt-4">
-                  <DocButton link={st.link} />
-                </div>
-              )}
-            </div>
-            <div className="hidden sm:block">
-              <ExplodedView build={build} index={index} n={page.n} total={modelSteps} />
-            </div>
+          <div className="flex h-full min-w-0 flex-col">
+            {label}
+            <h2 className="mt-4 text-2xl font-semibold @lg:text-3xl">{st.title}</h2>
+            <p className="mt-3 leading-relaxed @lg:text-lg">{st.body}</p>
+            {!long && sections && <div className="mt-3 flex flex-col gap-3">{sections}</div>}
+            {!long && st.link && (
+              <div className="mt-4">
+                <DocButton link={st.link} />
+              </div>
+            )}
+            {st.figure && !long ? (
+              <div className="mt-4 flex min-h-0 flex-1 flex-col">
+                <FigureView figure={st.figure} />
+              </div>
+            ) : (
+              <ExplodedView build={build} index={index} n={modelStep} total={modelSteps} className="mt-4 min-h-[9rem] flex-1" />
+            )}
           </div>
         );
       }
       case "figures":
         return (
-          <div className="flex min-w-0 flex-col gap-5">
-            <h2 className="text-2xl font-semibold sm:text-3xl">{page.title}</h2>
+          <div className="flex h-full min-w-0 flex-col gap-4">
+            <h2 className="text-2xl font-semibold">
+              {page.title}
+              {page.count > 1 && <span className="ml-2 font-mono text-xs font-semibold text-ink-2">{page.n} / {page.count}</span>}
+            </h2>
             {page.figures.map((f) => (
               <FigureView key={f.src} figure={f} />
             ))}
@@ -344,20 +349,22 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
         return (
           <div className="flex h-full flex-col justify-center">
             <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-ink-2">Final Model</h2>
-            <BoxArt build={build} index={index} size={16} className="my-4 h-40" />
-            <p className="font-display text-2xl font-medium leading-snug sm:text-3xl">{page.outcome}</p>
-            {page.finalModel && page.finalModel !== page.outcome && <p className="mt-6 text-lg leading-relaxed text-ink-2">{page.finalModel}</p>}
+            <div aria-hidden className="relative my-4 max-h-64 min-h-[9rem] flex-1">
+              <IsoStack items={BUILD_MODELS[build.slug] ?? boxModel(index, color, "white")} size={22} className="absolute inset-0 h-full w-full" />
+            </div>
+            <p className="font-display text-xl font-medium leading-snug @lg:text-2xl">{page.outcome}</p>
+            {page.finalModel && page.finalModel !== page.outcome && <p className="mt-4 leading-relaxed text-ink-2">{page.finalModel}</p>}
           </div>
         );
       case "lessons":
         return (
           <div>
             <h2 className="text-2xl font-semibold sm:text-3xl">Lessons Learned</h2>
-            <ol className="mt-8 space-y-5">
+            <ol className="mt-6 space-y-4">
               {page.lessons.map((l, i) => (
                 <li key={l} className="flex gap-4">
                   <span className="font-mono text-sm font-semibold text-brick-red">{String(i + 1).padStart(2, "0")}</span>
-                  <p className="text-lg leading-relaxed">{l}</p>
+                  <p className="leading-relaxed">{l}</p>
                 </li>
               ))}
             </ol>
@@ -390,12 +397,16 @@ export function ManualPageView({ page, build, index, className }: { page: Manual
 
   return (
     // focusable so a long page can be scrolled from the keyboard
-    <div tabIndex={0} className={cn("relative flex h-full flex-col gap-6 overflow-y-auto bg-paper p-6 text-ink sm:p-10", className ?? "rounded-[var(--radius-card)]")}>
+    <div
+      tabIndex={0}
+      data-manual-page={page.kind}
+      className={cn("@container relative flex h-full flex-col gap-5 overflow-y-auto bg-paper p-5 text-ink sm:p-8", className ?? "rounded-[var(--radius-card)]")}
+    >
       <div className="bp-dots pointer-events-none absolute inset-0 opacity-70" aria-hidden />
       <div className="relative">
         <PageLabel page={page} build={build} />
       </div>
-      <div className="relative flex-1">{body}</div>
+      <div className="relative min-h-0 flex-1">{body}</div>
     </div>
   );
 }

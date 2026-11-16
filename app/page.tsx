@@ -23,7 +23,12 @@ export default function Home() {
   return (
     <ManualController>
       {/* one root element: Next scrolls the first page node into view on soft navigations */}
-      <div data-page-root>
+      <div data-page-root className="relative isolate">
+      {/* backdrop: studded baseplate + slow colour light, behind every section */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="backdrop-light"><span /><span /><span /></div>
+        <div className="backdrop-studs absolute inset-0" />
+      </div>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-toast focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-white">
         Skip to content
       </a>

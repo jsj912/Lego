@@ -57,7 +57,7 @@ export default async function BuildPage(props: PageProps<"/builds/[slug]">) {
           <summary className="cursor-pointer font-semibold">Read the whole manual as text</summary>
           <ol className="mt-5 space-y-5">
             {pages.map((p, i) => (
-              <li key={i} className="min-h-[420px] overflow-hidden rounded-2xl text-ink">
+              <li key={i} className="h-[560px] overflow-hidden rounded-2xl text-ink">
                 <ManualPageView page={p} build={build} index={index} />
               </li>
             ))}
