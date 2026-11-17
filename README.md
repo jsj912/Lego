@@ -38,7 +38,7 @@ This runs, in order: `lint` → `typecheck` → `check:content` → `build` → 
 - **Projects:** `builds[]`. The big cards are chosen by `featuredBuilds`, the rest appear as "More sets". Set numbers follow display order, and each build gets a manual at `/builds/<slug>`.
 - **Skills:** `skills`. Stud counts are computed from the projects' `pieces` tags plus `skillAliases`.
 - **"Where I've built" logos:** add `samsung`, `fidelity`, `bmsce` or `iitm` (`.svg`, `.png`, `.webp` or `.jpg`) to `public/logos/`. Without a logo, the tile shows the name.
-- **Off the clock:** `content/offTheClock.ts` holds the books, blurbs, run stats and photo captions. Photos go in `public/interests/<folder>/`.
+- **Off the clock:** `content/offTheClock.ts` holds the books, blurbs, run stats and photo captions. Photos go in `public/interests/<folder>/`. The village itself is a brick model in `components/offclock/villageModel.ts`.
 - **Résumé:** replace `public/resume.pdf`. The Résumé links hide themselves if the file is missing.
 
 ## Environment variables

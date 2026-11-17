@@ -1,70 +1,38 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { motion, useMotionValueEvent, useScroll, useTransform } from "motion/react";
-import { useCallback, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { DoorOpen } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 import type { Hobby } from "@/content/offTheClock";
-import { IsoStack, type IsoItem } from "@/components/ui/IsoStack";
-import { useMotionSafe } from "@/hooks/useMotionSafe";
+import { IsoStack, PLATE, type IsoProject } from "@/components/ui/IsoStack";
 import type { Photo } from "@/lib/assets";
-import type { BrickColor } from "@/lib/bricks";
-import { Shopfront } from "./Shopfront";
-import { BrickCloud, BrickHills, StreetProp } from "./Village";
-import { Balloon, Birds, BrickCar, BrickSun, Bush, Cat, Flowers, Pond } from "./VillageLife";
+import { ROOF_TONES } from "./Buildings";
+import { BrickCloud } from "./Village";
+import { Balloon, Birds, BrickSun } from "./VillageLife";
+import { CHIMNEYS, HOUSES, MILL_HUB, VILLAGE, VILLAGE_BOUNDS } from "./villageModel";
 
 const HobbyPanel = dynamic(() => import("./HobbyPanel"), { ssr: false });
 
-const DESKTOP = "(min-width: 1024px)";
-function useDesktop() {
-  return useSyncExternalStore(
-    (cb) => {
-      const mq = window.matchMedia(DESKTOP);
-      mq.addEventListener("change", cb);
-      return () => mq.removeEventListener("change", cb);
-    },
-    () => window.matchMedia(DESKTOP).matches,
-    () => true,
-  );
-}
+const ROOF: Record<Hobby["id"], string> = {
+  books: ROOF_TONES.teal.base,
+  running: ROOF_TONES.pink.base,
+  flowers: ROOF_TONES.lavender.base,
+  scrapbook: ROOF_TONES.yellow.base,
+  "build-table": ROOF_TONES.mint.base,
+};
 
-/** A giant brick-built book standing at the end of the street. */
-function giantBook(color: BrickColor): IsoItem[] {
-  const levels = [0, 3, 6, 9, 12, 15, 18];
-  return levels.map((z, i) => ({
-    color,
-    w: 2,
-    h: 6,
-    x: 0,
-    y: 0,
-    z,
-    studs: i === levels.length - 1,
-    decals:
-      i === 0 || i === levels.length - 1
-        ? [{ face: "front" as const, a: 0.12, z: i === 0 ? 0.35 : 0.5, w: 1.76, h: 0.18, fill: "#d4a72c" }]
-        : i === 3
-          ? [{ face: "front" as const, a: 0.35, z: 0.2, w: 1.3, h: 0.8, fill: "#d4a72c" }]
-          : [],
-  }));
-}
-
-function Minifig({ height = 120 }: { height?: number }) {
-  return (
-    <picture>
-      <source srcSet="/minifig.webp" type="image/webp" />
-      <img src="/minifig.png" alt="" aria-hidden width={Math.round((height * 472) / 900)} height={height} loading="lazy" decoding="async" className="block select-none" draggable={false} />
-    </picture>
-  );
-}
-
+/**
+ * The off-the-clock village: one brick-built model on a baseplate, seen from
+ * above. Every house is a door into a hobby: click a house (or its card below).
+ */
 export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<string, Photo[]> }) {
-  const desktop = useDesktop();
-  const { reduced } = useMotionSafe();
-  const mode = desktop ? (reduced ? "row" : "scroll") : "stack";
-
   const [open, setOpen] = useState<Hobby["id"] | null>(null);
+  const [hot, setHot] = useState<Hobby["id"] | null>(null);
   const trigger = useRef<HTMLElement | null>(null);
-  const openHobby = (id: Hobby["id"], el: HTMLElement) => {
-    trigger.current = el;
+  const cards = useRef(new Map<Hobby["id"], HTMLButtonElement>());
+
+  const openHobby = (id: Hobby["id"]) => {
+    trigger.current = cards.current.get(id) ?? null;
     setOpen(id);
   };
   const close = useCallback(() => {
@@ -72,197 +40,125 @@ export function Street({ hobbies, photos }: { hobbies: Hobby[]; photos: Record<s
     requestAnimationFrame(() => trigger.current?.focus({ preventScroll: true }));
   }, []);
 
-  // ── scroll-driven street (desktop, motion allowed) ──
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const figRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ track: 2400, vw: 1440, vh: 900 });
-  useLayoutEffect(() => {
-    if (mode !== "scroll") return;
-    const measure = () =>
-      setDims({ track: trackRef.current?.scrollWidth ?? 2400, vw: window.innerWidth, vh: window.innerHeight });
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (trackRef.current) ro.observe(trackRef.current);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [mode]);
-  const travel = Math.max(0, dims.track - dims.vw);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
-  const trackX = useTransform(scrollYProgress, (p) => -p * travel);
-  const hillX = useTransform(scrollYProgress, (p) => -p * travel * 0.45);
-  const cloudX = useTransform(scrollYProgress, (p) => -p * travel * 0.2);
-  const figX = useTransform(scrollYProgress, (p) => 60 + p * Math.max(0, dims.vw - 220));
-  const stopTimer = useRef<number | undefined>(undefined);
-  useMotionValueEvent(scrollYProgress, "change", () => {
-    const el = figRef.current;
-    if (!el) return;
-    el.style.setProperty("--walk", "running");
-    window.clearTimeout(stopTimer.current);
-    stopTimer.current = window.setTimeout(() => el.style.setProperty("--walk", "paused"), 160);
-  });
-
   const hobby = hobbies.find((h) => h.id === open);
+  const titleOf = (id: Hobby["id"]) => hobbies.find((h) => h.id === id)?.title ?? "";
 
-  const shopEls = hobbies.map((h, i) => (
-    <motion.div
-      key={h.id}
-      className="shrink-0"
-      initial={mode === "scroll" ? false : { opacity: 0, y: reduced ? 0 : 16 }}
-      whileInView={mode === "scroll" ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.4, delay: mode === "row" ? i * 0.05 : 0 }}
-    >
-      <Shopfront hobby={h} photos={(photos[h.id] ?? []).map((p) => p.src)} onOpen={(el) => openHobby(h.id, el)} />
-    </motion.div>
-  ));
-  const shops = shopEls.flatMap((el, i) => (i < shopEls.length - 1 ? [el, <StreetProp key={`prop-${i}`} i={i} />] : [el]));
-
-  // ground, back to front: grass verge, road with traffic, then a meadow that fills the rest of the view
-  const ground = (
-    <>
-      <div aria-hidden className="grass-plate absolute inset-x-0 bottom-[calc(var(--meadow)+68px)] h-7" />
-      <div aria-hidden className="road-plate absolute inset-x-0 bottom-[var(--meadow)] h-[68px] overflow-hidden">
-        <span className="car-drive absolute bottom-1 left-0"><BrickCar color="red" /></span>
-        <span className="car-drive car-drive-back absolute bottom-6 left-0"><BrickCar color="blue" flip /></span>
-        <span className="car-drive absolute bottom-1 left-0" style={{ animationDelay: "-19s" }}><BrickCar color="yellow" /></span>
-      </div>
-      <div aria-hidden className="meadow-plate absolute inset-x-0 bottom-0 h-[var(--meadow)] overflow-hidden">
-        <div className="picket absolute inset-x-0 top-0 h-6" />
-        <span className="absolute bottom-3 left-[300px]"><Pond width={230} /></span>
-        <span className="absolute bottom-6 left-[120px]"><Bush /></span>
-        <span className="absolute bottom-10 left-[620px]"><Flowers /></span>
-        <span className="absolute bottom-4 left-[760px]"><Cat /></span>
-        <span className="absolute bottom-8 left-[980px]"><Bush size={80} /></span>
-        <span className="absolute bottom-5 left-[1120px]"><Flowers colors={["#0055bf", "#ffffff", "#ffd500"]} /></span>
-        <span className="absolute bottom-3 left-[1500px]"><Pond width={190} /></span>
-        <span className="absolute bottom-9 left-[1380px]"><Flowers colors={["#ffd500", "#d01012", "#ffd500"]} /></span>
-        <span className="absolute bottom-6 left-[1800px]"><Bush /></span>
-        <span className="absolute bottom-8 left-[2040px]"><Flowers /></span>
-        <span className="absolute bottom-3 left-[2260px]"><Pond width={220} /></span>
-        <span className="absolute bottom-7 left-[2560px]"><Bush size={76} /></span>
-        <span className="absolute bottom-5 left-[2720px]"><Flowers colors={["#ffffff", "#d01012", "#0055bf"]} /></span>
-      </div>
-    </>
-  );
-  const clouds = (
-    <>
-      <span className="absolute left-[4vw] top-6"><BrickCloud w={130} /></span>
-      <span className="absolute left-[34vw] top-16"><BrickCloud w={96} /></span>
-      <span className="absolute left-[62vw] top-4"><BrickCloud w={150} /></span>
-      <span className="absolute left-[96vw] top-14"><BrickCloud w={110} /></span>
-      <span className="absolute left-[130vw] top-8"><BrickCloud w={130} /></span>
-      <span className="balloon-drift absolute left-[48vw] top-10"><Balloon /></span>
-    </>
-  );
-  // things that stay put in the sky while the street moves
-  const sky = (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <span className="absolute right-[6vw] top-6"><BrickSun /></span>
-      <span className="bird-fly absolute left-0 top-24"><Birds /></span>
-    </div>
-  );
-  const meadowVar = { ["--meadow" as string]: "clamp(96px, 20vh, 210px)" };
+  // drawn over the model, in its own space: smoke, the builder, house signs and click targets
+  const overlay = (P: IsoProject) => {
+    const poly = (...p: (readonly [number, number])[]) => p.map((q) => q.join(",")).join(" ");
+    const [jx, jy] = P(23, 28.8, PLATE);
+    const [mx, my] = P(MILL_HUB[0], MILL_HUB[1], MILL_HUB[2] * PLATE);
+    return (
+      <>
+        <g fill="#ffffff" style={{ pointerEvents: "none" }}>
+          {CHIMNEYS.map(([x, y, z], i) => {
+            const [cx, cy] = P(x, y, z * PLATE);
+            return [0, 1, 2].map((k) => (
+              <circle key={`${i}-${k}`} className="smoke-puff" cx={cx} cy={cy - 8} r={7 - k * 1.5} opacity={0} style={{ animationDelay: `${-k * 1.2 - i * 0.5}s` }} />
+            ));
+          })}
+        </g>
+        {/* the windmill's sails */}
+        <g className="windmill-spin" style={{ pointerEvents: "none" }}>
+          {[0, 90, 180, 270].map((a) => (
+            <g key={a} transform={`rotate(${a + 20} ${mx} ${my})`}>
+              <rect x={mx - 2} y={my - 74} width={4} height={74} fill="#5a3a20" />
+              <rect x={mx + 2} y={my - 72} width={17} height={50} fill="#fffaf0" stroke="#8a5a3c" strokeWidth={1.5} />
+              <path d={`M${mx + 2} ${my - 55} h17 M${mx + 2} ${my - 38} h17`} stroke="#8a5a3c" strokeWidth={1} />
+            </g>
+          ))}
+          <circle cx={mx} cy={my} r={6} fill="#5a3a20" />
+        </g>
+        {/* the builder, visiting */}
+        <image href="/minifig.webp" x={jx - 17} y={jy - 64} width={34} height={64} style={{ pointerEvents: "none" }} />
+        {HOUSES.map(({ id, box: b, top }) => {
+          const zb = PLATE;
+          const zt = top * PLATE;
+          const [sx, sy] = P(b.x + b.w / 2, b.y + b.h / 2, zt + 0.9);
+          const title = titleOf(id);
+          const w = title.length * 6.6 + 22;
+          return (
+            <g
+              key={id}
+              data-house={id}
+              className={`house-hit ${hot === id ? "is-hot" : ""}`}
+              onClick={() => openHobby(id)}
+              onPointerEnter={() => setHot(id)}
+              onPointerLeave={() => setHot(null)}
+            >
+              <polygon
+                points={poly(P(b.x, b.y + b.h, zb), P(b.x + b.w, b.y + b.h, zb), P(b.x + b.w, b.y, zb), P(b.x + b.w, b.y, zt), P(b.x, b.y, zt), P(b.x, b.y + b.h, zt))}
+                className="house-hit-area"
+              />
+              {/* sign board on a post above the roof */}
+              <g className="house-sign">
+                <rect x={sx - 1.5} y={sy + 10} width={3} height={14} fill="#5a3a20" />
+                <rect x={sx - w / 2} y={sy - 12} width={w} height={23} rx={5} fill="#fff7e0" stroke="#7a5230" strokeWidth={2.5} />
+                <text x={sx} y={sy + 4} textAnchor="middle" fontSize={12} fontWeight={700} fontFamily="ui-sans-serif, system-ui, sans-serif" fill="#5a3a20">
+                  {title}
+                </text>
+              </g>
+            </g>
+          );
+        })}
+      </>
+    );
+  };
 
   return (
     <>
-      {mode === "scroll" && (
-        <div ref={sectionRef} className="relative" style={{ height: travel + dims.vh }} data-street-mode="scroll">
-          <div className="village-sky sticky top-0 flex h-dvh flex-col justify-end overflow-hidden" style={meadowVar}>
-            {sky}
-            <motion.div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40" style={{ x: cloudX }}>
-              {clouds}
-            </motion.div>
-            {/* the track and the walker share this box, so the walker stands on the road */}
-            <div className="relative">
-              <motion.div aria-hidden className="pointer-events-none absolute bottom-[calc(var(--meadow)+88px)] left-0" style={{ x: hillX }}>
-                <BrickHills />
-                <div className="hill-fill h-[130px]" />
-              </motion.div>
-              <motion.div ref={trackRef} className="relative flex w-max items-end gap-10 px-10 pb-[calc(var(--meadow)+80px)]" style={{ x: trackX }}>
-                {ground}
-                <div aria-hidden className="shrink-0 self-end">
-                  <IsoStack items={giantBook("blue")} size={34} />
-                </div>
-                {shops}
-                <div aria-hidden className="shrink-0 self-end">
-                  <IsoStack items={giantBook("red")} size={34} />
-                </div>
-              </motion.div>
-              {/* the builder walking along the street */}
-              <motion.div ref={figRef} aria-hidden className="pointer-events-none absolute bottom-[calc(var(--meadow)+12px)] left-0 z-10" style={{ x: figX }}>
-                <div className="walk-bob">
-                  <Minifig height={130} />
-                </div>
-              </motion.div>
-            </div>
-          </div>
+      <div className="village-sky relative overflow-hidden" data-street-mode="diorama">
+        {/* sky */}
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <span className="absolute right-[6vw] top-6"><BrickSun /></span>
+          <span className="absolute left-[4vw] top-8"><BrickCloud w={130} /></span>
+          <span className="absolute left-[34vw] top-20"><BrickCloud w={96} /></span>
+          <span className="absolute left-[64vw] top-6"><BrickCloud w={150} /></span>
+          <span className="balloon-drift absolute left-[20vw] top-28"><Balloon /></span>
+          <span className="bird-fly absolute left-0 top-24"><Birds /></span>
         </div>
-      )}
 
-      {mode === "row" && (
-        <div className="village-sky relative overflow-x-auto" style={meadowVar} data-street-mode="row">
-          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40">{clouds}</div>
-          <div className="relative flex w-max items-end gap-10 px-10 pb-[calc(var(--meadow)+80px)] pt-24">
-            <div aria-hidden className="pointer-events-none absolute bottom-[calc(var(--meadow)+88px)] left-0">
-              <BrickHills />
-              <div className="hill-fill h-[130px]" />
-            </div>
-            {ground}
-            <div aria-hidden className="shrink-0">
-              <IsoStack items={giantBook("blue")} size={30} />
-            </div>
-            <div aria-hidden className="shrink-0 self-end pb-2">
-              <Minifig height={130} />
-            </div>
-            {shops}
-            <div aria-hidden className="shrink-0">
-              <IsoStack items={giantBook("red")} size={30} />
-            </div>
+        {/* the village; on a narrow screen it scrolls sideways */}
+        <div className="relative overflow-x-auto px-3 pb-2 pt-16 sm:px-6" tabIndex={0} role="group" aria-label="The village from above. On a small screen, scroll sideways to look around." data-village-scroll>
+          <div className="mx-auto w-[980px] max-w-none lg:w-full lg:max-w-[1240px]" aria-hidden data-village>
+            <IsoStack items={VILLAGE} boundsItems={VILLAGE_BOUNDS} size={16} shadow={false} overlay={overlay} className="h-auto w-full" />
           </div>
         </div>
-      )}
+        <p className="relative px-4 pb-4 text-center font-mono text-[0.72rem] uppercase tracking-[0.16em] text-ink-2 lg:hidden" aria-hidden>
+          Swipe sideways to look around
+        </p>
 
-      {mode === "stack" && (
-        <div className="village-sky relative overflow-hidden" data-street-mode="stack">
-          {/* the village on the hill, the sun, and the two books that bracket the street */}
-          <div aria-hidden className="relative h-56 overflow-hidden">
-            <span className="absolute right-4 top-3"><BrickSun size={70} /></span>
-            <span className="absolute left-4 top-4"><BrickCloud w={90} /></span>
-            <span className="bird-fly absolute left-0 top-16"><Birds /></span>
-            <div className="absolute bottom-0 left-0">
-              <BrickHills width={900} />
-            </div>
-            <div className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-6">
-              <IsoStack items={giantBook("blue")} size={12} />
-              <Minifig height={104} />
-              <IsoStack items={giantBook("red")} size={12} />
-            </div>
-          </div>
-          <div className="grass-plate h-5" aria-hidden />
-          <div className="flex flex-col items-center gap-10 bg-[#e9f3e4] px-4 pb-12 pt-10">
-            {shopEls.flatMap((el, i) =>
-              i < shopEls.length - 1
-                ? [el, <div key={`prop-${i}`} className="flex justify-center"><StreetProp i={i} bunting={false} /></div>]
-                : [el],
-            )}
-          </div>
-          {/* the road and the meadow at the end of the village */}
-          <div aria-hidden className="road-plate relative h-[68px] overflow-hidden" style={{ ["--drive-to" as string]: "110vw", ["--drive-time" as string]: "9s" }}>
-            <span className="car-drive absolute bottom-1 left-0"><BrickCar color="red" /></span>
-            <span className="car-drive car-drive-back absolute bottom-6 left-0" style={{ animationDelay: "-4s" }}><BrickCar color="blue" flip /></span>
-          </div>
-          <div aria-hidden className="meadow-plate relative h-36 overflow-hidden">
-            <div className="picket absolute inset-x-0 top-0 h-6" />
-            <span className="absolute bottom-3 left-1/2 -translate-x-1/2"><Pond width={210} /></span>
-            <span className="absolute bottom-6 left-2"><Flowers /></span>
-            <span className="absolute bottom-5 right-2"><Cat /></span>
-          </div>
-        </div>
-      )}
+        {/* every house has a door */}
+        <ul className="relative mx-auto grid max-w-7xl gap-3 px-4 pb-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-5 lg:px-8" aria-label="Houses in the village">
+          {hobbies.map((h) => (
+            <li key={h.id}>
+              <button
+                type="button"
+                ref={(el) => {
+                  if (el) cards.current.set(h.id, el);
+                  else cards.current.delete(h.id);
+                }}
+                onClick={() => openHobby(h.id)}
+                onPointerEnter={() => setHot(h.id)}
+                onPointerLeave={() => setHot(null)}
+                onFocus={() => setHot(h.id)}
+                onBlur={() => setHot(null)}
+                data-shopfront={h.id}
+                aria-label={`${h.title}: open`}
+                className={`house-card group flex h-full w-full flex-col overflow-hidden rounded-2xl bg-surface text-left shadow-[var(--shadow-soft)] ring-1 ring-ink/10 transition-transform duration-200 hover:-translate-y-1 focus-visible:-translate-y-1 ${hot === h.id ? "-translate-y-1 ring-2 ring-brick-yellow" : ""}`}
+              >
+                <span aria-hidden className="room-roof block h-6 w-full" style={{ ["--rt" as string]: ROOF[h.id], ["--rt-d" as string]: ROOF[h.id] }} />
+                <span className="flex flex-1 flex-col gap-2 px-4 pb-4 pt-3">
+                  <span className="font-display text-[1.02rem] font-semibold leading-snug">{h.title}</span>
+                  <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-ink-2 group-hover:text-ink">
+                    <DoorOpen size={16} aria-hidden /> Step inside
+                  </span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {hobby && <HobbyPanel hobby={hobby} photos={photos[hobby.id] ?? []} onClose={close} />}
     </>

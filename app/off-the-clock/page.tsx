@@ -37,9 +37,9 @@ export default function OffTheClockPage() {
             >
               <ArrowLeft size={16} aria-hidden /> Back to the workshop
             </Link>
-            <p className="mt-10 font-mono text-[0.8rem] font-semibold uppercase tracking-[0.18em] text-ink-2">Book nook</p>
+            <p className="mt-10 font-mono text-[0.8rem] font-semibold uppercase tracking-[0.18em] text-ink-2">The village</p>
             <h1 className="mt-2 text-4xl font-semibold sm:text-5xl">Off the clock</h1>
-            <p className="mt-3 max-w-xl text-lg text-ink-2">A little village between two books. Scroll to stroll; step into any shop.</p>
+            <p className="mt-3 max-w-xl text-lg text-ink-2">A little brick village by the canal. Every house is a hobby; step into any of them.</p>
           </div>
         </div>
         <Street hobbies={hobbies} photos={photos} />

@@ -91,3 +91,11 @@ Choices made while building, and why.
 - The meadow height is one CSS variable (`--meadow`, a clamp on the viewport height), so the scene always reaches the bottom of the screen and nothing below the road is left blank.
 - No figures other than Joan's: the village is populated by animals and vehicles.
 - Phone layout keeps the stacked shops, now with a hill banner on top, props between shops, and the road and meadow at the end. Everything new is decorative, `aria-hidden`, and still for reduced motion.
+
+## Off the clock: a 3D brick village (replaces the flat street)
+- **One brick model on a baseplate** (`components/offclock/villageModel.ts`), drawn by `IsoStack` like every other build on the site, so it has studs and real depth. Five houses, each a different shape and colour (tall stone-and-tan library with a teal roof, long clubhouse with a pink band and attic, lavender flower cottage, steep amber studio, red barn with a mint roof), plus a canal with a bridge, a windmill with turning sails, a market stall, a well, trees, lanterns, ducks, a rowboat and little brick villagers, a few of whom walk.
+- **`IsoStack` gained two things for this:** a `roof` piece (a pitched prism with shingle rows; ridge along x or y; its gable end takes the wall colour) and a per-piece `shade` for colours outside the seven named brick colours.
+- **The side-scrolling walk is gone.** A model seen from above has no "street" to scroll along; the whole village is on screen at once instead. Click a house (its sign lifts and the house highlights) or its card underneath. The cards are the real buttons, so keyboard and screen-reader users get all five; the model itself is `aria-hidden`.
+- **On a phone** the model keeps its size and scrolls sideways (the scroll area is focusable), with the five cards stacked below.
+- **Inside each house** (`HobbyPanel.tsx`) is a room, not a plain panel: the house's roof colour across the top, a ceiling beam, wallpaper, floorboards, and a villager who says the blurb. Books sit in a wooden bookcase; photos hang as wooden frames, pegged prints on twine (flowers) or taped prints (scrapbook). A hobby with no photos shows empty frames.
+- **Removed:** the flat shopfronts and their window interiors, the giant books, the road and cars. They are in git history (`77c9a49`) if wanted back.

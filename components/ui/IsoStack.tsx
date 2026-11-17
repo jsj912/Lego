@@ -41,6 +41,8 @@ type Base = {
   id?: string | number;
   /** class on the piece's group (e.g. a drop-in animation) */
   cls?: string;
+  /** custom face colours, for pieces outside the seven named brick colours */
+  shade?: { base: string; light: string; dark: string };
 };
 
 export type IsoProject = (x: number, y: number, z: number) => readonly [number, number];
@@ -51,6 +53,8 @@ export type IsoItem =
   | (Base & { kind: "round"; w?: 1; h?: 1; studs?: boolean })
   /** a large round plate of diameter `d` studs (x, y = its bounding square's corner) */
   | (Base & { kind: "disc"; d: number; w?: number; h?: number; studs?: boolean })
+  /** a pitched roof (a prism): `rise` in plates, ridge running along x or y; `gable` colours the triangular end */
+  | (Base & { kind: "roof"; w: number; h: number; rise: number; ridge: "x" | "y"; gable?: { base: string; dark: string } })
   /** beam with pin holes on its visible faces, no studs */
   | (Base & { kind: "beam"; w: number; h: number })
   /** gear standing on a visible face: "front" is the plane y = at, "side" is x = at; cx/cz/radius in stud units */
@@ -75,8 +79,8 @@ type Props = {
 type Solid = Exclude<IsoItem, { kind: "gear" }>;
 type Gear = Extract<IsoItem, { kind: "gear" }>;
 
-const heightOf = (it: Solid) => (it.kind === "plate" || it.kind === "tile" || it.kind === "disc" ? PLATE : BRICK_H);
-const hasStuds = (it: Solid) => it.kind !== "tile" && it.kind !== "beam" && ("studs" in it ? it.studs !== false : true);
+const heightOf = (it: Solid) => (it.kind === "roof" ? it.rise * PLATE : it.kind === "plate" || it.kind === "tile" || it.kind === "disc" ? PLATE : BRICK_H);
+const hasStuds = (it: Solid) => it.kind !== "tile" && it.kind !== "beam" && it.kind !== "roof" && ("studs" in it ? it.studs !== false : true);
 const dims = (it: Solid) =>
   it.kind === "round" ? { w: 1, h: 1 } : it.kind === "disc" ? { w: it.d, h: it.d } : { w: it.w, h: it.h };
 
@@ -154,7 +158,7 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
       </g>
     );
 
-  const stud = (key: string, cx: number, cyTop: number, cyBot: number, s: (typeof BRICK_SHADES)[BrickColor], outline?: boolean) => {
+  const stud = (key: string, cx: number, cyTop: number, cyBot: number, s: { base: string; light: string; dark: string }, outline?: boolean) => {
     const rx = r(STUD_R * Math.SQRT2 * C30 * u);
     const ry = r(STUD_R * Math.SQRT2 * 0.5 * u);
     const stroke = line ? line.stroke : outline ? s.dark : "none";
@@ -172,7 +176,7 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
   };
 
   function renderSolid({ it, x, y, zb, w, h }: (typeof solids)[number], idx: number): ReactNode {
-    const s = BRICK_SHADES[it.color];
+    const s = it.shade ? { ...BRICK_SHADES[it.color], ...it.shade } : BRICK_SHADES[it.color];
     const outline = it.outline;
     const zt = zb + heightOf(it);
     const stroke = line ? line.stroke : outline ? s.dark : "rgba(0,0,0,0.1)";
@@ -226,6 +230,30 @@ export function IsoStack({ items, size = 24, glow, shadow: shadowProp = true, cl
                 return cells.sort((a, b) => a.k - b.k).map((c, i) => stud(`ds${i}`, c.cx, c.t, c.b, s, outline));
               })()
             : !isDisc && hasStuds(it) && stud("s", cx, r(top - STUD_H * u), top, s, outline)}
+        </g>
+      );
+    }
+
+    if (it.kind === "roof") {
+      const alongX = it.ridge === "x";
+      const g = it.gable ?? { base: s.base, dark: s.dark };
+      // ridge end points, then the far slope, the near (visible) slope and the visible gable end
+      const r0 = alongX ? P(x, y + h / 2, zt) : P(x + w / 2, y, zt);
+      const r1 = alongX ? P(x + w, y + h / 2, zt) : P(x + w / 2, y + h, zt);
+      const far = alongX ? pts(P(x, y, zb), P(x + w, y, zb), r1, r0) : pts(P(x, y, zb), P(x, y + h, zb), r1, r0);
+      const near = alongX ? pts(P(x, y + h, zb), P(x + w, y + h, zb), r1, r0) : pts(P(x + w, y, zb), P(x + w, y + h, zb), r1, r0);
+      const end = alongX ? pts(P(x + w, y, zb), P(x + w, y + h, zb), r1) : pts(P(x, y + h, zb), P(x + w, y + h, zb), r1);
+      // rows of shingles across the near slope
+      const e0 = alongX ? P(x, y + h, zb) : P(x + w, y, zb);
+      const e1 = alongX ? P(x + w, y + h, zb) : P(x + w, y + h, zb);
+      const rows = [0.25, 0.5, 0.75].map((t) => `M${r(e0[0] + (r0[0] - e0[0]) * t)},${r(e0[1] + (r0[1] - e0[1]) * t)} L${r(e1[0] + (r1[0] - e1[0]) * t)},${r(e1[1] + (r1[1] - e1[1]) * t)}`);
+      return (
+        <g key={it.id !== undefined ? `k${it.id}` : idx} className={it.cls}>
+          <polygon points={far} fill={fill(s.light)} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" />
+          <polygon points={end} fill={fill(alongX ? g.dark : g.base)} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" />
+          <polygon points={near} fill={fill(alongX ? s.base : s.dark)} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" />
+          {!outline && <path d={rows.join(" ")} fill="none" stroke={line ? line.stroke : "rgba(0,0,0,0.16)"} strokeWidth={line ? 0.8 : 1.2} />}
+          {!outline && !line && <path d={`M${r0[0]},${r0[1]} L${r1[0]},${r1[1]}`} stroke="rgba(255,255,255,0.6)" strokeWidth={1.6} strokeLinecap="round" />}
         </g>
       );
     }

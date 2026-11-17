@@ -624,3 +624,113 @@ html { scrollbar-gutter: stable; }
     radial-gradient(ellipse at 50% 50%, rgb(255 255 255 / 0.14) 0 4px, transparent 4.5px) 9px 0 / 18px 14px,
     #3f8f4f;
 }
+
+/* off-the-clock cottages */
+.cottage-wall {
+  border-left: 10px solid;
+  border-right: 10px solid;
+  box-shadow: inset 0 14px 18px -12px rgb(0 0 0 / 0.28);
+}
+.cottage-planks { background-image: repeating-linear-gradient(90deg, transparent 0 20px, rgb(0 0 0 / 0.13) 20px 22px); }
+.wood-sign {
+  background: linear-gradient(180deg, #fff7e0, #f1dfb3);
+  box-shadow: 0 0 0 3px #7a5230, 0 4px 6px rgb(0 0 0 / 0.25);
+}
+.door-planks { background: repeating-linear-gradient(90deg, transparent 0 12px, rgb(0 0 0 / 0.18) 12px 14px); }
+.shutter { box-shadow: inset 0 0 0 1.5px rgb(0 0 0 / 0.22); background-image: repeating-linear-gradient(180deg, transparent 0 7px, rgb(0 0 0 / 0.18) 7px 9px) !important; background-blend-mode: multiply; }
+.stone-base {
+  background:
+    radial-gradient(ellipse at 50% 50%, #b7b0a3 0 62%, transparent 66%) 0 0 / 26px 14px,
+    radial-gradient(ellipse at 50% 50%, #a39b8d 0 62%, transparent 66%) 13px 7px / 26px 14px,
+    #7d7568;
+}
+.lantern-glow { box-shadow: 0 0 14px 5px rgb(255 205 110 / 0.75); animation: lantern-flicker 3.4s ease-in-out infinite; }
+@keyframes lantern-flicker { 0%, 100% { opacity: 1; } 45% { opacity: 0.82; } 60% { opacity: 0.95; } }
+@media (prefers-reduced-motion: reduce) { .lantern-glow { animation: none !important; } }
+
+/* off-the-clock: cobbled lane, canal and villagers */
+.cobble-lane {
+  background:
+    radial-gradient(ellipse at 50% 50%, #cfc7b8 0 60%, transparent 64%) 0 0 / 30px 17px,
+    radial-gradient(ellipse at 50% 50%, #bdb4a4 0 60%, transparent 64%) 15px 8.5px / 30px 17px,
+    #8f877a;
+  box-shadow: inset 0 5px 0 #a39a8c, inset 0 -5px 0 rgb(0 0 0 / 0.22);
+}
+.canal { background: linear-gradient(180deg, #2f7fbd 0, #4aa3df 26px, #6fbdf0 60%, #8ecff7); }
+.canal-shine {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 60px, rgb(255 255 255 / 0.22) 60px 110px, transparent 110px 190px) 0 46% / 380px 3px repeat-x,
+    repeating-linear-gradient(90deg, transparent 0 90px, rgb(255 255 255 / 0.18) 90px 130px, transparent 130px 240px) 0 68% / 480px 3px repeat-x;
+  animation: canal-shine 16s linear infinite;
+}
+@keyframes canal-shine { to { background-position: 380px 46%, -480px 68%; } }
+.near-bank {
+  background:
+    radial-gradient(circle at 50% 42%, rgb(255 255 255 / 0.16) 0 3.4px, transparent 4px) 0 0 / 18px 18px,
+    linear-gradient(180deg, #4aa565, #2f8a4b);
+  border-top: 5px solid #a39a8c;
+}
+/* post-and-rail fence along the lane's edge of the canal */
+.wood-fence {
+  background:
+    linear-gradient(#a8744f, #7a5230) 0 8px / 100% 4px no-repeat,
+    linear-gradient(#a8744f, #7a5230) 0 18px / 100% 4px no-repeat,
+    repeating-linear-gradient(90deg, #7a5230 0 9px, transparent 9px 64px);
+  filter: drop-shadow(0 2px 0 rgb(0 0 0 / 0.2));
+}
+.boat-drift { animation: boat-drift var(--drift-time, 80s) linear infinite; }
+@keyframes boat-drift { from { transform: translateX(-180px); } to { transform: translateX(var(--drift-to, 3400px)); } }
+.boat-bob { animation: figure-bob 3.2s ease-in-out infinite; }
+.villager-walk { display: block; animation: villager-walk 30s linear infinite; }
+@keyframes villager-walk {
+  0% { transform: translateX(0) scaleX(1); }
+  49% { transform: translateX(var(--walk-d)) scaleX(1); }
+  50% { transform: translateX(var(--walk-d)) scaleX(-1); }
+  99% { transform: translateX(0) scaleX(-1); }
+  100% { transform: translateX(0) scaleX(1); }
+}
+.villager-step { animation: walk-bob 0.7s ease-in-out infinite; }
+.wheel-spin-slow { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) {
+  .canal-shine, .boat-bob, .villager-walk, .villager-step { animation: none !important; }
+  .boat-drift { animation: none !important; transform: translateX(900px); }
+}
+
+/* off-the-clock: the brick village diorama */
+.house-hit { cursor: pointer; }
+.house-hit-area { fill: transparent; stroke: transparent; stroke-width: 3; stroke-linejoin: round; pointer-events: all; transition: fill 150ms, stroke 150ms; }
+.house-hit:hover .house-hit-area, .house-hit.is-hot .house-hit-area { fill: rgb(255 213 0 / 0.16); stroke: #ffd500; }
+.house-sign { transition: transform 200ms var(--ease-snap); transform-box: fill-box; transform-origin: 50% 100%; }
+.house-hit:hover .house-sign, .house-hit.is-hot .house-sign { transform: translateY(-5px) scale(1.06); }
+.iso-glow { filter: drop-shadow(0 0 6px rgb(255 205 110 / 0.95)); }
+/* movement along the model's x axis: one stud is (13.86px, 8px) at this stud size */
+.iso-boat { animation: iso-move 18s ease-in-out infinite alternate; --mx: 139px; --my: 80px; }
+.iso-walk-a { animation: iso-move 10s ease-in-out infinite alternate; --mx: 111px; --my: 64px; }
+.iso-walk-b { animation: iso-move 12s ease-in-out infinite alternate; --mx: -97px; --my: -56px; }
+.iso-walk-c { animation: iso-move 8s ease-in-out infinite alternate; --mx: 69px; --my: 40px; }
+@keyframes iso-move { from { transform: translate(0, 0); } to { transform: translate(var(--mx), var(--my)); } }
+@media (prefers-reduced-motion: reduce) {
+  .iso-boat, .iso-walk-a, .iso-walk-b, .iso-walk-c { animation: none !important; }
+}
+
+/* inside a house: the room */
+.room-roof {
+  background:
+    radial-gradient(ellipse at 50% 0, var(--rt) 0 68%, transparent 71%) 0 100% / 26px 13px repeat-x,
+    linear-gradient(var(--rt), var(--rt)) 0 0 / 100% calc(100% - 12px) no-repeat,
+    var(--rt-d);
+}
+.room-floor { background: repeating-linear-gradient(90deg, #a8744f 0 46px, #8a5a3c 46px 48px); box-shadow: inset 0 3px 0 rgb(0 0 0 / 0.25); }
+.room-bubble::before {
+  content: ""; position: absolute; left: -7px; bottom: 14px; width: 14px; height: 14px;
+  background: inherit; transform: rotate(45deg); box-shadow: -1px 1px 0 rgb(17 17 17 / 0.1);
+}
+.room-stripes { background-image: repeating-linear-gradient(90deg, transparent 0 34px, rgb(47 111 108 / 0.07) 34px 46px); }
+.room-lanes { background-image: repeating-linear-gradient(180deg, transparent 0 58px, rgb(184 92 117 / 0.1) 58px 61px); }
+.room-dots { background-image: radial-gradient(circle, rgb(122 90 166 / 0.14) 0 3px, transparent 3.5px); background-size: 26px 26px; }
+.room-kraft { background-image: repeating-linear-gradient(135deg, transparent 0 9px, rgb(184 134 43 / 0.08) 9px 10px); }
+.room-pegboard { background-image: radial-gradient(circle, rgb(17 17 17 / 0.16) 0 2px, transparent 2.5px); background-size: 20px 20px; }
+.room-twine { background: linear-gradient(#b89a6a, #b89a6a) 0 8px / 100% 2px no-repeat; }
+.bookcase { background: linear-gradient(180deg, #7a5230, #5a3a20); box-shadow: inset 0 0 0 3px rgb(0 0 0 / 0.25), 0 14px 24px -14px rgb(0 0 0 / 0.6); }
+.bookcase-back { background-color: #33241a; box-shadow: inset 0 10px 18px rgb(0 0 0 / 0.5); }
+.photo-frame { background: linear-gradient(135deg, #8a5a3c, #5a3a20); box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.12), 0 10px 18px -8px rgb(0 0 0 / 0.55); border-radius: 4px; }
