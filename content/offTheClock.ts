@@ -4,7 +4,8 @@
 // Photos: drop images into /public/interests/<folder>/ (jpg, jpeg, png, webp, avif).
 
 export type RunStat = { label: string; value: string };
-export type Book = { title: string; author?: string };
+/** `shelf` is the labelled shelf the book sits on in the library. */
+export type Book = { title: string; author?: string; shelf?: string };
 
 export type Hobby = {
   id: "books" | "running" | "flowers" | "scrapbook" | "build-table";
@@ -27,18 +28,18 @@ export const hobbies: Hobby[] = [
     blurb: "I read mostly high fantasy, for the worldbuilding.",
     folder: "books",
     books: [
-      { title: "Mistborn", author: "Brandon Sanderson" },
-      { title: "Assassin's Apprentice", author: "Robin Hobb · Farseer trilogy" },
-      { title: "Fireborne", author: "Rosaria Munda" },
-      { title: "The Name of the Wind", author: "Patrick Rothfuss" },
-      { title: "The Wise Man's Fear", author: "Patrick Rothfuss" },
-      { title: "The Da Vinci Code", author: "Dan Brown" },
-      { title: "Angels & Demons", author: "Dan Brown" },
-      { title: "Inferno", author: "Dan Brown" },
-      { title: "Divergent", author: "Veronica Roth" },
-      { title: "The Hunger Games", author: "Suzanne Collins" },
-      { title: "The Maze Runner", author: "James Dashner" },
-      { title: "The Giver", author: "Lois Lowry" },
+      { title: "Mistborn", author: "Brandon Sanderson", shelf: "High fantasy" },
+      { title: "Assassin's Apprentice", author: "Robin Hobb · Farseer trilogy", shelf: "High fantasy" },
+      { title: "Fireborne", author: "Rosaria Munda", shelf: "High fantasy" },
+      { title: "The Name of the Wind", author: "Patrick Rothfuss", shelf: "High fantasy" },
+      { title: "The Wise Man's Fear", author: "Patrick Rothfuss", shelf: "High fantasy" },
+      { title: "The Da Vinci Code", author: "Dan Brown", shelf: "Thrillers" },
+      { title: "Angels & Demons", author: "Dan Brown", shelf: "Thrillers" },
+      { title: "Inferno", author: "Dan Brown", shelf: "Thrillers" },
+      { title: "Divergent", author: "Veronica Roth", shelf: "Dystopia" },
+      { title: "The Hunger Games", author: "Suzanne Collins", shelf: "Dystopia" },
+      { title: "The Maze Runner", author: "James Dashner", shelf: "Dystopia" },
+      { title: "The Giver", author: "Lois Lowry", shelf: "Dystopia" },
     ],
     currentlyReading: null, // TODO: add the book you're currently reading
   },

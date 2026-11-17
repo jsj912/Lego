@@ -4,10 +4,9 @@ import { X } from "lucide-react";
 import { useEffect, useRef, type CSSProperties } from "react";
 import type { Hobby } from "@/content/offTheClock";
 import type { Photo } from "@/lib/assets";
+import Bookshop from "./Bookshop";
 import { ROOF_TONES, type RoofTone } from "./Buildings";
 import { LOOKS, Villager, type VillagerLook } from "./Villagers";
-
-const SPINES = ["#7f1d1d", "#1e3a8a", "#14532d", "#581c87", "#9a3412", "#0f766e", "#831843", "#334155", "#713f12", "#155e75"];
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -28,6 +27,7 @@ export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; p
   const ref = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const room = ROOMS[hobby.id];
+  const hasBooks = !!hobby.books && hobby.books.length > 0;
 
   useEffect(() => {
     const html = document.documentElement;
@@ -86,63 +86,20 @@ export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; p
             </button>
           </div>
 
-          {/* the host, with the blurb as what they say */}
-          <div className="mt-5 flex items-end gap-3">
-            <span aria-hidden className="shrink-0">
-              <Villager look={room.host} height={124} />
-            </span>
-            {hobby.blurb && (
-              <p className="room-bubble relative mb-8 rounded-2xl bg-surface px-4 py-3 text-lg font-medium leading-snug text-ink shadow-[var(--shadow-soft)] ring-1 ring-ink/10">
-                {hobby.blurb}
-              </p>
-            )}
-          </div>
-
-          {hobby.currentlyReading && (
-            <p className="mt-5 inline-block rounded-lg bg-brick-yellow px-3 py-2 text-sm font-semibold">
-              <span className="mr-2 font-mono text-[0.68rem] uppercase tracking-[0.14em]">Currently reading</span>
-              {hobby.currentlyReading}
-            </p>
-          )}
-
-          {hobby.books && hobby.books.length > 0 && (
-            <div className="mt-6">
-              <h3 className="font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink-2">On the shelf</h3>
-              {/* a real bookcase: carved top, dark back, a plank under every row */}
-              <div className="bookcase mt-3 rounded-t-[26px] p-3 pb-2">
-                <div aria-hidden className="mb-2 flex items-center justify-center gap-3">
-                  <span className="h-[3px] w-16 rounded bg-[#d4a72c]/70" />
-                  <span className="flame h-3.5 w-2.5" />
-                  <span className="h-[3px] w-16 rounded bg-[#d4a72c]/70" />
-                </div>
-                <ul className="bookcase-back shelf-rows flex flex-wrap justify-center gap-x-1.5 rounded-md px-3 pb-[20px] pt-1" aria-label="Books">
-                  {hobby.books.map((b, i) => {
-                    const color = SPINES[i % SPINES.length];
-                    return (
-                      <li key={b.title} className="flex h-[206px] items-end">
-                        <div
-                          className="spine relative flex flex-col items-center justify-between rounded-t-[4px] rounded-b-[2px] px-1 py-3 text-white transition-transform duration-200 hover:-translate-y-2"
-                          style={{ background: color, width: 52 + ((i * 7) % 3) * 8, height: 170 + ((i * 23) % 28) }}
-                          title={b.author ? `${b.title} · ${b.author}` : b.title}
-                        >
-                          <span aria-hidden className="spine-band absolute inset-x-0 top-2 h-[3px]" />
-                          <span aria-hidden className="spine-band absolute inset-x-0 top-[14px] h-px" />
-                          <span className="mt-3 max-h-[100px] overflow-hidden font-display text-[0.78rem] font-semibold leading-tight [writing-mode:vertical-rl]">
-                            {b.title}
-                          </span>
-                          {b.author && (
-                            <span className="mb-1 max-h-[70px] overflow-hidden text-[0.52rem] font-medium uppercase leading-[1.15] tracking-[0.04em] text-white/80 [writing-mode:vertical-rl]">
-                              {b.author.split(" · ")[0]}
-                            </span>
-                          )}
-                          <span aria-hidden className="spine-band absolute inset-x-0 bottom-2 h-[3px]" />
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+          {hasBooks ? (
+            <Bookshop hobby={hobby} host={room.host} />
+          ) : (
+            /* the host, with the blurb as what they say */
+              <div className="mt-5 flex items-end gap-3">
+                <span aria-hidden className="shrink-0">
+                  <Villager look={room.host} height={124} />
+                </span>
+                {hobby.blurb && (
+                  <p className="room-bubble relative mb-8 rounded-2xl bg-surface px-4 py-3 text-lg font-medium leading-snug text-ink shadow-[var(--shadow-soft)] ring-1 ring-ink/10">
+                    {hobby.blurb}
+                  </p>
+                )}
               </div>
-            </div>
           )}
 
           {hobby.runStats && hobby.runStats.length > 0 && (
@@ -178,7 +135,7 @@ export default function HobbyPanel({ hobby, photos, onClose }: { hobby: Hobby; p
                 </li>
               ))}
             </ul>
-          ) : hobby.books && hobby.books.length > 0 ? null : (
+          ) : hasBooks ? null : (
             <div className="mt-7" data-photos-placeholder>
               {/* empty frames waiting on the wall */}
               <div aria-hidden className="grid grid-cols-3 gap-4">
